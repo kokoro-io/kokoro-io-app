@@ -4,8 +4,10 @@ using System.ComponentModel;
 using KokoroIO.XamarinForms.UWP;
 using KokoroIO.XamarinForms.ViewModels;
 using KokoroIO.XamarinForms.Views;
+using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
 [assembly: ExportRenderer(typeof(MessageContent), typeof(MessageContentRenderer))]
@@ -26,10 +28,24 @@ namespace KokoroIO.XamarinForms.UWP
             {
                 if (Control == null)
                 {
-                    SetNativeControl(new RichTextBlock());
+                    var rtb = new RichTextBlock();
+                    rtb.IsTextSelectionEnabled = false;
+                    rtb.TextWrapping = Windows.UI.Xaml.TextWrapping.Wrap;
+                    ScrollViewer.SetHorizontalScrollBarVisibility(rtb, ScrollBarVisibility.Hidden);
+                    ScrollViewer.SetHorizontalScrollMode(rtb, ScrollMode.Disabled);
+                    ScrollViewer.SetVerticalScrollBarVisibility(rtb, ScrollBarVisibility.Hidden);
+                    ScrollViewer.SetVerticalScrollMode(rtb, ScrollMode.Disabled);
+
+                    SetNativeControl(rtb);
                 }
                 UpdateBlocks(Control);
             }
+        }
+
+        protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
+        {
+            Control.MaxWidth = availableSize.Width;
+            return base.MeasureOverride(availableSize);
         }
 
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -22,16 +22,40 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition
-                                    Width="Auto" />
+                                    Width="56" />
                                 <ColumnDefinition
                                     Width="*" />
                             </Grid.ColumnDefinitions>
                             <Image
                                 Grid.RowSpan="2"
-                                Source="{Binding Profile.Avatar}" />
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Margin="8"
+                                Source="{Binding Profile.Avatar}">
+                                <Image.Triggers>
+                                    <DataTrigger
+                                        TargetType="Image"
+                                        Binding="{Binding IsMerged}"
+                                        Value="True">
+                                        <Setter
+                                            Property="IsVisible"
+                                            Value="False" />
+                                    </DataTrigger>
+                                </Image.Triggers>
+                            </Image>
                             <StackLayout
                                 Grid.Column="1"
                                 Orientation="Horizontal">
+                                <StackLayout.Triggers>
+                                    <DataTrigger
+                                        TargetType="StackLayout"
+                                        Binding="{Binding IsMerged}"
+                                        Value="True">
+                                        <Setter
+                                            Property="IsVisible"
+                                            Value="False" />
+                                    </DataTrigger>
+                                </StackLayout.Triggers>
                                 <Label
                                     Text="{Binding Profile.DisplayName}"
                                     LineBreakMode="NoWrap"
@@ -44,6 +68,7 @@
                             <view:MessageContent
                                 Grid.Column="1"
                                 Grid.Row="1"
+                                Margin="4,2,16,2"
                                 Blocks="{Binding Blocks}" />
                         </Grid>
                         <!---->
