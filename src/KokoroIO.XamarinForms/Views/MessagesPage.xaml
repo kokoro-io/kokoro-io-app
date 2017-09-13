@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
+    Title="{Binding Title}">
+    <ContentPage.Content>
+        <ListView
+            HasUnevenRows="true"
+            VerticalOptions="FillAndExpand"
+            CachingStrategy="RecycleElement"
+            ItemsSource="{Binding Messages}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition
+                                    Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                    Width="Auto" />
+                                <ColumnDefinition
+                                    Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image
+                                Grid.RowSpan="2"
+                                Source="{Binding Profile.Avatar}" />
+                            <StackLayout
+                                Grid.Column="1"
+                                Orientation="Horizontal">
+                                <Label
+                                    Text="{Binding Profile.DisplayName}"
+                                    LineBreakMode="NoWrap"
+                                    FontSize="13.5" />
+                                <Label
+                                    Text="{Binding PublishedAt}"
+                                    LineBreakMode="NoWrap"
+                                    FontSize="13.5" />
+                            </StackLayout>
+                        </Grid>
+                        <!---->
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </ContentPage.Content>
+</ContentPage>

@@ -17,6 +17,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public string Id { get; }
         public string ChannelName { get; }
+
+        public string DisplayName
+            => (Kind == RoomKind.DirectMessage ? '@' : '#') + ChannelName;
+
         public RoomKind Kind { get; }
 
         public string KindName

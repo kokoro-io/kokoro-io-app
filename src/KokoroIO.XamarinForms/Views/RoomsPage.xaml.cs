@@ -9,24 +9,30 @@ namespace KokoroIO.XamarinForms.Views
 {
     public partial class RoomsPage : ContentPage
     {
-       // RoomsViewModel viewModel;
+        // RoomsViewModel viewModel;
 
         public RoomsPage()
         {
             InitializeComponent();
         }
 
-        //async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
-        //{
-        //    var item = args.SelectedItem as Item;
-        //    if (item == null)
-        //        return;
+        private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
+        {
+            var lv = sender as ListView;
 
-        //    await Navigation.PushAsync(new ItemDetailPage(new ItemDetailViewModel(item)));
+            var item = lv?.SelectedItem as RoomViewModel;
+            if (item == null)
+            {
+                return;
+            }
 
-        //    // Manually deselect item
-        //    ItemsListView.SelectedItem = null;
-        //}
+            await Navigation.PushAsync(new MessagesPage()
+            {
+                BindingContext = new MessagesViewModel(item)
+            });
+
+            lv.SelectedItem = null;
+        }
 
         //async void AddItem_Clicked(object sender, EventArgs e)
         //{

@@ -10,14 +10,15 @@
             HasUnevenRows="true"
             VerticalOptions="FillAndExpand"
             CachingStrategy="RecycleElement"
-            ItemsSource="{Binding Rooms}">
+            ItemsSource="{Binding Rooms}"
+            ItemSelected="OnItemSelected">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout
                             Padding="10">
                             <Label
-                                Text="{Binding ChannelName}"
+                                Text="{Binding DisplayName}"
                                 LineBreakMode="NoWrap"
                                 Style="{DynamicResource ListItemTextStyle}"
                                 FontSize="16" />

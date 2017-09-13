@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
@@ -50,6 +51,24 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Rooms
+
+        #region Profiles
+
+        private readonly Dictionary<string, ProfileViewModel> _Profiles = new Dictionary<string, ProfileViewModel>();
+
+        internal ProfileViewModel GetProfile(Profile model)
+        {
+            var key = model.Id + '\0' + model.Avatar + '\0' + model.DisplayName;
+
+            if (!_Profiles.TryGetValue(key, out var p))
+            {
+                p = new ProfileViewModel(model);
+                _Profiles[key] = p;
+            }
+            return p;
+        }
+
+        #endregion Profiles
     }
 
 }
