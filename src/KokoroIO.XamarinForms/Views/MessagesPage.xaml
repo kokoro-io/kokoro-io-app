@@ -2,6 +2,7 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
     Title="{Binding Title}">
     <ContentPage.Content>
@@ -40,6 +41,10 @@
                                     LineBreakMode="NoWrap"
                                     FontSize="13.5" />
                             </StackLayout>
+                            <view:MessageContent
+                                Grid.Column="1"
+                                Grid.Row="1"
+                                Blocks="{Binding Blocks}" />
                         </Grid>
                         <!---->
                     </ViewCell>
