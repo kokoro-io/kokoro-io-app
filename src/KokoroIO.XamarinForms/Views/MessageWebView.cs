@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using System.Xml;
 using KokoroIO.XamarinForms.ViewModels;
+using Newtonsoft.Json;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.Views
@@ -74,10 +76,49 @@ namespace KokoroIO.XamarinForms.Views
 
         private void RefreshMessages()
         {
-            string xml;
-            var replacements = new Dictionary<string, string>();
+            InitHtml();
+
+            if (Messages == null)
+            {
+                Eval("setMessages(null)");
+            }
+            else
+            {
+                var js = new JsonSerializer();
+
+                using (var sw = new StringWriter())
+                {
+                    sw.Write("setMessages(");
+                    js.Serialize(sw, Messages.Select(m => new
+                    {
+                        m.Id,
+                        m.Profile.Avatar,
+                        m.Profile.DisplayName,
+                        m.PublishedAt,
+                        m.Content,
+                        m.IsMerged
+                    }));
+                    sw.Write(")");
+
+                    var script = sw.ToString();
+
+                    Eval(script);
+                }
+            }
+        }
+
+        private void InitHtml()
+        {
+            if (Source != null)
+            {
+                return;
+            }
+
             using (var sw = new StringWriter())
-            using (var xw = XmlWriter.Create(sw))
+            using (var xw = XmlWriter.Create(sw, new XmlWriterSettings()
+            {
+                CheckCharacters = false
+            }))
             {
                 xw.WriteDocType("html", null, null, null);
 
@@ -108,86 +149,30 @@ namespace KokoroIO.XamarinForms.Views
                 }
                 xw.WriteEndElement();
 
-                xw.WriteString("");
+                xw.WriteStartElement("script");
+                using (var rs = GetManifestResourceStream("Messages.js"))
+                using (var sr = new StreamReader(rs))
+                {
+                    xw.WriteRaw(sr.ReadToEnd());
+                }
+                xw.WriteEndElement();
 
                 xw.WriteEndElement();
                 xw.WriteStartElement("body");
 
-                var ms = Messages;
-
-                if (ms != null)
-                {
-                    foreach (var m in ms)
-                    {
-                        xw.WriteStartElement("div");
-                        xw.WriteAttributeString("class", m.IsMerged ? "talk not-continued" : "talk continued");
-                        xw.WriteAttributeString("data-message-id", m.Id.ToString("D"));
-                        {
-                            xw.WriteStartElement("div");
-                            xw.WriteAttributeString("class", "avatar");
-                            {
-                                xw.WriteStartElement("a");
-                                xw.WriteAttributeString("class", "img-rounded");
-
-                                xw.WriteStartElement("img");
-                                xw.WriteAttributeString("src", m.Profile.Avatar);
-
-                                xw.WriteEndElement();
-                                xw.WriteEndElement();
-                            }
-                            xw.WriteEndElement();
-
-                            xw.WriteStartElement("div");
-                            xw.WriteAttributeString("class", "message");
-                            {
-                                xw.WriteStartElement("div");
-                                xw.WriteAttributeString("class", "speaker");
-                                {
-                                    xw.WriteStartElement("a");
-                                    xw.WriteString(m.Profile.DisplayName);
-                                    xw.WriteEndElement();
-
-                                    xw.WriteStartElement("small");
-                                    xw.WriteAttributeString("class", "timeleft text-muted");
-                                    xw.WriteString(m.PublishedAt.ToString("MM/dd HH:mm"));
-                                    xw.WriteEndElement();
-                                }
-                                xw.WriteEndElement();
-
-                                xw.WriteStartElement("div");
-                                xw.WriteAttributeString("class", "filtered_text");
-                                {
-                                    var cm = $"<!--{m.Id}-->";
-                                    xw.WriteRaw(cm);
-
-                                    replacements[cm] = m.Content;
-                                }
-                                xw.WriteEndElement();
-                            }
-                            xw.WriteEndElement();
-                        }
-                        xw.WriteEndElement();
-                    }
-                }
+                xw.WriteString("");
 
                 xw.WriteEndElement();
                 xw.WriteEndElement();
 
                 xw.Flush();
 
-                xml = sw.ToString();
+                Source = new HtmlWebViewSource()
+                {
+                    BaseUrl = "https://kokoro.io/",
+                    Html = sw.ToString()
+                };
             }
-
-            foreach (var kv in replacements)
-            {
-                xml = xml.Replace(kv.Key, kv.Value);
-            }
-
-            Source = new HtmlWebViewSource()
-            {
-                BaseUrl = "https://kokoro.io/",
-                Html = xml
-            };
         }
 
         private void MessageWebView_Navigating(object sender, WebNavigatingEventArgs e)
