@@ -19,6 +19,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal ApplicationViewModel Application => Room.Application;
 
+        public Command OpenUrlCommand => Application.OpenUrlCommand;
+
         private ObservableCollection<MessageInfo> _Messages;
 
         public ObservableCollection<MessageInfo> Messages

@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
+using System.Windows.Input;
 using System.Xml;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
@@ -10,6 +11,11 @@ namespace KokoroIO.XamarinForms.Views
 {
     public class MessageWebView : WebView
     {
+        public MessageWebView()
+        {
+            this.Navigating += MessageWebView_Navigating;
+        }
+
         public static readonly BindableProperty MessagesProperty
             = BindableProperty.Create(nameof(Messages), typeof(IEnumerable<MessageInfo>), typeof(MessageWebView), propertyChanged: MessagesChanged);
 
@@ -17,6 +23,15 @@ namespace KokoroIO.XamarinForms.Views
         {
             get => (IEnumerable<MessageInfo>)GetValue(MessagesProperty);
             set => SetValue(MessagesProperty, value);
+        }
+
+        public static readonly BindableProperty NavigatingCommandProperty
+            = BindableProperty.Create(nameof(NavigatingCommand), typeof(ICommand), typeof(MessageWebView));
+
+        public ICommand NavigatingCommand
+        {
+            get => (ICommand)GetValue(NavigatingCommandProperty);
+            set => SetValue(NavigatingCommandProperty, value);
         }
 
         private static void MessagesChanged(BindableObject bindable, object oldValue, object newValue)
@@ -52,7 +67,7 @@ namespace KokoroIO.XamarinForms.Views
 #if __IOS__
             return t.Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.iOS.Resources." + fileName);
 #else
-            return t.Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.Android.Resources." + fileName);
+            return t.Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.Droid.Resources." + fileName);
 #endif
 #endif
         }
@@ -173,6 +188,21 @@ namespace KokoroIO.XamarinForms.Views
                 BaseUrl = "https://kokoro.io/",
                 Html = xml
             };
+        }
+
+        private void MessageWebView_Navigating(object sender, WebNavigatingEventArgs e)
+        {
+            var c = NavigatingCommand;
+
+            if (!e.Cancel && c?.CanExecute(e.Url) == true)
+            {
+                e.Cancel = true;
+                try
+                {
+                    c.Execute(e.Url);
+                }
+                catch { }
+            }
         }
     }
 }
