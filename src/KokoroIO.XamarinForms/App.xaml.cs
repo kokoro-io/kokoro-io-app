@@ -1,4 +1,7 @@
 ﻿using KokoroIO.XamarinForms.Views;
+using Microsoft.Azure.Mobile;
+using Microsoft.Azure.Mobile.Analytics;
+using Microsoft.Azure.Mobile.Crashes;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,6 +16,13 @@ namespace KokoroIO.XamarinForms
             InitializeComponent();
 
             SetMainPage();
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            MobileCenter.Start("android=2bf93410-91e9-48a0-ac2a-b7cd2b2b62c1;", typeof(Analytics), typeof(Crashes));
         }
 
         public static void SetMainPage()
