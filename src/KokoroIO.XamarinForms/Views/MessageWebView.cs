@@ -17,7 +17,7 @@ namespace KokoroIO.XamarinForms.Views
     {
         public MessageWebView()
         {
-            this.Navigating += MessageWebView_Navigating;
+            Navigating += MessageWebView_Navigating;
         }
 
         public static readonly BindableProperty MessagesProperty
@@ -78,6 +78,7 @@ namespace KokoroIO.XamarinForms.Views
         }
 
         internal Func<string, Task> InvokeScriptAsyncCore;
+        private int _RetryCount;
 
         private async Task InvokeScriptAsync(string script)
         {
@@ -95,19 +96,19 @@ namespace KokoroIO.XamarinForms.Views
         {
             InitHtml();
 
-            if (Messages == null)
+            try
             {
-                Eval("setMessages(null)");
-            }
-            else
-            {
-                try
+                if (Messages == null)
+                {
+                    await InvokeScriptAsync("window.setMessages(null)");
+                }
+                else
                 {
                     var js = new JsonSerializer();
 
                     using (var sw = new StringWriter())
                     {
-                        sw.Write("setMessages(");
+                        sw.Write("window.setMessages(");
 
                         js.Serialize(sw, Messages.Select(m => new
                         {
@@ -126,15 +127,22 @@ namespace KokoroIO.XamarinForms.Views
                         await InvokeScriptAsync(script);
                     }
                 }
-                catch
+                _RetryCount = 0;
+            }
+            catch
+            {
+                _RetryCount++;
+                Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
                 {
-                }
+                    RefreshMessages();
+                    return false;
+                });
             }
         }
 
         private void InitHtml()
         {
-            if (Source != null)
+            if (Source != null && _RetryCount < 10)
             {
                 return;
             }
@@ -146,7 +154,7 @@ namespace KokoroIO.XamarinForms.Views
                 OmitXmlDeclaration = true
             }))
             {
-                xw.WriteDocType("html", null, null, null);
+                xw.WriteDocType("html", "", "", "");
 
                 xw.WriteStartElement("html");
                 xw.WriteStartElement("head");
