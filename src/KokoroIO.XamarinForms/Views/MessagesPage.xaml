@@ -6,12 +6,16 @@
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
     Title="{Binding Title}">
     <ContentPage.Content>
-        <ListView
+        <view:MessageListView
             HasUnevenRows="true"
             VerticalOptions="FillAndExpand"
-            CachingStrategy="RecycleElement"
-            ItemsSource="{Binding Messages}">
-            <ListView.ItemTemplate>
+            SeparatorVisibility="None"
+            ItemsSource="{Binding Messages}"
+            RefreshTopCommand="{Binding PrependCommand}"
+            RefreshCommand="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsBusy}"
+            ItemAppearing="ListView_ItemAppearing">
+            <view:MessageListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <Grid>
@@ -71,10 +75,9 @@
                                 Margin="4,2,16,2"
                                 Blocks="{Binding Blocks}" />
                         </Grid>
-                        <!---->
                     </ViewCell>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </view:MessageListView.ItemTemplate>
+        </view:MessageListView>
     </ContentPage.Content>
 </ContentPage>

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -9,6 +10,9 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             Room = room;
             Title = room.DisplayName;
+
+            PrependCommand = new Command(BeginPrepend);
+            RefreshCommand = new Command(BeginAppend);
         }
 
         internal RoomViewModel Room { get; }
@@ -115,5 +119,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 IsBusy = false;
             }
         }
+
+        public Command PrependCommand { get; set; }
+        public Command RefreshCommand { get; set; }
     }
 }

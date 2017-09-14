@@ -36,6 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageListItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageSpan.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageSpanType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\ProfileViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\RoomViewModel.cs" />
@@ -43,6 +44,7 @@
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessageContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MessageListView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPage.xaml.cs">
       <DependentUpon>MessagesPage.xaml</DependentUpon>
       <SubType>Code</SubType>

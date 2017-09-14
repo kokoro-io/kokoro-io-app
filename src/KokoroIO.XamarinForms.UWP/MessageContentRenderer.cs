@@ -4,10 +4,8 @@ using System.ComponentModel;
 using KokoroIO.XamarinForms.UWP;
 using KokoroIO.XamarinForms.ViewModels;
 using KokoroIO.XamarinForms.Views;
-using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
-using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
 [assembly: ExportRenderer(typeof(MessageContent), typeof(MessageContentRenderer))]
@@ -55,6 +53,15 @@ namespace KokoroIO.XamarinForms.UWP
                 UpdateBlocks(Control);
             }
             base.OnElementPropertyChanged(sender, e);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_Blocks != null && _Blocks.TryGetTarget(out var v))
+            {
+                v.CollectionChanged -= Blocks_CollectionChanged;
+            }
+            base.Dispose(disposing);
         }
 
         private WeakReference<INotifyCollectionChanged> _Blocks;
@@ -133,6 +140,12 @@ namespace KokoroIO.XamarinForms.UWP
             if (s.Text == Environment.NewLine)
             {
                 return new LineBreak();
+            }
+            else if (s.Type == MessageSpanType.Hyperlink)
+            {
+                var hl = new Hyperlink();
+                hl.Inlines.Add(new Run() { Text = s.Text });
+                return hl;
             }
             else
             {

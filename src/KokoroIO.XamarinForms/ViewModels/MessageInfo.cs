@@ -54,7 +54,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             try
             {
-                var html = model.Content.Replace("<br>", "<br />");
+                var html = model.Content.Replace("<br>", "<br />").Replace("\u0008", "");
 
                 using (var sr = new StringReader(html))
                 using (var xr = XmlReader.Create(sr, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Fragment }))
