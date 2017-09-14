@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
@@ -14,8 +15,8 @@ namespace KokoroIO.XamarinForms.Views
 
         public IEnumerable<MessageInfo> Messages
         {
-            get { return (IEnumerable<MessageInfo>)GetValue(MessagesProperty); }
-            set { SetValue(MessagesProperty, value); }
+            get => (IEnumerable<MessageInfo>)GetValue(MessagesProperty);
+            set => SetValue(MessagesProperty, value);
         }
 
         private static void MessagesChanged(BindableObject bindable, object oldValue, object newValue)
@@ -42,6 +43,20 @@ namespace KokoroIO.XamarinForms.Views
             RefreshMessages();
         }
 
+        private static Stream GetManifestResourceStream(string fileName)
+        {
+            var t = typeof(MessageWebView);
+#if WINDOWS_UWP
+            return t.GetTypeInfo().Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.UWP.Resources." + fileName);
+#else
+#if __IOS__
+            return t.Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.iOS.Resources." + fileName);
+#else
+            return t.Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.Android.Resources." + fileName);
+#endif
+#endif
+        }
+
         private void RefreshMessages()
         {
             string xml;
@@ -53,7 +68,18 @@ namespace KokoroIO.XamarinForms.Views
 
                 xw.WriteStartElement("html");
                 xw.WriteStartElement("head");
+
+                xw.WriteStartElement("style");
+
+                using (var rs = GetManifestResourceStream("Messages.css"))
+                using (var sr = new StreamReader(rs))
+                {
+                    xw.WriteString(sr.ReadToEnd());
+                }
+                xw.WriteEndElement();
+
                 xw.WriteString("");
+
                 xw.WriteEndElement();
                 xw.WriteStartElement("body");
 
