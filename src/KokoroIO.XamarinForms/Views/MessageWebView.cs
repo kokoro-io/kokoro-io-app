@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml;
 using KokoroIO.XamarinForms.ViewModels;
@@ -52,6 +54,7 @@ namespace KokoroIO.XamarinForms.Views
                     cc.CollectionChanged += mwv.Cc_CollectionChanged;
                 }
             }
+
             mwv.RefreshMessages();
         }
 
@@ -74,7 +77,21 @@ namespace KokoroIO.XamarinForms.Views
 #endif
         }
 
-        private void RefreshMessages()
+        internal Func<string, Task> InvokeScriptAsyncCore;
+
+        private async Task InvokeScriptAsync(string script)
+        {
+            if (InvokeScriptAsyncCore != null)
+            {
+                await InvokeScriptAsyncCore(script);
+            }
+            else
+            {
+                Eval(script);
+            }
+        }
+
+        private async void RefreshMessages()
         {
             InitHtml();
 
@@ -84,25 +101,33 @@ namespace KokoroIO.XamarinForms.Views
             }
             else
             {
-                var js = new JsonSerializer();
-
-                using (var sw = new StringWriter())
+                try
                 {
-                    sw.Write("setMessages(");
-                    js.Serialize(sw, Messages.Select(m => new
+                    var js = new JsonSerializer();
+
+                    using (var sw = new StringWriter())
                     {
-                        m.Id,
-                        m.Profile.Avatar,
-                        m.Profile.DisplayName,
-                        m.PublishedAt,
-                        m.Content,
-                        m.IsMerged
-                    }));
-                    sw.Write(")");
+                        sw.Write("setMessages(");
 
-                    var script = sw.ToString();
+                        js.Serialize(sw, Messages.Select(m => new
+                        {
+                            m.Id,
+                            m.Profile.Avatar,
+                            m.Profile.DisplayName,
+                            m.PublishedAt,
+                            m.Content,
+                            m.IsMerged
+                        }));
 
-                    Eval(script);
+                        sw.WriteLine(")");
+
+                        var script = sw.ToString();
+
+                        await InvokeScriptAsync(script);
+                    }
+                }
+                catch
+                {
                 }
             }
         }
@@ -117,7 +142,8 @@ namespace KokoroIO.XamarinForms.Views
             using (var sw = new StringWriter())
             using (var xw = XmlWriter.Create(sw, new XmlWriterSettings()
             {
-                CheckCharacters = false
+                CheckCharacters = false,
+                OmitXmlDeclaration = true
             }))
             {
                 xw.WriteDocType("html", null, null, null);
@@ -129,7 +155,7 @@ namespace KokoroIO.XamarinForms.Views
                 using (var rs = GetManifestResourceStream("Messages.css"))
                 using (var sr = new StreamReader(rs))
                 {
-                    xw.WriteString(sr.ReadToEnd());
+                    xw.WriteRaw(sr.ReadToEnd());
                 }
                 xw.WriteEndElement();
 
@@ -137,7 +163,7 @@ namespace KokoroIO.XamarinForms.Views
                 using (var rs = GetManifestResourceStream("MessageBox.css"))
                 using (var sr = new StreamReader(rs))
                 {
-                    xw.WriteString(sr.ReadToEnd());
+                    xw.WriteRaw(sr.ReadToEnd());
                 }
                 xw.WriteEndElement();
 
@@ -145,7 +171,7 @@ namespace KokoroIO.XamarinForms.Views
                 using (var rs = GetManifestResourceStream("Pygments.css"))
                 using (var sr = new StreamReader(rs))
                 {
-                    xw.WriteString(sr.ReadToEnd());
+                    xw.WriteRaw(sr.ReadToEnd());
                 }
                 xw.WriteEndElement();
 

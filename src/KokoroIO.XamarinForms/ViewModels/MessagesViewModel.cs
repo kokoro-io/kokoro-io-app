@@ -1,5 +1,5 @@
-using System.Collections.ObjectModel;
 using System.Linq;
+using KokoroIO.XamarinForms.Helpers;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
@@ -21,15 +21,15 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public Command OpenUrlCommand => Application.OpenUrlCommand;
 
-        private ObservableCollection<MessageInfo> _Messages;
+        private ObservableRangeCollection<MessageInfo> _Messages;
 
-        public ObservableCollection<MessageInfo> Messages
+        public ObservableRangeCollection<MessageInfo> Messages
         {
             get
             {
                 if (_Messages == null)
                 {
-                    _Messages = new ObservableCollection<MessageInfo>();
+                    _Messages = new ObservableRangeCollection<MessageInfo>();
                     BeginLoadMessages();
                 }
                 return _Messages;
@@ -92,25 +92,58 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 HasPrevious &= aid != null || messages.Length >= PAGE_SIZE;
 
-                var i = 0;
-
-                foreach (var m in messages.OrderBy(e => e.Id))
+                if (!messages.Any())
                 {
-                    var vm = new MessageInfo(this, m);
-                    for (; ; i++)
+                    return;
+                }
+
+                var minId = messages.Min(m => m.Id);
+                var maxId = messages.Max(m => m.Id);
+
+                if (!_Messages.Any() || _Messages.Last().Id < minId)
+                {
+                    var mvms = messages.OrderBy(m => m.Id).Select(m => new MessageInfo(this, m)).ToList();
+                    for (var i = 0; i < mvms.Count; i++)
                     {
-                        var prev = i == 0 ? null : _Messages[i - 1];
-                        var next = i >= _Messages.Count ? null : _Messages[i];
+                        mvms[i].SetIsMerged(i == 0 ? _Messages.LastOrDefault() : mvms[i - 1]);
+                    }
 
-                        if (!(prev?.Id > vm.Id)
-                            || !(vm.Id >= next?.Id))
+                    _Messages.AddRange(mvms);
+                }
+                else if (maxId < _Messages.First().Id)
+                {
+                    var mvms = messages.OrderBy(m => m.Id).Select(m => new MessageInfo(this, m)).ToList();
+                    for (var i = 1; i < mvms.Count; i++)
+                    {
+                        mvms[i].SetIsMerged(mvms[i - 1]);
+                    }
+
+                    _Messages[0].SetIsMerged(mvms.LastOrDefault());
+
+                    _Messages.AddRange(mvms);
+                }
+                else
+                {
+                    var i = 0;
+
+                    foreach (var m in messages.OrderBy(e => e.Id))
+                    {
+                        var vm = new MessageInfo(this, m);
+                        for (; ; i++)
                         {
-                            _Messages.Insert(i, vm);
-                            i++;
+                            var prev = i == 0 ? null : _Messages[i - 1];
+                            var next = i >= _Messages.Count ? null : _Messages[i];
 
-                            vm.SetIsMerged(prev);
-                            next?.SetIsMerged(vm);
-                            break;
+                            if (!(prev?.Id > vm.Id)
+                                || !(vm.Id >= next?.Id))
+                            {
+                                _Messages.Insert(i, vm);
+                                i++;
+
+                                vm.SetIsMerged(prev);
+                                next?.SetIsMerged(vm);
+                                break;
+                            }
                         }
                     }
                 }
