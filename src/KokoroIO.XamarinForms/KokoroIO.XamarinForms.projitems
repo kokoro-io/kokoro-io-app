@@ -85,4 +85,8 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\Messages.css" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MessageBox.css" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\Pygments.css" />
+  </ItemGroup>
 </Project>

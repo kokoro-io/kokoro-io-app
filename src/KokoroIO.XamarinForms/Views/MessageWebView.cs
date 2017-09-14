@@ -70,8 +70,23 @@ namespace KokoroIO.XamarinForms.Views
                 xw.WriteStartElement("head");
 
                 xw.WriteStartElement("style");
-
                 using (var rs = GetManifestResourceStream("Messages.css"))
+                using (var sr = new StreamReader(rs))
+                {
+                    xw.WriteString(sr.ReadToEnd());
+                }
+                xw.WriteEndElement();
+
+                xw.WriteStartElement("style");
+                using (var rs = GetManifestResourceStream("MessageBox.css"))
+                using (var sr = new StreamReader(rs))
+                {
+                    xw.WriteString(sr.ReadToEnd());
+                }
+                xw.WriteEndElement();
+
+                xw.WriteStartElement("style");
+                using (var rs = GetManifestResourceStream("Pygments.css"))
                 using (var sr = new StreamReader(rs))
                 {
                     xw.WriteString(sr.ReadToEnd());

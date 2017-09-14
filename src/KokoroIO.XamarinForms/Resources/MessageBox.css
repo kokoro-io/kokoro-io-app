@@ -1,0 +1,222 @@
+﻿p {
+    margin: 0;
+}
+
+img.thumb {
+    max-width: 330px;
+    max-height: 300px;
+}
+
+.message blockquote {
+    padding: 3px 8px;
+    margin: 3px 0 10px 0;
+    border-left: 4px solid #18BC9C;
+    font-size: 1em;
+    line-height: 1.4em;
+}
+
+.embed_contents .embed_media.nsfw img,
+.embed_contents .embed-thumbnail.nsfw img {
+    filter: grayscale(90%) blur(4px);
+}
+
+.embed_contents .thumb .embed-thumbnail {
+    overflow: hidden;
+    position: relative;
+    border-radius: 6px;
+}
+
+.embed_content {
+    margin: 10px 0;
+}
+
+.embed_contents .nsfw-mark {
+    color: #F39C12;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+}
+
+.embed_content .medias > .embed_media {
+    position: relative;
+    align-items: stretch;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.embed_content > .embed-mixedcontent .medias > .embed_media {
+    margin: 10px 10px 0 0;
+}
+
+.embed_content .medias {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.embed_content > .embed-mixedcontent .medias {
+    padding: 0px 10px 10px 10px;
+    margin: -10px 0 0 0;
+}
+
+.embed_contents .play-button {
+    color: #000;
+    opacity: 0.7;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -0.5em 0 0 -0.5em;
+    text-shadow: 0 2px 0 #fff, 2px 0 0 #fff, 0 -2px 0 #fff, -2px 0 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+}
+
+.embed_content > .embed-singleimage .embed_media img,
+.embed_content > .embed-singlevideo .embed_media img {
+    max-width: 250px;
+    max-height: 250px;
+}
+
+.embed_content > .embed-singleaudio .embed_media .embed-audio {
+    border-radius: 6px;
+    padding: 2px;
+    border: 1px solid #ccc;
+    line-height: 1;
+    background: #fafafa;
+}
+
+.embed_content > .embed-mixedcontent {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+    .embed_content > .embed-mixedcontent > .meta {
+        display: flex;
+        flex-flow: row nowrap;
+        padding: 10px;
+    }
+
+        .embed_content > .embed-mixedcontent > .meta > .info {
+            min-width: 0; /* Hack for enable word breaking at flexbox */
+        }
+
+        .embed_content > .embed-mixedcontent > .meta .description p {
+            white-space: pre-wrap;
+        }
+
+        .embed_content > .embed-mixedcontent > .meta > .thumb {
+            margin: 0 10px 0 0;
+        }
+
+            .embed_content > .embed-mixedcontent > .meta > .thumb img {
+                display: block;
+            }
+
+            .embed_content > .embed-mixedcontent > .meta > .thumb img {
+                max-width: 120px;
+                max-height: 120px;
+            }
+
+    .embed_content > .embed-mixedcontent > .medias {
+        justify-content: center;
+    }
+
+        .embed_content > .embed-mixedcontent > .medias > .embed_media img {
+            max-width: 120px;
+        }
+
+        .embed_content > .embed-mixedcontent > .medias > .embed_media img {
+            display: block;
+        }
+
+    .embed_content > .embed-mixedcontent > a {
+        display: none;
+    }
+
+.ne-image-wrapper img {
+    max-width: 330px;
+    max-height: 300px;
+}
+
+.talk {
+    display: flex;
+    flex-direction: row;
+}
+
+    .talk.continued {
+        padding-top: 4px;
+    }
+
+    .talk.not-continued {
+        padding-top: 13px;
+    }
+
+    .talk .avatar {
+        display: flex;
+        flex-grow: 0;
+        min-width: 60px;
+        padding: 0 10px;
+        /* position: relative; */
+    }
+
+        .talk .avatar img {
+            width: 40px;
+            height: 40px;
+            display: block;
+            position: relative;
+        }
+
+            .talk .avatar img:before {
+                content: " ";
+                width: 40px;
+                height: 40px;
+                display: block;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                background: #fff;
+            }
+
+            .talk .avatar img:after {
+                content: "\00a0(^_^;)";
+                font-size: 0.7em;
+                color: #666666;
+                text-align: center;
+                line-height: 40px;
+                width: 40px;
+                height: 40px;
+                display: block;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                background: #eee;
+                border-radius: 5px;
+            }
+
+    .talk .message {
+        flex-grow: 1;
+        min-width: 0; /* Hack for enable word breaking at flexbox */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        padding: 0 10px 0 0;
+    }
+
+        .talk .message .speaker {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+            .talk .message .speaker a {
+                text-decoration: none;
+                color: #2C3E50;
+            }
+
+                .talk .message .speaker a:hover {
+                    color: #18BC9C;
+                }
+
+        .talk .message .filtered_text {
+            font-size: 1.1em;
+        }
+
+        .talk .message .timeleft {
+            padding-left: 5px;
+        }
