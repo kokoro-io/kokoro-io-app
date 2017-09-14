@@ -29,22 +29,15 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Models\BaseDataObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\ListMessageBlock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageBlock.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageBlockBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageListItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageSpan.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageSpanType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\ProfileViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\RoomViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\MessageContent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Views\MessageListView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MessageWebView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPage.xaml.cs">
       <DependentUpon>MessagesPage.xaml</DependentUpon>
       <SubType>Code</SubType>
