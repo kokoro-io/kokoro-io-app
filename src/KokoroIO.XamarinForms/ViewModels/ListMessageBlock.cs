@@ -14,7 +14,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 var ivm = new MessageListItem();
 
-                ivm.Spans.AddRange(MessageSpan.EnumerateSpans(li));
+                ivm.Spans.AddRange(MessageSpan.EnumerateSpans(Message, li));
 
                 _Items.Add(ivm);
             }

@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
+using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -10,6 +12,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal ApplicationViewModel(Client client)
         {
             Client = client;
+            OpenUrlCommand = new Command(OpenUrl);
         }
 
         internal Client Client { get; }
@@ -69,6 +72,17 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Profiles
-    }
 
+        public Command OpenUrlCommand { get; }
+
+        private void OpenUrl(object url)
+        {
+            var u = url as Uri ?? (url is string s ? new Uri(s) : null);
+
+            if (u != null)
+            {
+                Device.OpenUri(u);
+            }
+        }
+    }
 }

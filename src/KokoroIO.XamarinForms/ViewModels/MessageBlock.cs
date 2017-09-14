@@ -13,7 +13,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal MessageBlock(MessageInfo message, XElement element)
             : base(message)
         {
-            _Spans.AddRange(MessageSpan.EnumerateSpans(element));
+            _Spans.AddRange(MessageSpan.EnumerateSpans(Message, element));
         }
 
         private readonly List<MessageSpan> _Spans = new List<MessageSpan>();

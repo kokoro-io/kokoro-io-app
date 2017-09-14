@@ -144,6 +144,7 @@ namespace KokoroIO.XamarinForms.UWP
             else if (s.Type == MessageSpanType.Hyperlink)
             {
                 var hl = new Hyperlink();
+                hl.NavigateUri = s.Href != null ? new Uri(s.Href) : null;
                 hl.Inlines.Add(new Run() { Text = s.Text });
                 return hl;
             }

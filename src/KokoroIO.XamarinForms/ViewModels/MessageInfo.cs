@@ -96,9 +96,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                             {
                                 if (pvm.Spans.Count > 0)
                                 {
-                                    pvm.Spans.Add(new MessageSpan() { Text = Environment.NewLine });
+                                    pvm.Spans.Add(new MessageSpan(this) { Text = Environment.NewLine });
                                 }
-                                pvm.Spans.Add(new MessageSpan()
+                                pvm.Spans.Add(new MessageSpan(this)
                                 {
                                     Text = l
                                 });
