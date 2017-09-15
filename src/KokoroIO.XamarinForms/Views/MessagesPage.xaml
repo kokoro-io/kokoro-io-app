@@ -17,7 +17,27 @@
                 RefreshCommand="{Binding RefreshCommand}"
                 NavigatingCommand="{Binding OpenUrlCommand}"
                 Messages="{Binding Messages}" />
-
+            <Label
+                Margin="8,4"
+                Text="{Binding Room.UnreadCount,StringFormat='{}{0} new messages'}"
+                TextColor="#fff"
+                BackgroundColor="#4169E1"
+                Font="Monospace,Bold"
+                HorizontalOptions="FillAndExpand"
+                HorizontalTextAlignment="Center"
+                VerticalOptions="Start"
+                FontSize="Small">
+                <Label.Triggers>
+                    <DataTrigger
+                        TargetType="Label"
+                        Binding="{Binding Room.UnreadCount}"
+                        Value="0">
+                        <Setter
+                            Property="IsVisible"
+                            Value="False" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
             <Grid
                 Grid.Row="1"
                 Margin="4">

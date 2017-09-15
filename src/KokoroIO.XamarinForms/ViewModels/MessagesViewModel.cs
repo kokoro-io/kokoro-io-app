@@ -17,7 +17,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             RefreshCommand = new Command(BeginAppend);
         }
 
-        internal RoomViewModel Room { get; }
+        public RoomViewModel Room { get; }
 
         internal ApplicationViewModel Application => Room.Application;
 
