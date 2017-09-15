@@ -10,3 +10,11 @@ body {
     overflow-y: auto;
     font-family: sans-serif;
 }
+
+.talk.continued .avatar img {
+    display: none;
+}
+
+.talk.continued .speaker {
+    display: none;
+}
