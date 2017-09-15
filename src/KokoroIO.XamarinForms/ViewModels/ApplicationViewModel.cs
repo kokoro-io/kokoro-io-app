@@ -59,6 +59,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private readonly Dictionary<string, ProfileViewModel> _Profiles = new Dictionary<string, ProfileViewModel>();
 
+        internal ProfileViewModel GetProfile(Message model)
+        {
+            var key = model.Profile.Id + '\0' + model.Avatar + '\0' + model.DisplayName;
+
+            if (!_Profiles.TryGetValue(key, out var p))
+            {
+                p = new ProfileViewModel(model.Profile.Id, model.Avatar, model.DisplayName);
+                _Profiles[key] = p;
+            }
+            return p;
+        }
+
         internal ProfileViewModel GetProfile(Profile model)
         {
             var key = model.Id + '\0' + model.Avatar + '\0' + model.DisplayName;

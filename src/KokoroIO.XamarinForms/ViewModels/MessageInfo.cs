@@ -10,7 +10,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             Page = page;
             Id = message.Id;
-            Profile = page.Application.GetProfile(message.Profile);
+            Profile = page.Application.GetProfile(message);
             PublishedAt = message.PublishedAt;
 
             Content = message.Content;

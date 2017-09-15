@@ -11,6 +11,13 @@ namespace KokoroIO.XamarinForms.ViewModels
             DisplayName = model.DisplayName;
         }
 
+        internal ProfileViewModel(string id, string avatar, string displayName)
+        {
+            Id = id;
+            Avatar = avatar;
+            DisplayName = displayName;
+        }
+
         public string Id { get; }
         public string Avatar { get; }
         public string DisplayName { get; }
