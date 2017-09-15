@@ -91,7 +91,7 @@ namespace KokoroIO.XamarinForms.Views
 
         private async void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (_MessagesLoaded == true)
+            if (_InitialMessagesLoaded)
             {
                 // HTML and JavaScript has loaded.
 
@@ -191,8 +191,7 @@ namespace KokoroIO.XamarinForms.Views
         #region HTML and JavaScript
 
         internal Func<string, Task> InvokeScriptAsyncCore;
-        private int _RetryCount;
-        private bool? _MessagesLoaded;
+        internal Action<string> NavigateToStringCore;
 
         private class JsonMessage
         {
@@ -240,11 +239,18 @@ namespace KokoroIO.XamarinForms.Views
             }
         }
 
-        private void InitHtml()
+        #region InitHtmlTask
+
+        private Task _InitHtmlTask;
+
+        private Task InitHtmlTask
+            => _InitHtmlTask ?? (_InitHtmlTask = InitHtmlCore());
+
+        private async Task InitHtmlCore()
         {
-            if (Source != null && _RetryCount < 10)
+            while (NavigateToStringCore == null)
             {
-                return;
+                await Task.Delay(100);
             }
 
             using (var sw = new StringWriter())
@@ -258,6 +264,10 @@ namespace KokoroIO.XamarinForms.Views
 
                 xw.WriteStartElement("html");
                 xw.WriteStartElement("head");
+
+                xw.WriteStartElement("base");
+                xw.WriteAttributeString("href", "https://kokoro.io/");
+                xw.WriteEndElement();
 
                 xw.WriteStartElement("meta");
                 xw.WriteAttributeString("name", "viewport");
@@ -306,21 +316,26 @@ namespace KokoroIO.XamarinForms.Views
 
                 xw.Flush();
 
-                Source = new HtmlWebViewSource()
-                {
-                    BaseUrl = "https://kokoro.io/",
-                    Html = sw.ToString()
-                };
+                NavigateToStringCore(sw.ToString());
             }
         }
 
+        #endregion InitHtmlTask
+
+        private bool _InitialMessagesLoaded;
+        private bool _RefreshMessagesRequested;
+
         private async void RefreshMessages()
         {
-            InitHtml();
+            if (_RefreshMessagesRequested)
+            {
+                return;
+            }
 
+            _RefreshMessagesRequested = true;
+            await InitHtmlTask;
             try
             {
-                _MessagesLoaded = false;
                 if (Messages == null)
                 {
                     await InvokeScriptAsync("window.setMessages(null)");
@@ -334,17 +349,15 @@ namespace KokoroIO.XamarinForms.Views
                         sw.Write("window.setMessages(");
                         js.Serialize(sw, Messages.Select(m => new JsonMessage(m)));
                         sw.Write(")");
+                        _RefreshMessagesRequested = false;
 
                         await InvokeScriptAsync(sw.ToString());
                     }
                 }
-                _RetryCount = 0;
-                _MessagesLoaded = true;
+                _InitialMessagesLoaded = true;
             }
             catch
             {
-                _RetryCount++;
-                _MessagesLoaded = null;
                 Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
                 {
                     RefreshMessages();

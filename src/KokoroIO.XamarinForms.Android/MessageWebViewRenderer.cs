@@ -29,6 +29,7 @@ namespace KokoroIO.XamarinForms.Droid
             if (mwv != null)
             {
                 mwv.InvokeScriptAsyncCore = null;
+                mwv.NavigateToStringCore = null;
             }
 
             base.OnElementChanged(e);
@@ -38,8 +39,11 @@ namespace KokoroIO.XamarinForms.Droid
             if (mwv != null)
             {
                 mwv.InvokeScriptAsyncCore = InvokeScriptAsyncCore;
+                mwv.NavigateToStringCore = NavigateToStringCore;
             }
         }
+
+        #region InvokeScriptAsyncCore
 
         private Task InvokeScriptAsyncCore(string script)
         {
@@ -94,6 +98,13 @@ namespace KokoroIO.XamarinForms.Droid
                 }
                 return base.OnConsoleMessage(consoleMessage);
             }
+        }
+
+        #endregion InvokeScriptAsyncCore
+
+        private void NavigateToStringCore(string html)
+        {
+            Control.LoadDataWithBaseURL("https://kokoro.io/", html, "text/html", "UTF-8", null);
         }
     }
 }
