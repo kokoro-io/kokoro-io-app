@@ -101,6 +101,41 @@ namespace KokoroIO.XamarinForms.Views
                             catch { }
                         }
                         break;
+                    case NotifyCollectionChangedAction.Remove:
+                        if (e.OldItems?.Count > 0)
+                        {
+                            try
+                            {
+                                var js = new JsonSerializer();
+
+                                using (var sw = new StringWriter())
+                                {
+                                    sw.Write("window.removeMessages(");
+                                    js.Serialize(sw, e.OldItems.Cast<MessageInfo>().Select(m => m.Id));
+                                    sw.Write(",");
+                                    IEnumerable<MessageInfo> merged;
+                                    if (e.NewStartingIndex >= 0)
+                                    {
+                                        merged = new[]
+                                        {
+                                            Messages.ElementAtOrDefault(e.OldStartingIndex - 1),
+                                            Messages.ElementAtOrDefault(e.OldStartingIndex )
+                                        };
+                                    }
+                                    else
+                                    {
+                                        merged = Messages.Except(e.OldItems.Cast<MessageInfo>());
+                                    }
+                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new JsonMerged(m)));
+                                    sw.Write(")");
+
+                                    await InvokeScriptAsync(sw.ToString());
+                                }
+                                return;
+                            }
+                            catch { }
+                        }
+                        break;
                 }
             }
 

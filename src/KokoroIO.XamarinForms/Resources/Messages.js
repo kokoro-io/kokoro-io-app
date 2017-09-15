@@ -48,6 +48,20 @@
         updateContinued(merged);
     }
 
+    var removeMessages = window.removeMessages = function (ids, merged) {
+        if (ids) {
+            var j = 0;
+            for (var i = 0; i < ids.length; i++) {
+                var talk = document.getElementById('talk' + ids[i]);
+
+                if (talk) {
+                    talk.remove();
+                }
+            }
+        }
+        updateContinued(merged);
+    }
+
     function updateContinued(merged) {
         if (merged) {
             for (var i = 0; i < merged.length; i++) {
