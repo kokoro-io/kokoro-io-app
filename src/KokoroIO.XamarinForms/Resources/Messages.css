@@ -18,3 +18,7 @@ body {
 .talk.continued .speaker {
     display: none;
 }
+
+.talk .avatar img {
+    border-radius: 5px;
+}
