@@ -1,4 +1,5 @@
-﻿using KokoroIO.XamarinForms.ViewModels;
+﻿using System.Linq;
+using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.Views
@@ -12,6 +13,16 @@ namespace KokoroIO.XamarinForms.Views
             InitializeComponent();
         }
 
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            while (Navigation.NavigationStack.Last() != this)
+            {
+                await Navigation.PopAsync();
+            }
+        }
+
         private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
             var lv = sender as ListView;
@@ -22,10 +33,11 @@ namespace KokoroIO.XamarinForms.Views
                 return;
             }
 
-            await Navigation.PushAsync(new MessagesPage()
+            var mp = new MessagesPage()
             {
                 BindingContext = item.GetOrCreateMessagesPage()
-            });
+            };
+            await Navigation.PushAsync(mp);
 
             lv.SelectedItem = null;
         }

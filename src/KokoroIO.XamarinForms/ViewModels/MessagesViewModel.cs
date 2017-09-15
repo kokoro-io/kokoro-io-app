@@ -66,7 +66,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 IsBusy = true;
 
-                const int PAGE_SIZE = 60;
+                const int PAGE_SIZE = 20;
 
                 int? bid, aid;
 
