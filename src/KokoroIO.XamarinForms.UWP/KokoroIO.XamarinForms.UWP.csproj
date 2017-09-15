@@ -103,6 +103,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AudioService.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -117,6 +118,7 @@
   <ItemGroup>
     <Content Include="profile_generic.png" />
     <Content Include="Properties\Default.rd.xml" />
+    <EmbeddedResource Include="Resources\ring.mp3" />
     <Content Include="slideout.png" />
   </ItemGroup>
   <ItemGroup>

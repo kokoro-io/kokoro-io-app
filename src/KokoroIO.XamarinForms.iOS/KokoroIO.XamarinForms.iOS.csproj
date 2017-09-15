@@ -177,7 +177,9 @@
       <InProject>false</InProject>
     </ImageAsset>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BundleResource Include="Resources\ring.mp3" />
+  </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
   </ItemGroup>
@@ -187,6 +189,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioService.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
   </ItemGroup>
