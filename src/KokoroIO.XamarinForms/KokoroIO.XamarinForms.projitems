@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ExpandableEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessageWebView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPage.xaml.cs">
       <DependentUpon>MessagesPage.xaml</DependentUpon>

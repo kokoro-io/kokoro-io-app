@@ -6,10 +6,45 @@
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
     Title="{Binding Title}">
     <ContentPage.Content>
-        <view:MessageWebView
-            LoadOlderCommand="{Binding PrependCommand}"
-            RefreshCommand="{Binding RefreshCommand}"
-            NavigatingCommand="{Binding OpenUrlCommand}"
-            Messages="{Binding Messages}" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <view:MessageWebView
+                LoadOlderCommand="{Binding PrependCommand}"
+                RefreshCommand="{Binding RefreshCommand}"
+                NavigatingCommand="{Binding OpenUrlCommand}"
+                Messages="{Binding Messages}" />
+
+            <Grid
+                Grid.Row="1"
+                Margin="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition
+                        Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <!--<Button
+                    Font="Monospace,Bold,Large"
+                    TextColor="#ccc"
+                    BackgroundColor="Transparent"
+                    Text="+" />-->
+                <view:ExpandableEditor
+                    Grid.Column="1"
+                    FontSize="Medium"
+                    Text="{Binding NewMessage}" />
+                <Button
+                    Grid.Column="2"
+                    Font="Monospace,Medium"
+                    TextColor="#ccc"
+                    BackgroundColor="Transparent"
+                    Text="Go"
+                    Command="{Binding PostCommand}" />
+            </Grid>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using KokoroIO.XamarinForms.Helpers;
 using Xamarin.Forms;
@@ -154,5 +156,56 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public Command PrependCommand { get; set; }
         public Command RefreshCommand { get; set; }
+
+        #region Post
+
+        private string _NewMessage = string.Empty;
+
+        public string NewMessage
+        {
+            get => _NewMessage;
+            set => SetProperty(ref _NewMessage, value);
+        }
+
+        private Command _PostCommand;
+
+        public Command PostCommand
+            => _PostCommand ?? (_PostCommand = new Command(BeginPost));
+
+        public async void BeginPost()
+        {
+            var m = _NewMessage;
+
+            var nsfw = false;// TODO: NSFW UI
+            var succeeded = false;
+
+            if (IsBusy || string.IsNullOrEmpty(m))
+            {
+                return;
+            }
+            try
+            {
+                IsBusy = true;
+                await Application.Client.PostMessageAsync(Room.Id, m, nsfw);
+                NewMessage = string.Empty;
+                succeeded = true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            if (succeeded)
+            {
+                BeginAppend();
+                // TODO: scroll to new message
+            }
+        }
+
+        #endregion Post
     }
 }
