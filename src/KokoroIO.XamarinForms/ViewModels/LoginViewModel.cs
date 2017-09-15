@@ -93,6 +93,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 App.Current.MainPage = new TabbedPage
                 {
+                    BindingContext = app,
                     Children =
                     {
                         new NavigationPage(new RoomsPage())

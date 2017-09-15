@@ -1,8 +1,4 @@
-﻿using System;
-
-using KokoroIO.XamarinForms.Models;
-using KokoroIO.XamarinForms.ViewModels;
-
+﻿using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.Views
