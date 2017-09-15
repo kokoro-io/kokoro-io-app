@@ -1,10 +1,50 @@
 ﻿(function () {
     var setMessages = window.setMessages = function (messages) {
+        console.debug("Setting " + (messages ? messages.length : 0) + " messages");
         document.body.innerHTML = "";
-        addMessages(messages, null);
+        _addMessagessCore(messages, null);
+
+        if (messages && messages.length > 0) {
+            _showItem(messages[messages.length - 1].Id, false);
+        }
     }
 
-    var addMessages = window.addMessages = function (messages, merged) {
+    function _getTopId() {
+        var e = document.elementFromPoint(8, 8);
+        while (e) {
+            if (e.classList.contains("talk")) {
+                return parseInt(e.getAttribute("data-message-id"), 10);
+            }
+
+            e = e.parentElement;
+        }
+        return -1;
+    }
+
+    function _showItem(id, top) {
+
+        if (!id) {
+            return;
+        }
+
+        console.debug("showing item[" + id + "] to " + (top ? "top" : "bottom"));
+
+        var talk = document.getElementById('talk' + id);
+        if (!talk) {
+            console.warn("#talk" + id + " is not found");
+            return;
+        }
+
+        var st;
+        if (top) {
+            st = talk.offsetTop;
+        } else {
+            st = talk.offsetTop + document.body.clientHeight - talk.clientHeight;
+        }
+        document.body.scrollTop = st;
+    }
+
+    function _addMessagessCore(messages, merged) {
         if (messages) {
             var talks = document.querySelectorAll("div.talk");
 
@@ -48,7 +88,19 @@
         updateContinued(merged);
     }
 
+    window.addMessages = function (messages, merged) {
+        console.debug("Adding " + (messages ? messages.length : 0) + " messages");
+        var tid = _getTopId();
+        var top = tid > 0;
+        if (!top && messages && messages.length > 0) {
+            tid = messages[messages.length - 1].Id;
+        }
+        _addMessagessCore(messages, merged);
+        _showItem(tid, top);
+    }
+
     var removeMessages = window.removeMessages = function (ids, merged) {
+        console.debug("Removing " + (ids ? ids.length : 0) + " messages");
         if (ids) {
             var j = 0;
             for (var i = 0; i < ids.length; i++) {
