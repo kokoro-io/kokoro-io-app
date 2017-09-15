@@ -12,6 +12,16 @@ namespace KokoroIO.XamarinForms.Droid
 {
     public class MessageWebViewRenderer : WebViewRenderer
     {
+        static MessageWebViewRenderer()
+        {
+#if DEBUG
+            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Kitkat)
+            {
+                Android.Webkit.WebView.SetWebContentsDebuggingEnabled(true);
+            }
+#endif
+        }
+
         protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.WebView> e)
         {
             var mwv = e.OldElement as MessageWebView;
