@@ -110,18 +110,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     _Messages.AddRange(mvms);
                 }
-                else if (maxId < _Messages.First().Id)
-                {
-                    var mvms = messages.OrderBy(m => m.Id).Select(m => new MessageInfo(this, m)).ToList();
-                    for (var i = 1; i < mvms.Count; i++)
-                    {
-                        mvms[i].SetIsMerged(mvms[i - 1]);
-                    }
-
-                    _Messages[0].SetIsMerged(mvms.LastOrDefault());
-
-                    _Messages.AddRange(mvms);
-                }
                 else
                 {
                     var i = 0;
@@ -131,17 +119,26 @@ namespace KokoroIO.XamarinForms.ViewModels
                         var vm = new MessageInfo(this, m);
                         for (; ; i++)
                         {
-                            var prev = i == 0 ? null : _Messages[i - 1];
-                            var next = i >= _Messages.Count ? null : _Messages[i];
+                            var prev = _Messages[i];
 
-                            if (!(prev?.Id > vm.Id)
-                                || !(vm.Id >= next?.Id))
+                            if (m.Id < prev.Id)
                             {
                                 _Messages.Insert(i, vm);
-                                i++;
-
-                                vm.SetIsMerged(prev);
-                                next?.SetIsMerged(vm);
+                                break;
+                            }
+                            else if (m.Id == prev.Id)
+                            {
+                                // TODO: update
+                                break;
+                            }
+                            else if (i + 1 >= _Messages.Count)
+                            {
+                                _Messages.Add(vm);
+                                break;
+                            }
+                            else if (m.Id < _Messages[i + 1].Id)
+                            {
+                                _Messages.Insert(i, vm);
                                 break;
                             }
                         }

@@ -29,6 +29,34 @@ namespace KokoroIO.XamarinForms.Views
             set => SetValue(MessagesProperty, value);
         }
 
+        #region LoadOlderCommand
+
+        public static readonly BindableProperty LoadOlderCommandProperty
+            = BindableProperty.Create(nameof(LoadOlderCommand), typeof(ICommand), typeof(MessageWebView));
+
+        public ICommand LoadOlderCommand
+        {
+            get => (ICommand)GetValue(LoadOlderCommandProperty);
+            set => SetValue(LoadOlderCommandProperty, value);
+        }
+
+        #endregion LoadOlderCommand
+
+        #region RefreshCommand
+
+        public static readonly BindableProperty RefreshCommandProperty
+            = BindableProperty.Create(nameof(RefreshCommand), typeof(ICommand), typeof(MessageWebView));
+
+        public ICommand RefreshCommand
+        {
+            get => (ICommand)GetValue(RefreshCommandProperty);
+            set => SetValue(RefreshCommandProperty, value);
+        }
+
+        #endregion RefreshCommand
+
+        #region NavigatingCommand
+
         public static readonly BindableProperty NavigatingCommandProperty
             = BindableProperty.Create(nameof(NavigatingCommand), typeof(ICommand), typeof(MessageWebView));
 
@@ -37,6 +65,8 @@ namespace KokoroIO.XamarinForms.Views
             get => (ICommand)GetValue(NavigatingCommandProperty);
             set => SetValue(NavigatingCommandProperty, value);
         }
+
+        #endregion NavigatingCommand
 
         private static void MessagesChanged(BindableObject bindable, object oldValue, object newValue)
         {
@@ -101,6 +131,7 @@ namespace KokoroIO.XamarinForms.Views
                             catch { }
                         }
                         break;
+
                     case NotifyCollectionChangedAction.Remove:
                         if (e.OldItems?.Count > 0)
                         {
@@ -323,9 +354,27 @@ namespace KokoroIO.XamarinForms.Views
 
         private void MessageWebView_Navigating(object sender, WebNavigatingEventArgs e)
         {
+            if (e.Cancel)
+            {
+                return;
+            }
+
+            if (e.Url == "http://kokoro.io/client/control?event=prepend")
+            {
+                e.Cancel = true;
+                LoadOlderCommand?.Execute(null);
+                return;
+            }
+            if (e.Url == "http://kokoro.io/client/control?event=append")
+            {
+                e.Cancel = true;
+                RefreshCommand?.Execute(null);
+                return;
+            }
+
             var c = NavigatingCommand;
 
-            if (!e.Cancel && c?.CanExecute(e.Url) == true)
+            if (c?.CanExecute(e.Url) == true)
             {
                 e.Cancel = true;
                 try

@@ -22,7 +22,6 @@
     }
 
     function _showItem(id, top) {
-
         if (!id) {
             return;
         }
@@ -46,8 +45,7 @@
 
     function _addMessagessCore(messages, merged) {
         if (messages) {
-            var talks = document.querySelectorAll("div.talk");
-
+            var b = document.body;
             var j = 0;
             for (var i = 0; i < messages.length; i++) {
                 var m = messages[i];
@@ -59,24 +57,34 @@
                 var content = m.Content;
                 var isMerged = m.IsMerged;
 
+                // console.debug("Processing message[" + id + "]");
+
                 for (; ;) {
-                    var prev = talks[j];
-                    var aft = talks[j + 1];
+                    var prev = b.children[j];
+                    var aft = b.children[j + 1];
                     var pid = prev ? parseInt(prev.getAttribute("data-message-id"), 10) : -1;
                     var aid = aft ? parseInt(aft.getAttribute("data-message-id"), 10) : Number.MAX_VALUE;
 
-                    if (id == pid) {
-                        var talk = createTaklElement(m);
-                        document.body.insertBefore(talk, prev);
+                    console.log([id, pid, aid]);
+
+                    if (!prev || (id != pid && !aft)) {
+                        // console.debug("Appending message[" + id + "]");
+                        document.body.appendChild(createTaklElement(m));
+                        j++;
+                        break;
+                    } else if (id < pid) {
+                        // console.debug("Inserting message[" + id + "] before " + pid);
+                        document.body.insertBefore(createTaklElement(m), prev);
+                        j++;
+                        break;
+                    } else if (id == pid) {
+                        // console.debug("Replacing message[" + id + "]");
+                        document.body.insertBefore(createTaklElement(m), prev);
                         prev.remove();
                         break;
-                    } if (pid < id && id < aid) {
-                        var talk = createTaklElement(m);
-                        if (aft) {
-                            document.body.insertBefore(talk, aft);
-                        } else {
-                            document.body.appendChild(talk);
-                        }
+                    } else if (id < aid) {
+                        // console.debug("Inserting message[" + id + "] before " + aid);
+                        document.body.insertBefore(createTaklElement(m), aft);
                         j++;
                         break;
                     } else {
@@ -184,4 +192,23 @@
 
         return talk;
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("scroll", function () {
+            var b = document.body;
+
+            if (b.scrollHeight < b.clientHeight) {
+                return;
+            }
+
+            if (b.scrollTop < 4) {
+                console.log("Loading older messages.");
+                location.href = "http://kokoro.io/client/control?event=prepend";
+            }
+            else if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
+                console.log("Loading newer messages.");
+                location.href = "http://kokoro.io/client/control?event=append";
+            }
+        });
+    });
 })();

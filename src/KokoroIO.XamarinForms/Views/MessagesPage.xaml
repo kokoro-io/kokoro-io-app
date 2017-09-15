@@ -7,6 +7,8 @@
     Title="{Binding Title}">
     <ContentPage.Content>
         <view:MessageWebView
+            LoadOlderCommand="{Binding PrependCommand}"
+            RefreshCommand="{Binding RefreshCommand}"
             NavigatingCommand="{Binding OpenUrlCommand}"
             Messages="{Binding Messages}" />
     </ContentPage.Content>
