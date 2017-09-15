@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class ApplicationViewModel
     {
-        internal ApplicationViewModel(Client client)
+        internal ApplicationViewModel(Client client, Profile me)
         {
             Client = client;
             OpenUrlCommand = new Command(OpenUrl);
@@ -107,7 +108,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (u != null)
             {
-                Device.OpenUri(u);
+                XDevice.OpenUri(u);
             }
         }
 

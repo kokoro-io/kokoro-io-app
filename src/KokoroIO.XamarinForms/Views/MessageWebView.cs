@@ -11,6 +11,7 @@ using KokoroIO.XamarinForms.ViewModels;
 using Newtonsoft.Json;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
@@ -358,7 +359,7 @@ namespace KokoroIO.XamarinForms.Views
             }
             catch
             {
-                Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
+                XDevice.StartTimer(TimeSpan.FromMilliseconds(100), () =>
                 {
                     RefreshMessages();
                     return false;

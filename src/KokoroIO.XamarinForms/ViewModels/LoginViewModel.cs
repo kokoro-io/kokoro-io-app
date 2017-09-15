@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
 using KokoroIO.XamarinForms.Helpers;
 using KokoroIO.XamarinForms.Views;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -68,28 +70,27 @@ namespace KokoroIO.XamarinForms.ViewModels
                 IsBusy = true;
 
                 const string TokenName = nameof(KokoroIO) + "." + nameof(XamarinForms);
+                var ds = DependencyService.Get<IDeviceService>();
 
-                var tokens = await c.GetAccessTokensAsync(em, pw);
+                var hash = TokenName.Select(ch => (byte)ch).Concat(ds.GetIdentifier()).ToArray();
 
-                if (tokens.Any())
-                {
-                    var tk = tokens.FirstOrDefault(t => t.Name == TokenName) ?? tokens[0];
+                hash = SHA256.Create().ComputeHash(hash);
 
-                    c.AccessToken = tk.Token;
-                }
-                else
-                {
-                    var tk = await c.PostAccessTokenAsync(em, pw, TokenName);
+                var di = Convert.ToBase64String(hash);
 
-                    c.AccessToken = tk.Token;
-                }
+                var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, di);
+                c.AccessToken = device.AccessToken.Token;
+
+                var me = await c.GetProfileAsync();
 
                 App.Current.Properties[nameof(MailAddress)] = em;
                 App.Current.Properties[nameof(Password)] = pw;
+                App.Current.Properties[nameof(AccessToken)] = c.AccessToken;
+                await App.Current.SavePropertiesAsync();
 
                 preserve = true;
 
-                var app = new ApplicationViewModel(c);
+                var app = new ApplicationViewModel(c, me);
 
                 App.Current.MainPage = new TabbedPage
                 {
@@ -99,7 +100,59 @@ namespace KokoroIO.XamarinForms.ViewModels
                         new NavigationPage(new RoomsPage())
                         {
                             Title = "Rooms",
-                            Icon = Device.OnPlatform<string>("tab_feed.png",null,null),
+                            Icon = XDevice.OnPlatform<string>("tab_feed.png",null,null),
+                            BindingContext = new RoomsViewModel(app)
+                        }
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                if (!preserve)
+                {
+                    c.Dispose();
+                }
+                IsBusy = false;
+            }
+        }
+
+        public async void BeginLoginByStoredToken()
+        {
+            if (IsBusy
+                || !App.Current.Properties.TryGetValue(nameof(AccessToken), out var at)
+                || !(at is string ats))
+            {
+                return;
+            }
+
+            var preserve = false;
+            var c = new Client()
+            {
+                AccessToken = ats
+            };
+            try
+            {
+                IsBusy = true;
+
+                var me = await c.GetProfileAsync();
+
+                preserve = true;
+
+                var app = new ApplicationViewModel(c, me);
+
+                App.Current.MainPage = new TabbedPage
+                {
+                    BindingContext = app,
+                    Children =
+                    {
+                        new NavigationPage(new RoomsPage())
+                        {
+                            Title = "Rooms",
+                            Icon = XDevice.OnPlatform<string>("tab_feed.png",null,null),
                             BindingContext = new RoomsViewModel(app)
                         }
                     }
