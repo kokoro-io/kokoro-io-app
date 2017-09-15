@@ -45,21 +45,65 @@ namespace KokoroIO.XamarinForms.Views
             {
                 if (oldValue is INotifyCollectionChanged cc)
                 {
-                    cc.CollectionChanged -= mwv.Cc_CollectionChanged;
+                    cc.CollectionChanged -= mwv.Messages_CollectionChanged;
                 }
             }
             {
                 if (newValue is INotifyCollectionChanged cc)
                 {
-                    cc.CollectionChanged += mwv.Cc_CollectionChanged;
+                    cc.CollectionChanged += mwv.Messages_CollectionChanged;
                 }
             }
 
             mwv.RefreshMessages();
         }
 
-        private void Cc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private async void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (_MessagesLoaded == true)
+            {
+                // HTML and JavaScript has loaded.
+
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        if (e.NewItems?.Count > 0)
+                        {
+                            try
+                            {
+                                var js = new JsonSerializer();
+
+                                using (var sw = new StringWriter())
+                                {
+                                    sw.Write("window.addMessages(");
+                                    js.Serialize(sw, e.NewItems.Cast<MessageInfo>().Select(m => new JsonMessage(m)));
+                                    sw.Write(",");
+                                    IEnumerable<MessageInfo> merged;
+                                    if (e.NewStartingIndex >= 0)
+                                    {
+                                        merged = new[]
+                                        {
+                                            Messages.ElementAtOrDefault(e.NewStartingIndex - 1),
+                                            Messages.ElementAtOrDefault(e.NewStartingIndex + e.NewItems.Count)
+                                        };
+                                    }
+                                    else
+                                    {
+                                        merged = Messages.Except(e.NewItems.Cast<MessageInfo>());
+                                    }
+                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new JsonMerged(m)));
+                                    sw.Write(")");
+
+                                    await InvokeScriptAsync(sw.ToString());
+                                }
+                                return;
+                            }
+                            catch { }
+                        }
+                        break;
+                }
+            }
+
             RefreshMessages();
         }
 
@@ -77,8 +121,43 @@ namespace KokoroIO.XamarinForms.Views
 #endif
         }
 
+        #region HTML and JavaScript
+
         internal Func<string, Task> InvokeScriptAsyncCore;
         private int _RetryCount;
+        private bool? _MessagesLoaded;
+
+        private class JsonMessage
+        {
+            public JsonMessage(MessageInfo m)
+            {
+                Id = m.Id;
+                Avatar = m.Profile.Avatar;
+                DisplayName = m.Profile.DisplayName;
+                PublishedAt = m.PublishedAt;
+                Content = m.Content;
+                IsMerged = m.IsMerged;
+            }
+
+            public int Id { get; }
+            public string Avatar { get; }
+            public string DisplayName { get; }
+            public DateTime PublishedAt { get; }
+            public string Content { get; }
+            public bool IsMerged { get; }
+        }
+
+        private class JsonMerged
+        {
+            public JsonMerged(MessageInfo m)
+            {
+                Id = m.Id;
+                IsMerged = m.IsMerged;
+            }
+
+            public int Id { get; }
+            public bool IsMerged { get; }
+        }
 
         private async Task InvokeScriptAsync(string script)
         {
@@ -89,54 +168,6 @@ namespace KokoroIO.XamarinForms.Views
             else
             {
                 Eval(script);
-            }
-        }
-
-        private async void RefreshMessages()
-        {
-            InitHtml();
-
-            try
-            {
-                if (Messages == null)
-                {
-                    await InvokeScriptAsync("window.setMessages(null)");
-                }
-                else
-                {
-                    var js = new JsonSerializer();
-
-                    using (var sw = new StringWriter())
-                    {
-                        sw.Write("window.setMessages(");
-
-                        js.Serialize(sw, Messages.Select(m => new
-                        {
-                            m.Id,
-                            m.Profile.Avatar,
-                            m.Profile.DisplayName,
-                            m.PublishedAt,
-                            m.Content,
-                            m.IsMerged
-                        }));
-
-                        sw.WriteLine(")");
-
-                        var script = sw.ToString();
-
-                        await InvokeScriptAsync(script);
-                    }
-                }
-                _RetryCount = 0;
-            }
-            catch
-            {
-                _RetryCount++;
-                Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
-                {
-                    RefreshMessages();
-                    return false;
-                });
             }
         }
 
@@ -213,6 +244,47 @@ namespace KokoroIO.XamarinForms.Views
                 };
             }
         }
+
+        private async void RefreshMessages()
+        {
+            InitHtml();
+
+            try
+            {
+                _MessagesLoaded = false;
+                if (Messages == null)
+                {
+                    await InvokeScriptAsync("window.setMessages(null)");
+                }
+                else
+                {
+                    var js = new JsonSerializer();
+
+                    using (var sw = new StringWriter())
+                    {
+                        sw.Write("window.setMessages(");
+                        js.Serialize(sw, Messages.Select(m => new JsonMessage(m)));
+                        sw.Write(")");
+
+                        await InvokeScriptAsync(sw.ToString());
+                    }
+                }
+                _RetryCount = 0;
+                _MessagesLoaded = true;
+            }
+            catch
+            {
+                _RetryCount++;
+                _MessagesLoaded = null;
+                Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
+                {
+                    RefreshMessages();
+                    return false;
+                });
+            }
+        }
+
+        #endregion HTML and JavaScript
 
         private void MessageWebView_Navigating(object sender, WebNavigatingEventArgs e)
         {
