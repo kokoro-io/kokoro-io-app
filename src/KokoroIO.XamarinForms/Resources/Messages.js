@@ -1,5 +1,4 @@
 ﻿(function () {
-
     function asArray(messages) {
         if (!messages) {
             return null;
@@ -11,27 +10,9 @@
 
     var setMessages = window.setMessages = function (messages) {
         document.body.innerHTML = "";
-
-        messages = asArray(messages);
-
-        if (!messages) {
-            return;
-        }
-
-        for (var i = 0; i < messages.length; i++) {
-            var m = messages[i];
-
-            var id = m.Id;
-            var avatarUrl = m.Avatar;
-            var displayName = m.DisplayName;
-            var publishedAt = m.PublishedAt;
-            var content = m.Content;
-            var isMerged = m.IsMerged;
-
-            var talk = createTaklElement(m);
-            document.body.appendChild(talk);
-        }
+        addMessages(messages);
     }
+
     var addMessages = window.addMessages = function (messages) {
         var talks = document.querySelectorAll("div.talk");
 
@@ -54,7 +35,12 @@
                 var pid = prev ? parseInt(prev.getAttribute("data-message-id"), 10) : -1;
                 var aid = aft ? parseInt(aft.getAttribute("data-message-id"), 10) : Number.MAX_VALUE;
 
-                if (pid < id && id < aid) {
+                if (id == pid) {
+                    var talk = createTaklElement(m);
+                    document.body.insertBefore(talk, prev);
+                    prev.remove();
+                    break;
+                } if (pid < id && id < aid) {
                     var talk = createTaklElement(m);
                     if (aft) {
                         document.body.insertBefore(talk, aft);
@@ -122,15 +108,5 @@
         }
 
         return talk;
-    }
-    var setMessage = window.setMessage = function (id, avatar, displayName, publishedAt, content, isMerged) {
-        setMessages([{
-            Id: parseInt(Id, 10),
-            Avatar: avatar,
-            DisplayName: displayName,
-            PublishedAt: publishedAt,
-            Content: content,
-            IsMerged: !!isMerged
-        }]);
     }
 })();
