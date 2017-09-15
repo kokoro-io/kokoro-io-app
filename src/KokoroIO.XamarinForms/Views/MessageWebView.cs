@@ -159,6 +159,11 @@ namespace KokoroIO.XamarinForms.Views
                 xw.WriteStartElement("html");
                 xw.WriteStartElement("head");
 
+                xw.WriteStartElement("meta");
+                xw.WriteAttributeString("name", "viewport");
+                xw.WriteAttributeString("content", "width=device-width, initial-scale=1, user-scalable=0");
+                xw.WriteEndElement();
+
                 xw.WriteStartElement("style");
                 using (var rs = GetManifestResourceStream("Messages.css"))
                 using (var sr = new StreamReader(rs))
