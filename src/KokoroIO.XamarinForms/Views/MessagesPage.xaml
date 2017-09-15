@@ -55,11 +55,12 @@
                     Text="+" />-->
                 <view:ExpandableEditor
                     Grid.Column="1"
-                    FontSize="Medium"
+                    FontSize="Small"
                     Text="{Binding NewMessage}" />
                 <Button
                     Grid.Column="2"
-                    Font="Monospace,Medium"
+                    Font="Monospace"
+                    FontSize="Small"
                     TextColor="#ccc"
                     BackgroundColor="Transparent"
                     Text="Go"
