@@ -16,12 +16,31 @@
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout
-                            Padding="10">
+                            Padding="10"
+                            Orientation="Horizontal">
                             <Label
                                 Text="{Binding DisplayName}"
                                 LineBreakMode="NoWrap"
                                 Style="{DynamicResource ListItemTextStyle}"
                                 FontSize="16" />
+                            <Label
+                                Margin="4,0"
+                                Text="{Binding UnreadCount}"
+                                TextColor="#fff"
+                                BackgroundColor="#f66"
+                                Font="Monospace,Bold"
+                                FontSize="Small">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        TargetType="Label"
+                                        Binding="{Binding UnreadCount}"
+                                        Value="0">
+                                        <Setter
+                                            Property="IsVisible"
+                                            Value="False" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

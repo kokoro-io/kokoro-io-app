@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
@@ -13,6 +14,9 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             Client = client;
             OpenUrlCommand = new Command(OpenUrl);
+
+            client.MessageCreated += Client_MessageCreated;
+            client.MessageUpdated += Client_MessageUpdated;
         }
 
         internal Client Client { get; }
@@ -50,6 +54,16 @@ namespace KokoroIO.XamarinForms.ViewModels
                 var rvm = new RoomViewModel(this, r);
 
                 _Rooms.Add(rvm);
+            }
+
+            if (rooms.Any())
+            {
+                try
+                {
+                    await Client.ConnectAsync();
+                    await Client.SubscribeAsync(rooms);
+                }
+                catch { }
             }
         }
 
@@ -94,6 +108,39 @@ namespace KokoroIO.XamarinForms.ViewModels
             if (u != null)
             {
                 Device.OpenUri(u);
+            }
+        }
+
+        public async Task ConnectAsync()
+        {
+            // TODO: disable push notification
+
+            await Client.ConnectAsync();
+            await Client.SubscribeAsync(Rooms.Select(r => r.Id));
+        }
+
+        public async Task CloseAsync()
+        {
+            await Client.CloseAsync();
+
+            // TODO: enable push notification
+        }
+
+        private void Client_MessageCreated(object sender, EventArgs<Message> e)
+        {
+            var rvm = _Rooms?.FirstOrDefault(r => r.Id == e.Data.Room.Id);
+            if (rvm != null)
+            {
+                rvm.UnreadCount++;
+            }
+        }
+
+        private void Client_MessageUpdated(object sender, EventArgs<Message> e)
+        {
+            var mp = _Rooms?.FirstOrDefault(r => r.Id == e.Data.Room.Id)?.MessagesPage;
+            if (mp != null)
+            {
+                // TODO: update existing message
             }
         }
     }

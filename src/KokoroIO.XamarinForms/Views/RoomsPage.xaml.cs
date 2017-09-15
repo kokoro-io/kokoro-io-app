@@ -24,27 +24,10 @@ namespace KokoroIO.XamarinForms.Views
 
             await Navigation.PushAsync(new MessagesPage()
             {
-                BindingContext = new MessagesViewModel(item)
+                BindingContext = item.GetOrCreateMessagesPage()
             });
 
             lv.SelectedItem = null;
         }
-
-        //async void AddItem_Clicked(object sender, EventArgs e)
-        //{
-        //    await Navigation.PushAsync(new NewItemPage());
-        //}
-
-        //protected override void OnAppearing()
-        //{
-        //    base.OnAppearing();
-
-        //    viewModel = viewModel ?? BindingContext as RoomsViewModel;
-
-        //    if (viewModel.Items.Count == 0)
-        //    {
-        //        viewModel.LoadItemsCommand.Execute(null);
-        //    }
-        //}
     }
 }

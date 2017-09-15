@@ -1,3 +1,4 @@
+using System;
 using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
 
@@ -42,5 +43,37 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return Kind.ToString();
             }
         }
+
+        #region MessagesPage
+
+        private WeakReference<MessagesViewModel> _MessagesPage;
+
+        public MessagesViewModel MessagesPage
+            => _MessagesPage != null && _MessagesPage.TryGetTarget(out var mp) ? mp : null;
+
+        public MessagesViewModel GetOrCreateMessagesPage()
+        {
+            var r = MessagesPage;
+            if (r == null)
+            {
+                r = new MessagesViewModel(this);
+                _MessagesPage = new WeakReference<MessagesViewModel>(r);
+            }
+            return r;
+        }
+
+        #endregion MessagesPage
+
+        #region UnreadCount
+
+        private int _UnreadCount;
+
+        public int UnreadCount
+        {
+            get => _UnreadCount;
+            set => SetProperty(ref _UnreadCount, value);
+        }
+
+        #endregion UnreadCount
     }
 }

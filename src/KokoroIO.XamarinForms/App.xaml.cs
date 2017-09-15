@@ -1,4 +1,5 @@
-﻿using KokoroIO.XamarinForms.Views;
+﻿using KokoroIO.XamarinForms.ViewModels;
+using KokoroIO.XamarinForms.Views;
 using Microsoft.Azure.Mobile;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
@@ -23,6 +24,36 @@ namespace KokoroIO.XamarinForms
             base.OnStart();
 
             MobileCenter.Start("android=2bf93410-91e9-48a0-ac2a-b7cd2b2b62c1;", typeof(Analytics), typeof(Crashes));
+        }
+
+        protected override async void OnSleep()
+        {
+            base.OnSleep();
+
+            var avm = MainPage?.BindingContext as ApplicationViewModel;
+            if (avm != null)
+            {
+                try
+                {
+                    await avm.CloseAsync();
+                }
+                catch { }
+            }
+        }
+
+        protected override async void OnResume()
+        {
+            base.OnResume();
+
+            var avm = MainPage?.BindingContext as ApplicationViewModel;
+            if (avm != null)
+            {
+                try
+                {
+                    await avm.ConnectAsync();
+                }
+                catch { }
+            }
         }
 
         public static void SetMainPage()

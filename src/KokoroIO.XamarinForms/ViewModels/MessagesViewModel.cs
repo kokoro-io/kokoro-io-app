@@ -94,6 +94,22 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 HasPrevious &= aid != null || messages.Length >= PAGE_SIZE;
 
+                if (aid != null)
+                {
+                    if (messages.Length >= PAGE_SIZE)
+                    {
+                        Room.UnreadCount = Math.Max(0, Room.UnreadCount - messages.Length);
+                    }
+                    else
+                    {
+                        Room.UnreadCount = 0;
+                    }
+                }
+                else if (bid == null && messages.Length < PAGE_SIZE)
+                {
+                    Room.UnreadCount = 0;
+                }
+
                 if (!messages.Any())
                 {
                     return;
