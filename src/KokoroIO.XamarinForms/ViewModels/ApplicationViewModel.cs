@@ -146,7 +146,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             var mp = _Rooms?.FirstOrDefault(r => r.Id == e.Data.Room.Id)?.MessagesPage;
             if (mp != null)
             {
-                // TODO: update existing message
+                mp.UpdateMessage(e.Data);
             }
         }
     }

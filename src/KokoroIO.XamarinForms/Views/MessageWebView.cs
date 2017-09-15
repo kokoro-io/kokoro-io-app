@@ -101,6 +101,13 @@ namespace KokoroIO.XamarinForms.Views
                     case NotifyCollectionChangedAction.Add:
                         if (e.NewItems?.Count > 0)
                         {
+                            var newItems = e.NewItems.Cast<MessageInfo>();
+                            foreach (var item in newItems)
+                            {
+                                item.PropertyChanged -= Item_PropertyChanged;
+                                item.PropertyChanged += Item_PropertyChanged;
+                            }
+
                             try
                             {
                                 var js = new JsonSerializer();
@@ -108,7 +115,7 @@ namespace KokoroIO.XamarinForms.Views
                                 using (var sw = new StringWriter())
                                 {
                                     sw.Write("window.addMessages(");
-                                    js.Serialize(sw, e.NewItems.Cast<MessageInfo>().Select(m => new JsonMessage(m)));
+                                    js.Serialize(sw, newItems.Select(m => new JsonMessage(m)));
                                     sw.Write(",");
                                     IEnumerable<MessageInfo> merged;
                                     if (e.NewStartingIndex >= 0)
@@ -121,7 +128,7 @@ namespace KokoroIO.XamarinForms.Views
                                     }
                                     else
                                     {
-                                        merged = Messages.Except(e.NewItems.Cast<MessageInfo>());
+                                        merged = Messages.Except(newItems);
                                     }
                                     js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new JsonMerged(m)));
                                     sw.Write(")");
@@ -137,6 +144,12 @@ namespace KokoroIO.XamarinForms.Views
                     case NotifyCollectionChangedAction.Remove:
                         if (e.OldItems?.Count > 0)
                         {
+                            var oldItems = e.OldItems.Cast<MessageInfo>();
+                            foreach (var item in oldItems)
+                            {
+                                item.PropertyChanged -= Item_PropertyChanged;
+                            }
+
                             try
                             {
                                 var js = new JsonSerializer();
@@ -144,7 +157,7 @@ namespace KokoroIO.XamarinForms.Views
                                 using (var sw = new StringWriter())
                                 {
                                     sw.Write("window.removeMessages(");
-                                    js.Serialize(sw, e.OldItems.Cast<MessageInfo>().Select(m => m.Id));
+                                    js.Serialize(sw, oldItems.Select(m => m.Id));
                                     sw.Write(",");
                                     IEnumerable<MessageInfo> merged;
                                     if (e.NewStartingIndex >= 0)
@@ -157,7 +170,7 @@ namespace KokoroIO.XamarinForms.Views
                                     }
                                     else
                                     {
-                                        merged = Messages.Except(e.OldItems.Cast<MessageInfo>());
+                                        merged = Messages.Except(oldItems);
                                     }
                                     js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new JsonMerged(m)));
                                     sw.Write(")");
@@ -173,6 +186,47 @@ namespace KokoroIO.XamarinForms.Views
             }
 
             RefreshMessages();
+        }
+
+        private HashSet<MessageInfo> _Updating;
+
+        private void Item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(MessageInfo.Content):
+                case nameof(MessageInfo.EmbedContents):
+                    if (_InitialMessagesLoaded == true)
+                    {
+                        var up = _Updating ?? (_Updating = new HashSet<MessageInfo>());
+                        if (up.Add((MessageInfo)sender) && up.Count == 1)
+                        {
+                            XDevice.BeginInvokeOnMainThread(BeginUpdateMessages);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private async void BeginUpdateMessages()
+        {
+            var ms = _Updating?.ToArray();
+            _Updating?.Clear();
+
+            if (ms?.Length > 0)
+            {
+                var js = new JsonSerializer();
+
+                using (var sw = new StringWriter())
+                {
+                    sw.Write("window.addMessages(");
+                    js.Serialize(sw, ms.OrderBy(m => m.Id).Select(m => new JsonMessage(m)));
+                    sw.Write(")");
+                    _RefreshMessagesRequested = false;
+
+                    await InvokeScriptAsync(sw.ToString());
+                }
+            }
         }
 
         private static Stream GetManifestResourceStream(string fileName)
@@ -343,6 +397,12 @@ namespace KokoroIO.XamarinForms.Views
                 }
                 else
                 {
+                    foreach (var item in Messages)
+                    {
+                        item.PropertyChanged -= Item_PropertyChanged;
+                        item.PropertyChanged += Item_PropertyChanged;
+                    }
+
                     var js = new JsonSerializer();
 
                     using (var sw = new StringWriter())

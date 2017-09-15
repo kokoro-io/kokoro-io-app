@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using KokoroIO.XamarinForms.Helpers;
+using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
@@ -146,7 +147,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                             }
                             else if (m.Id == prev.Id)
                             {
-                                // TODO: update
+                                prev.Update(m);
                                 break;
                             }
                             else if (i + 1 >= _Messages.Count)
@@ -169,6 +170,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                 IsBusy = false;
             }
         }
+
+        internal void UpdateMessage(Message message)
+            => _Messages?.FirstOrDefault(m => m.Id == message.Id)?.Update(message);
 
         public Command PrependCommand { get; set; }
         public Command RefreshCommand { get; set; }
