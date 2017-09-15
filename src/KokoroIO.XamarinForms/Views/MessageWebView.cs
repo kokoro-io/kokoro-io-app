@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Xml;
 using KokoroIO.XamarinForms.ViewModels;
 using Newtonsoft.Json;
+using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.Views
@@ -203,6 +204,7 @@ namespace KokoroIO.XamarinForms.Views
                 PublishedAt = m.PublishedAt;
                 Content = m.Content;
                 IsMerged = m.IsMerged;
+                EmbedContents = m.EmbedContents;
             }
 
             public int Id { get; }
@@ -211,6 +213,7 @@ namespace KokoroIO.XamarinForms.Views
             public DateTime PublishedAt { get; }
             public string Content { get; }
             public bool IsMerged { get; }
+            public IList<EmbedContent> EmbedContents { get; }
         }
 
         private class JsonMerged

@@ -65,8 +65,6 @@
                     var pid = prev ? parseInt(prev.getAttribute("data-message-id"), 10) : -1;
                     var aid = aft ? parseInt(aft.getAttribute("data-message-id"), 10) : Number.MAX_VALUE;
 
-                    console.log([id, pid, aid]);
-
                     if (!prev || (id != pid && !aft)) {
                         // console.debug("Appending message[" + id + "]");
                         document.body.appendChild(createTaklElement(m));
@@ -145,6 +143,7 @@
         var publishedAt = m.PublishedAt;
         var content = m.Content;
         var isMerged = m.IsMerged;
+        var embeds = m.EmbedContents;
 
         var talk = document.createElement("div");
         talk.id = "talk" + id;
@@ -186,11 +185,136 @@
             filteredText.classList.add("filtered_text");
             filteredText.innerHTML = content;
             message.appendChild(filteredText);
+
+            if (embeds && embeds.length > 0) {
+                var ecs = document.createElement("div");
+                ecs.classList.add("embed_contents");
+                message.appendChild(ecs);
+
+                try {
+                    for (var i = 0; i < embeds.length; i++) {
+                        var e = embeds[i];
+                        if (!e) {
+                            continue;
+                        }
+                        var d = e.data;
+                        if (!d) {
+                            continue;
+                        }
+                        var ec = document.createElement("div");
+                        ec.classList.add("embed_content");
+                        ecs.appendChild(ec);
+
+                        switch (d.type) {
+                            case 'MixedContent':
+                                ec.appendChild(_createEmbedContent(d, false));
+                                break;
+                            case 'SingleImage':
+                            case 'SingleVideo':
+                            case 'SingleAudio':
+                                ec.appendChild(_createEmbedContent(d, true));
+                                break;
+                            default:
+                                console.warn("Unknown embed data: ", d);
+                                break;
+                        }
+                    }
+                } catch (ex) {
+                    ecs.innerHTML = "";
+
+                    var err = document.createElement('p');
+                    err.innerText = ex;
+                    ecs.appendChild(err);
+
+                    var json = document.createElement('pre');
+                    json.innerText = JSON.stringify(d);
+                    ecs.appendChild(json);
+                }
+            }
         } catch (ex) {
             talk.innerText = ex;
         }
 
         return talk;
+    }
+
+    function _createEmbedContent(d, hideInfo) {
+        var r = document.createElement("div");
+        r.classList.add("embed-" + d.type.toLowerCase());
+
+        if (!hideInfo) {
+            var meta = document.createElement("div");
+            meta.classList.add("meta");
+            r.appendChild(meta);
+
+            if (d.metadata_image) {
+                var m = d.metadata_image;
+
+                var thumb = document.createElement("div");
+                thumb.classList.add("thumb");
+                meta.appendChild(thumb);
+
+                thumb.appendChild(_createMediaDiv(m, "embed-thumbnail"));
+            }
+            var info = document.createElement("div");
+            info.classList.add("info");
+            meta.appendChild(info);
+
+            if (d.title) {
+                var titleDiv = document.createElement("div");
+                titleDiv.classList.add("title");
+                info.appendChild(titleDiv);
+
+                var titleLink = document.createElement("a");
+                titleLink.href = d.url;
+                titleDiv.appendChild(titleLink);
+
+                var title = document.createElement("strong");
+                title.innerText = d.title;
+                titleLink.appendChild(title);
+            }
+
+            if (d.description) {
+                var descriptionDiv = document.createElement("div");
+                descriptionDiv.classList.add("description");
+                info.appendChild(descriptionDiv);
+
+                var description = document.createElement("p");
+                description.innerText = d.description;
+                descriptionDiv.appendChild(description);
+            }
+        }
+
+        if (d.medias && d.medias.length > 0) {
+            var medias = document.createElement("div");
+            medias.classList.add("medias");
+            r.appendChild(medias);
+
+            for (var i = 0; i < d.medias.length; i++) {
+                var m = d.medias[i];
+                if (m) {
+                    medias.appendChild(_createMediaDiv(m));
+                }
+            }
+        }
+
+        return r;
+    }
+
+    function _createMediaDiv(m, className) {
+        var em = document.createElement("div");
+        em.classList.add(className || "embed_media");
+
+        var a = document.createElement("a");
+        a.href = m.location || m.raw_url;
+        em.appendChild(a);
+
+        var img = document.createElement("img");
+        img.classList.add("img-rounded");
+        img.src = (m.thumbnail ? m.thumbnail.url : null) || m.raw_url;
+        a.appendChild(img);
+
+        return em;
     }
 
     document.addEventListener("DOMContentLoaded", function () {
