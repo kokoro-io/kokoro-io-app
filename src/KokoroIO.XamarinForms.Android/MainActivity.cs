@@ -1,6 +1,8 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Microsoft.Azure.Mobile;
+using Microsoft.Azure.Mobile.Distribute;
 
 namespace KokoroIO.XamarinForms.Droid
 {
