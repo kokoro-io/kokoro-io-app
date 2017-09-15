@@ -70,6 +70,12 @@
     <Reference Include="Microsoft.Azure.Mobile.Crashes.Android.Bindings, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Crashes.Android.Bindings.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.Mobile.Distribute, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Mobile.Distribute.Android.Bindings, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.Android.Bindings.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>

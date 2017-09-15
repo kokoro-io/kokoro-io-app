@@ -1,6 +1,7 @@
 ﻿
 using Foundation;
 using UIKit;
+using Microsoft.Azure.Mobile.Distribute;
 
 namespace KokoroIO.XamarinForms.iOS
 {
@@ -10,6 +11,7 @@ namespace KokoroIO.XamarinForms.iOS
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
 			global::Xamarin.Forms.Forms.Init();
+            Distribute.DontCheckForUpdatesInDebug();
 			LoadApplication(new App());
 
 			return base.FinishedLaunching(app, options);
