@@ -2,44 +2,25 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
-using KokoroIO.XamarinForms.Views;
+using System.Threading.Tasks;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
-using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class LoginViewModel : BaseViewModel
     {
-        private bool _AutomaticLogin;
-
         public LoginViewModel()
-            : this(true)
         {
-        }
-
-        internal LoginViewModel(bool automaticLogin)
-        {
-            _AutomaticLogin = automaticLogin;
-
             Title = "Login";
             if (App.Current.Properties.TryGetValue(nameof(MailAddress), out var obj))
             {
                 _MailAddress = obj as string;
             }
-            if (automaticLogin)
+            if (App.Current.Properties.TryGetValue(nameof(Password), out obj))
             {
-                if (App.Current.Properties.TryGetValue(nameof(Password), out obj))
-                {
-                    _Password = obj as string;
-                }
+                _Password = obj as string;
             }
-            else
-            {
-                App.Current.Properties.Remove(nameof(Password));
-                App.Current.Properties.Remove(nameof(AccessToken));
-            }
-
             LoginCommand = new Command(BeginLogin);
         }
 
@@ -108,19 +89,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 var app = new ApplicationViewModel(c, me);
 
-                App.Current.MainPage = new TabbedPage
-                {
-                    BindingContext = app,
-                    Children =
-                    {
-                        new NavigationPage(new RoomsPage())
-                        {
-                            Title = "Rooms",
-                            Icon = XDevice.OnPlatform<string>("tab_feed.png",null,null),
-                            BindingContext = new RoomsViewModel(app)
-                        }
-                    }
-                };
+                App.SetMainPage(app);
             }
             catch (Exception ex)
             {
@@ -138,14 +107,12 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        public async void BeginLoginByStoredToken()
+        public static async Task<ApplicationViewModel> LoginAsync()
         {
-            if (!_AutomaticLogin
-                || IsBusy
-                || !App.Current.Properties.TryGetValue(nameof(AccessToken), out var at)
+            if (!App.Current.Properties.TryGetValue(nameof(AccessToken), out var at)
                 || !(at is string ats))
             {
-                return;
+                return null;
             }
 
             var preserve = false;
@@ -155,33 +122,15 @@ namespace KokoroIO.XamarinForms.ViewModels
             };
             try
             {
-                IsBusy = true;
-
-                var me = await c.GetProfileAsync();
+                var me = await c.GetProfileAsync().ConfigureAwait(false);
 
                 preserve = true;
 
-                var app = new ApplicationViewModel(c, me);
-
-                App.Current.MainPage = new TabbedPage
-                {
-                    BindingContext = app,
-                    Children =
-                    {
-                        new NavigationPage(new RoomsPage())
-                        {
-                            Title = "Rooms",
-                            Icon = XDevice.OnPlatform<string>("tab_feed.png",null,null),
-                            BindingContext = new RoomsViewModel(app)
-                        }
-                    }
-                };
+                return new ApplicationViewModel(c, me);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-
-                MessagingCenter.Send(this, "LoginFailed");
             }
             finally
             {
@@ -189,8 +138,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     c.Dispose();
                 }
-                IsBusy = false;
             }
+
+            return null;
         }
     }
 }

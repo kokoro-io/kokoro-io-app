@@ -21,12 +21,5 @@ namespace KokoroIO.XamarinForms.Views
                 DisplayAlert("kokoro.io", "Failed to login", "OK");
             });
         }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-
-            (BindingContext as LoginViewModel)?.BeginLoginByStoredToken();
-        }
     }
 }

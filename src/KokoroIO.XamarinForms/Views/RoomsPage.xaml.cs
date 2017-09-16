@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
+using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.Views
@@ -26,15 +27,17 @@ namespace KokoroIO.XamarinForms.Views
 
         private async void Logout_Clicked(object sender, EventArgs e)
         {
-            App.Current.MainPage = new LoginPage()
-            {
-                BindingContext = new LoginViewModel(false)
-            };
             try
             {
                 await (BindingContext as RoomsViewModel)?.Application.CloseAsync();
             }
             catch { }
+
+            App.Current.Properties.Remove(nameof(LoginViewModel.Password));
+            App.Current.Properties.Remove(nameof(AccessToken));
+            await App.Current.SavePropertiesAsync();
+
+            App.Current.MainPage = new LoginPage();
         }
 
         private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
