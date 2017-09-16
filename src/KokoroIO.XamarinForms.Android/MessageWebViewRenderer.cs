@@ -74,7 +74,7 @@ namespace KokoroIO.XamarinForms.Droid
             public void OnReceiveValue(Java.Lang.Object value)
             {
                 tcs.TrySetResult(string.Empty);
-                view.SetWebChromeClient(null);
+                RemoveWebChromeClient(view);
             }
         }
 
@@ -94,10 +94,22 @@ namespace KokoroIO.XamarinForms.Droid
                 if (consoleMessage.InvokeMessageLevel() == ConsoleMessage.MessageLevel.Error)
                 {
                     tcs.TrySetException(new Exception(consoleMessage.Message()));
-                    view.SetWebChromeClient(null);
+                    RemoveWebChromeClient(view);
                 }
                 return base.OnConsoleMessage(consoleMessage);
             }
+        }
+
+        private static void RemoveWebChromeClient(Android.Webkit.WebView view)
+        {
+            try
+            {
+                if (view.IsAttachedToWindow)
+                {
+                    view.SetWebChromeClient(null);
+                }
+            }
+            catch { }
         }
 
         #endregion InvokeScriptAsyncCore
