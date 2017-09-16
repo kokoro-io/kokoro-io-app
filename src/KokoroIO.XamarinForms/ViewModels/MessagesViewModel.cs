@@ -13,6 +13,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             Room = room;
             Title = room.DisplayName;
+            _IsArchiveBannerShown = room.IsArchived;
 
             PrependCommand = new Command(BeginPrepend);
             RefreshCommand = new Command(BeginAppend);
@@ -227,5 +228,40 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Post
+
+        #region ShowUnreadCommand
+
+        private Command _ShowUnreadCommand;
+
+        public Command ShowUnreadCommand
+            => _ShowUnreadCommand ?? (_ShowUnreadCommand = new Command(ShowUnread));
+
+        public void ShowUnread()
+        {
+            // TODO: scroll to bottom
+            BeginAppend();
+        }
+
+        #endregion ShowUnreadCommand
+
+        #region ClearArchiveBannerCommand
+
+        private bool _IsArchiveBannerShown;
+
+        public bool IsArchiveBannerShown
+        {
+            get => _IsArchiveBannerShown;
+            private set => SetProperty(ref _IsArchiveBannerShown, value);
+        }
+
+        private Command _ClearArchiveBannerCommand;
+
+        public Command ClearArchiveBannerCommand
+            => _ClearArchiveBannerCommand ?? (_ClearArchiveBannerCommand = new Command(ClearArchiveBanner));
+
+        public void ClearArchiveBanner()
+            => IsArchiveBannerShown = false;
+
+        #endregion ClearArchiveBannerCommand
     }
 }

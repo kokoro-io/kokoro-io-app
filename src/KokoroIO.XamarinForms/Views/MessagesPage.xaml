@@ -5,6 +5,35 @@
     xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
     Title="{Binding Title}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="bannerButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="8,4" />
+                <Setter
+                    Property="VerticalOptions"
+                    Value="Start" />
+                <Setter
+                    Property="HorizontalOptions"
+                    Value="FillAndExpand" />
+                <Setter
+                    Property="FontSize"
+                    Value="Small" />
+                <Setter
+                    Property="BorderWidth"
+                    Value="0" />
+                <Setter
+                    Property="BorderRadius"
+                    Value="5" />
+                <Setter
+                    Property="TextColor"
+                    Value="#fff" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -20,47 +49,39 @@
             <StackLayout
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="Start">
-                <Label
-                    Margin="8,4"
-                    VerticalOptions="Start"
-                    HorizontalOptions="FillAndExpand"
-                    Font="Small Bold Monospace"
-                    TextColor="#fff"
+                <Button
+                    Style="{StaticResource bannerButtonStyle}"
                     BackgroundColor="#4169E1"
-                    HorizontalTextAlignment="Center"
-                    Text="{Binding Room.UnreadCount,StringFormat='{}{0} new messages'}">
-                    <Label.Triggers>
+                    Text="{Binding Room.UnreadCount,StringFormat='{}{0} new messages'}"
+                    Command="{Binding ShowUnreadCommand}">
+                    <Button.Triggers>
                         <DataTrigger
-                            TargetType="Label"
+                            TargetType="Button"
                             Binding="{Binding Room.UnreadCount}"
                             Value="0">
                             <Setter
                                 Property="IsVisible"
                                 Value="False" />
                         </DataTrigger>
-                    </Label.Triggers>
-                </Label>
-                <Label
-                    Margin="8,4"
-                    VerticalOptions="Start"
-                    HorizontalOptions="FillAndExpand"
-                    Font="Small Bold Monospace"
-                    TextColor="#fff"
-                    BackgroundColor="DarkOrange"
-                    HorizontalTextAlignment="Center"
+                    </Button.Triggers>
+                </Button>
+                <Button
+                    Style="{StaticResource bannerButtonStyle}"
                     Text="Archived channel"
-                    IsVisible="False">
-                    <Label.Triggers>
+                    BackgroundColor="DarkOrange"
+                    IsVisible="False"
+                    Command="{Binding ClearArchiveBannerCommand}">
+                    <Button.Triggers>
                         <DataTrigger
-                            TargetType="Label"
-                            Binding="{Binding Room.IsArchived}"
+                            TargetType="Button"
+                            Binding="{Binding IsArchiveBannerShown}"
                             Value="True">
                             <Setter
                                 Property="IsVisible"
                                 Value="True" />
                         </DataTrigger>
-                    </Label.Triggers>
-                </Label>
+                    </Button.Triggers>
+                </Button>
             </StackLayout>
             <Grid
                 Grid.Row="1"
