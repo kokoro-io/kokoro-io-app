@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -22,6 +23,8 @@ namespace KokoroIO.XamarinForms.Views
             viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
             IsPresented = true;
+
+            MasterBehavior = Device.Idiom == TargetIdiom.Phone ? MasterBehavior.Popover : MasterBehavior.Split;
         }
 
         private void BackButton_Clicked(object sender, EventArgs e)
@@ -44,7 +47,7 @@ namespace KokoroIO.XamarinForms.Views
 
                 if (mp == null)
                 {
-                    IsPresented = true;
+                    SetIsPresented(true);
                 }
                 else if (Detail is NavigationPage np)
                 {
@@ -52,26 +55,35 @@ namespace KokoroIO.XamarinForms.Views
                     {
                         dp.BindingContext = mp;
                         np.Title = dp.Title;
-                        IsPresented = false;
+                        SetIsPresented(false);
                     }
                     else
                     {
-                        await np.PushAsync(new MessagesPage()
+                        var det = new MessagesPage()
                         {
                             BindingContext = mp
-                        });
-                        IsPresented = false;
+                        };
+
+                        await np.PushAsync(det);
+
+                        while (det.Navigation.NavigationStack.Count > 1)
+                        {
+                            det.Navigation.RemovePage(det.Navigation.NavigationStack.FirstOrDefault(p => p != det));
+                        }
+
+                        SetIsPresented(false);
                     }
                 }
                 else
                 {
-                    np = new NavigationPage(new MessagesPage()
+                    var det = new MessagesPage()
                     {
                         BindingContext = mp
-                    });
+                    };
+                    np = new NavigationPage(det);
                     SetupNavigationPage(np);
                     Detail = np;
-                    IsPresented = false;
+                    SetIsPresented(false);
                 }
             }
         }
@@ -83,7 +95,21 @@ namespace KokoroIO.XamarinForms.Views
 
         private void NavigationPage_Popped(object sender, NavigationEventArgs e)
         {
-            IsPresented = true;
+            SetIsPresented(true);
+        }
+
+        private void SetIsPresented(bool value)
+        {
+            if (value)
+            {
+                IsPresented = true;
+            }
+            else if (MasterBehavior != MasterBehavior.Split
+                    && MasterBehavior != MasterBehavior.SplitOnLandscape
+                    && MasterBehavior != MasterBehavior.SplitOnPortrait)
+            {
+                IsPresented = false;
+            }
         }
     }
 }
