@@ -23,6 +23,9 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string DisplayName
             => (Kind == RoomKind.DirectMessage ? '@' : '#') + ChannelName;
 
+        public string Placeholder
+            => "Let's talk" + (Kind == RoomKind.DirectMessage ? " to " : " at ") + ChannelName;
+
         public RoomKind Kind { get; }
         public bool IsArchived { get; }
 

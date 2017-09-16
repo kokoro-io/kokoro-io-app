@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="AudioService.cs" />
     <Compile Include="DeviceService.cs" />
+    <Compile Include="ExpandableEditorRenderer.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

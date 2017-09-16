@@ -223,6 +223,7 @@
   <ItemGroup>
     <Compile Include="AudioService.cs" />
     <Compile Include="DeviceService.cs" />
+    <Compile Include="ExpandableEditorRenderer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="MessageWebViewRenderer.cs" />

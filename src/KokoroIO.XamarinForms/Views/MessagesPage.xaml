@@ -48,7 +48,7 @@
                     TextColor="#fff"
                     BackgroundColor="DarkOrange"
                     HorizontalTextAlignment="Center"
-                    Text="Archived channel" 
+                    Text="Archived channel"
                     IsVisible="False">
                     <Label.Triggers>
                         <DataTrigger
@@ -90,7 +90,8 @@
                 <view:ExpandableEditor
                     Grid.Column="1"
                     FontSize="Small"
-                    Text="{Binding NewMessage}" />
+                    Text="{Binding NewMessage}"
+                    Placeholder="{Binding Room.Placeholder}" />
                 <Button
                     Grid.Column="2"
                     Font="Monospace"
