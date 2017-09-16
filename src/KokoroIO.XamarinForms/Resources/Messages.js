@@ -338,14 +338,12 @@
 
         var handler;
         handler = function (e) {
-
             var img = e.target;
 
             var talk = img.parentElement;
 
             while (talk) {
                 if (talk.classList.contains("talk")) {
-
                     talk.setAttribute("data-loading-images", Math.max(0, (parseInt(talk.getAttribute("data-loading-images"), 10) - 1) || 0));
 
                     var ph = parseInt(talk.getAttribute("data-height"), 10);
@@ -391,8 +389,31 @@
                 talk.setAttribute("data-height", talk.clientHeight);
             }
         });
+
         document.addEventListener("scroll", function () {
             var b = document.body;
+
+            var talks = document.body.children;
+            for (var i = 0; i < talks.length; i++) {
+                var talk = talks[i];
+
+                var margin = 60;
+                var hidden = (talk.offsetTop + talk.clientHeight + margin < b.scrollTop
+                    || b.scrollTop + b.clientHeight < talk.offsetTop - margin)
+                    && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
+
+                if (hidden) {
+                    if (!talk.classList.contains("hidden")) {
+                        talk.style.height = talk.clientHeight.toString() + 'px';
+                        talk.classList.add("hidden");
+                    }
+                } else {
+                    if (talk.classList.contains("hidden")) {
+                        talk.style.height = null;
+                        talk.classList.remove("hidden");
+                    }
+                }
+            }
 
             if (b.scrollHeight < b.clientHeight) {
                 return;

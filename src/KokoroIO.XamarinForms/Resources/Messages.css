@@ -22,3 +22,11 @@ body {
 .talk .avatar img {
     border-radius: 5px;
 }
+
+.talk.continued.hidden, .talk.not-continued.hidden {
+    padding-top: 0;
+}
+
+.talk.hidden > div {
+    display: none;
+}
