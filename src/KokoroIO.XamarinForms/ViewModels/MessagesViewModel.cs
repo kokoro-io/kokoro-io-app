@@ -59,7 +59,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private async void BeginLoadMessages(bool prepend = false)
         {
-            if (IsBusy)
+            if (IsBusy || (Room.IsArchived && Room.UnreadCount <= 0 && !prepend && _Messages?.Count > 0))
             {
                 return;
             }
