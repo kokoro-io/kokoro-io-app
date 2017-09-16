@@ -428,5 +428,31 @@
                 location.href = "http://kokoro.io/client/control?event=append";
             }
         });
+
+        var mouseDownStart = null;
+
+        document.body.addEventListener("mousedown", function (e) {
+            if (e.button === 0) {
+                var b = document.body;
+                if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
+                    mouseDownStart = new Date().getTime();
+
+                    setTimeout(function () {
+                        if (mouseDownStart !== null
+                            && mouseDownStart + 800 < new Date().getTime()) {
+                            console.log("Loading newer messages.");
+                            location.href = "http://kokoro.io/client/control?event=append";
+                        }
+                        mouseDownStart = null;
+                    }, 1000);
+
+                    return;
+                }
+            }
+            mouseDownStart = null;
+        });
+        document.body.addEventListener("mouseup", function (e) {
+            mouseDownStart = null;
+        });
     });
 })();
