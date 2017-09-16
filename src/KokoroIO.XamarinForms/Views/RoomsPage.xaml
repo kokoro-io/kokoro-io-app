@@ -3,8 +3,12 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="KokoroIO.XamarinForms.Views.RoomsPage"
-    Title="{Binding Title}"
-    x:Name="BrowseItemsPage">
+    Title="{Binding Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Logout"
+            Clicked="Logout_Clicked" />
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <ListView
             HasUnevenRows="true"

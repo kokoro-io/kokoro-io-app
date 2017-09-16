@@ -18,18 +18,61 @@
             <Entry
                 FontSize="Medium"
                 Keyboard="Email"
-                Text="{Binding MailAddress}" />
+                Text="{Binding MailAddress}">
+                <Entry.Triggers>
+                    <DataTrigger
+                        TargetType="Entry"
+                        Binding="{Binding IsBusy}"
+                        Value="True">
+                        <Setter
+                            Property="IsEnabled"
+                            Value="False" />
+                    </DataTrigger>
+                </Entry.Triggers>
+            </Entry>
             <Label
                 Text="Password"
                 FontSize="Medium" />
             <Entry
                 FontSize="Medium"
                 IsPassword="True"
-                Text="{Binding Password}" />
+                Text="{Binding Password}">
+                <Entry.Triggers>
+                    <DataTrigger
+                        TargetType="Entry"
+                        Binding="{Binding IsBusy}"
+                        Value="True">
+                        <Setter
+                            Property="IsEnabled"
+                            Value="False" />
+                    </DataTrigger>
+                </Entry.Triggers>
+            </Entry>
             <Button
-                Text="Log in"
                 FontSize="Medium"
-                Command="{Binding LoginCommand}" />
+                Command="{Binding LoginCommand}">
+                <Button.Style>
+                    <Style
+                        TargetType="Button">
+                        <Setter
+                            Property="Text"
+                            Value="Log in" />
+                        <Style.Triggers>
+                            <DataTrigger
+                                TargetType="Button"
+                                Binding="{Binding IsBusy}"
+                                Value="True">
+                                <Setter
+                                    Property="IsEnabled"
+                                    Value="False" />
+                                <Setter
+                                    Property="Text"
+                                    Value="Logging in..." />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

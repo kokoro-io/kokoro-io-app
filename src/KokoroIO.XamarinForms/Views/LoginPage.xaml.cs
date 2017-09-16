@@ -15,6 +15,11 @@ namespace KokoroIO.XamarinForms.Views
         public LoginPage()
         {
             InitializeComponent();
+
+            MessagingCenter.Subscribe<LoginViewModel>(this, "LoginFailed", lvm =>
+            {
+                DisplayAlert("kokoro.io", "Failed to login", "OK");
+            });
         }
 
         protected override void OnAppearing()

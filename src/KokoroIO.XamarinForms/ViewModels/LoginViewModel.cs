@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
-using KokoroIO.XamarinForms.Helpers;
 using KokoroIO.XamarinForms.Views;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
@@ -12,16 +11,33 @@ namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class LoginViewModel : BaseViewModel
     {
+        private bool _AutomaticLogin;
+
         public LoginViewModel()
+            : this(true)
         {
+        }
+
+        internal LoginViewModel(bool automaticLogin)
+        {
+            _AutomaticLogin = automaticLogin;
+
             Title = "Login";
             if (App.Current.Properties.TryGetValue(nameof(MailAddress), out var obj))
             {
                 _MailAddress = obj as string;
             }
-            if (App.Current.Properties.TryGetValue(nameof(Password), out obj))
+            if (automaticLogin)
             {
-                _Password = obj as string;
+                if (App.Current.Properties.TryGetValue(nameof(Password), out obj))
+                {
+                    _Password = obj as string;
+                }
+            }
+            else
+            {
+                App.Current.Properties.Remove(nameof(Password));
+                App.Current.Properties.Remove(nameof(AccessToken));
             }
 
             LoginCommand = new Command(BeginLogin);
@@ -109,6 +125,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+
+                MessagingCenter.Send(this, "LoginFailed");
             }
             finally
             {
@@ -122,7 +140,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async void BeginLoginByStoredToken()
         {
-            if (IsBusy
+            if (!_AutomaticLogin
+                || IsBusy
                 || !App.Current.Properties.TryGetValue(nameof(AccessToken), out var at)
                 || !(at is string ats))
             {
@@ -161,6 +180,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+
+                MessagingCenter.Send(this, "LoginFailed");
             }
             finally
             {

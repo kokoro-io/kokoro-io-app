@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 
@@ -21,6 +22,19 @@ namespace KokoroIO.XamarinForms.Views
             {
                 await Navigation.PopAsync();
             }
+        }
+
+        private async void Logout_Clicked(object sender, EventArgs e)
+        {
+            App.Current.MainPage = new LoginPage()
+            {
+                BindingContext = new LoginViewModel(false)
+            };
+            try
+            {
+                await (BindingContext as RoomsViewModel)?.Application.CloseAsync();
+            }
+            catch { }
         }
 
         private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
