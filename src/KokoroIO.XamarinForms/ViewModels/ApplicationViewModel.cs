@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
+using KokoroIO.XamarinForms.Views;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
-    public sealed class ApplicationViewModel
+    public sealed class ApplicationViewModel : ObservableObject
     {
         internal ApplicationViewModel(Client client, Profile me)
         {
@@ -71,6 +72,14 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
+        private RoomViewModel _SelectedRoom;
+
+        public RoomViewModel SelectedRoom
+        {
+            get => _SelectedRoom;
+            set => SetProperty(ref _SelectedRoom, value);
+        }
+
         #endregion Rooms
 
         #region Profiles
@@ -102,6 +111,30 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Profiles
+
+        #region LogoutCommand
+
+        private Command _LogoutCommand;
+
+        public Command LogoutCommand
+            => _LogoutCommand ?? (_LogoutCommand = new Command(BeginLogout));
+
+        public async void BeginLogout()
+        {
+            try
+            {
+                await CloseAsync();
+            }
+            catch { }
+
+            App.Current.Properties.Remove(nameof(LoginViewModel.Password));
+            App.Current.Properties.Remove(nameof(AccessToken));
+            await App.Current.SavePropertiesAsync();
+
+            App.Current.MainPage = new LoginPage();
+        }
+
+        #endregion LogoutCommand
 
         public Command OpenUrlCommand { get; }
 

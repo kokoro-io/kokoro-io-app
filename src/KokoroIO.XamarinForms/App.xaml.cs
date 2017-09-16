@@ -36,19 +36,7 @@ namespace KokoroIO.XamarinForms
 
         internal static void SetMainPage(ApplicationViewModel app)
         {
-            App.Current.MainPage = new TabbedPage
-            {
-                BindingContext = app,
-                Children =
-                    {
-                        new NavigationPage(new RoomsPage())
-                        {
-                            Title = "Rooms",
-                            Icon = XDevice.OnPlatform<string>("tab_feed.png",null,null),
-                            BindingContext = new RoomsViewModel(app)
-                        }
-                    }
-            };
+            App.Current.MainPage = new RootPage(app);
         }
 
         protected override void OnStart()
