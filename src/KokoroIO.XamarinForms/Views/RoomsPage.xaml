@@ -22,7 +22,18 @@
                                 Text="{Binding DisplayName}"
                                 LineBreakMode="NoWrap"
                                 Style="{DynamicResource ListItemTextStyle}"
-                                FontSize="16" />
+                                FontSize="16">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        TargetType="Label"
+                                        Binding="{Binding IsArchived}"
+                                        Value="True">
+                                        <Setter
+                                            Property="TextColor"
+                                            Value="#999" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
                             <Label
                                 Margin="4,0"
                                 Text="{Binding UnreadCount}"

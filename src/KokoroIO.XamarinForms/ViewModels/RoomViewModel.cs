@@ -12,6 +12,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Id = model.Id;
             ChannelName = model.ChannelName;
             Kind = model.Kind;
+            IsArchived = model.IsArchived;
         }
 
         internal ApplicationViewModel Application { get; }
@@ -23,6 +24,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             => (Kind == RoomKind.DirectMessage ? '@' : '#') + ChannelName;
 
         public RoomKind Kind { get; }
+        public bool IsArchived { get; }
 
         public string KindName
         {

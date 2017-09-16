@@ -17,30 +17,64 @@
                 RefreshCommand="{Binding RefreshCommand}"
                 NavigatingCommand="{Binding OpenUrlCommand}"
                 Messages="{Binding Messages}" />
-            <Label
-                Margin="8,4"
-                Text="{Binding Room.UnreadCount,StringFormat='{}{0} new messages'}"
-                TextColor="#fff"
-                BackgroundColor="#4169E1"
-                Font="Monospace,Bold"
+            <StackLayout
                 HorizontalOptions="FillAndExpand"
-                HorizontalTextAlignment="Center"
-                VerticalOptions="Start"
-                FontSize="Small">
-                <Label.Triggers>
+                VerticalOptions="Start">
+                <Label
+                    Margin="8,4"
+                    VerticalOptions="Start"
+                    HorizontalOptions="FillAndExpand"
+                    Font="Small Bold Monospace"
+                    TextColor="#fff"
+                    BackgroundColor="#4169E1"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding Room.UnreadCount,StringFormat='{}{0} new messages'}">
+                    <Label.Triggers>
+                        <DataTrigger
+                            TargetType="Label"
+                            Binding="{Binding Room.UnreadCount}"
+                            Value="0">
+                            <Setter
+                                Property="IsVisible"
+                                Value="False" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Label
+                    Margin="8,4"
+                    VerticalOptions="Start"
+                    HorizontalOptions="FillAndExpand"
+                    Font="Small Bold Monospace"
+                    TextColor="#fff"
+                    BackgroundColor="DarkOrange"
+                    HorizontalTextAlignment="Center"
+                    Text="Archived channel" 
+                    IsVisible="False">
+                    <Label.Triggers>
+                        <DataTrigger
+                            TargetType="Label"
+                            Binding="{Binding Room.IsArchived}"
+                            Value="True">
+                            <Setter
+                                Property="IsVisible"
+                                Value="True" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </StackLayout>
+            <Grid
+                Grid.Row="1"
+                Margin="4">
+                <Grid.Triggers>
                     <DataTrigger
-                        TargetType="Label"
-                        Binding="{Binding Room.UnreadCount}"
-                        Value="0">
+                        TargetType="Grid"
+                        Binding="{Binding Room.IsArchived}"
+                        Value="True">
                         <Setter
                             Property="IsVisible"
                             Value="False" />
                     </DataTrigger>
-                </Label.Triggers>
-            </Label>
-            <Grid
-                Grid.Row="1"
-                Margin="4">
+                </Grid.Triggers>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition
                         Width="Auto" />

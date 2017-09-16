@@ -50,7 +50,10 @@ namespace KokoroIO.XamarinForms.ViewModels
         private async void LoadRooms()
         {
             var rooms = await Client.GetRoomsAsync();
-            foreach (var r in rooms.OrderBy(e => (int)e.Kind).ThenBy(e => e.ChannelName).ThenBy(e => e.Id))
+            foreach (var r in rooms.OrderBy(e => e.IsArchived ? 1 : 0)
+                                    .ThenBy(e => (int)e.Kind)
+                                    .ThenBy(e => e.ChannelName, StringComparer.Ordinal)
+                                    .ThenBy(e => e.Id))
             {
                 var rvm = new RoomViewModel(this, r);
 
