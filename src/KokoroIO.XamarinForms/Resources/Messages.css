@@ -30,3 +30,7 @@ body {
 .talk.hidden > div {
     display: none;
 }
+
+.talk:last-child {
+    margin-bottom: 10px;
+}
