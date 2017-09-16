@@ -17,6 +17,8 @@ namespace KokoroIO.XamarinForms.Views
 {
     public class MessageWebView : WebView
     {
+        private readonly HashSet<MessageInfo> _BindedMessages = new HashSet<MessageInfo>();
+
         public MessageWebView()
         {
             Navigating += MessageWebView_Navigating;
@@ -106,6 +108,7 @@ namespace KokoroIO.XamarinForms.Views
                             {
                                 item.PropertyChanged -= Item_PropertyChanged;
                                 item.PropertyChanged += Item_PropertyChanged;
+                                _BindedMessages.Add(item);
                             }
 
                             try
@@ -148,6 +151,7 @@ namespace KokoroIO.XamarinForms.Views
                             foreach (var item in oldItems)
                             {
                                 item.PropertyChanged -= Item_PropertyChanged;
+                                _BindedMessages.Remove(item);
                             }
 
                             try
@@ -405,10 +409,16 @@ namespace KokoroIO.XamarinForms.Views
                 }
                 else
                 {
+                    foreach (var item in _BindedMessages)
+                    {
+                        item.PropertyChanged -= Item_PropertyChanged;
+                    }
+                    _BindedMessages.Clear();
                     foreach (var item in Messages)
                     {
                         item.PropertyChanged -= Item_PropertyChanged;
                         item.PropertyChanged += Item_PropertyChanged;
+                        _BindedMessages.Add(item);
                     }
 
                     var js = new JsonSerializer();
