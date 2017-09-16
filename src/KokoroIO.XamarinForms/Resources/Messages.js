@@ -67,22 +67,27 @@
 
                     if (!prev || (id != pid && !aft)) {
                         // console.debug("Appending message[" + id + "]");
-                        document.body.appendChild(createTaklElement(m));
+                        var talk = createTaklElement(m);
+                        document.body.appendChild(talk);
+                        _afterTalkInserted(talk);
                         j++;
                         break;
-                    } else if (id < pid) {
-                        // console.debug("Inserting message[" + id + "] before " + pid);
-                        document.body.insertBefore(createTaklElement(m), prev);
-                        j++;
-                        break;
-                    } else if (id == pid) {
-                        // console.debug("Replacing message[" + id + "]");
-                        document.body.insertBefore(createTaklElement(m), prev);
-                        prev.remove();
+                    } else if (id <= pid) {
+                        var talk = createTaklElement(m);
+                        document.body.insertBefore(talk, prev);
+                        if (id == pid) {
+                            _afterTalkInserted(talk, prev.clientHeight);
+                            prev.remove();
+                        } else {
+                            _afterTalkInserted(talk);
+                            j++;
+                        }
                         break;
                     } else if (id < aid) {
                         // console.debug("Inserting message[" + id + "] before " + aid);
-                        document.body.insertBefore(createTaklElement(m), aft);
+                        var talk = createTaklElement(m);
+                        document.body.insertBefore(talk, aft);
+                        _afterTalkInserted(talk);
                         j++;
                         break;
                     } else {
@@ -317,7 +322,75 @@
         return em;
     }
 
+    function _afterTalkInserted(talk, previousHeight) {
+        if (talk.offsetTop < document.body.scrollTop) {
+            var delta = talk.clientHeight - (previousHeight || 0);
+            if (delta != 0) {
+                document.body.scrollTop += delta;
+                console.log("scolled " + delta);
+            }
+        }
+
+        talk.setAttribute("data-height", talk.clientHeight);
+
+        var imgs = talk.getElementsByTagName("img");
+        talk.setAttribute("data-loading-images", imgs.length);
+
+        var handler;
+        handler = function (e) {
+
+            var img = e.target;
+
+            var talk = img.parentElement;
+
+            while (talk) {
+                if (talk.classList.contains("talk")) {
+
+                    talk.setAttribute("data-loading-images", Math.max(0, (parseInt(talk.getAttribute("data-loading-images"), 10) - 1) || 0));
+
+                    var ph = parseInt(talk.getAttribute("data-height"), 10);
+
+                    if (ph > 0 && talk.offsetTop < document.body.scrollTop) {
+                        var delta = talk.clientHeight - ph;
+                        if (delta != 0) {
+                            document.body.scrollTop += delta;
+                            console.log("scolled " + delta);
+                        }
+                    }
+                    talk.setAttribute("data-height", talk.clientHeight);
+
+                    break;
+                }
+
+                talk = talk.parentElement;
+            }
+
+            img.removeEventListener("load", handler);
+            img.removeEventListener("error", handler);
+        }
+
+        for (var i = 0; i < imgs.length; i++) {
+            imgs[i].addEventListener("load", handler);
+            imgs[i].addEventListener("error", handler);
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
+        var windowWidth = window.innerWidth;
+
+        window.addEventListener("resize", function () {
+            if (window.innerWidth == windowWidth) {
+                return;
+            }
+
+            windowWidth = window.innerWidth;
+
+            var talks = document.body.children;
+            for (var i = 0; i < talks.length; i++) {
+                var talk = talks[i];
+                talk.setAttribute("data-height", talk.clientHeight);
+            }
+        });
         document.addEventListener("scroll", function () {
             var b = document.body;
 
