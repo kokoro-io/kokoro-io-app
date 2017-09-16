@@ -330,7 +330,7 @@ namespace KokoroIO.XamarinForms.Views
                 xw.WriteEndElement();
 
                 xw.WriteStartElement("style");
-                using (var rs = GetManifestResourceStream("Messages.css"))
+                using (var rs = GetManifestResourceStream("Application.css"))
                 using (var sr = new StreamReader(rs))
                 {
                     xw.WriteRaw(sr.ReadToEnd());
@@ -347,6 +347,14 @@ namespace KokoroIO.XamarinForms.Views
 
                 xw.WriteStartElement("style");
                 using (var rs = GetManifestResourceStream("Pygments.css"))
+                using (var sr = new StreamReader(rs))
+                {
+                    xw.WriteRaw(sr.ReadToEnd());
+                }
+                xw.WriteEndElement();
+
+                xw.WriteStartElement("style");
+                using (var rs = GetManifestResourceStream("Messages.css"))
                 using (var sr = new StreamReader(rs))
                 {
                     xw.WriteRaw(sr.ReadToEnd());
