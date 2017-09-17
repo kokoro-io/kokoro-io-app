@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using KokoroIO.XamarinForms.Models;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class UploadersViewModel : BaseViewModel
     {
-        internal UploadersViewModel(ApplicationViewModel application, Action<string> callback)
+        internal UploadersViewModel(ApplicationViewModel application, UploadParameter parameter)
         {
             Application = application;
-            Callback = callback;
+            Parameter = parameter;
         }
 
         internal ApplicationViewModel Application { get; }
 
-        internal Action<string> Callback { get; }
+        internal UploadParameter Parameter { get; }
 
         public IReadOnlyList<IImageUploader> Uploaders => ApplicationViewModel.Uploaders;
     }

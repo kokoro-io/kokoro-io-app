@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\ProfileViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\RoomViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploadersViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploadParameter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExpandableEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessageWebView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPage.xaml.cs">

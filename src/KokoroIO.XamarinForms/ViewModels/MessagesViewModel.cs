@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
@@ -240,11 +241,11 @@ namespace KokoroIO.XamarinForms.ViewModels
         private Command _UploadImageCommand;
 
         public Command UploadImageCommand
-            => _UploadImageCommand ?? (_UploadImageCommand = new Command(BeginUploadImage));
+            => _UploadImageCommand ?? (_UploadImageCommand = new Command(p => BeginUploadImage(p as Stream)));
 
-        public void BeginUploadImage()
+        public void BeginUploadImage(Stream data = null)
         {
-            Application.BeginUpload(url =>
+            Application.BeginUpload(new UploadParameter(url =>
             {
                 if (string.IsNullOrWhiteSpace(_NewMessage))
                 {
@@ -254,7 +255,10 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     NewMessage += " " + url;
                 }
-            });
+            }, c =>
+            {
+                data?.Dispose();
+            }, data: data));
         }
 
         #endregion UploadImageCommand

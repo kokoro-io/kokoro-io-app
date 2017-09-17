@@ -145,7 +145,8 @@
                     FontSize="Small"
                     HorizontalOptions="FillAndExpand"
                     Text="{Binding NewMessage}"
-                    Placeholder="{Binding Room.Placeholder}" />
+                    Placeholder="{Binding Room.Placeholder}"
+                    FilePasted="ExpandableEditor_FilePasted" />
                 <Button
                     Grid.Column="2"
                     Style="{StaticResource footerButtonStyle}"

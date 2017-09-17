@@ -11,17 +11,17 @@ namespace KokoroIO.XamarinForms.Views
     {
         private readonly ApplicationViewModel _Application;
         private readonly IImageUploader _Uploader;
-        private readonly Action<string> _Callback;
+        private readonly UploadParameter _Parameter;
 
         private bool _HasNavigated;
 
-        public UploaderAuthorizationPage(ApplicationViewModel application, IImageUploader uploader, Action<string> callback)
+        internal UploaderAuthorizationPage(ApplicationViewModel application, IImageUploader uploader, UploadParameter parameter)
         {
             InitializeComponent();
 
             _Application = application;
             _Uploader = uploader;
-            _Callback = callback;
+            _Parameter = parameter;
         }
 
         protected override void OnAppearing()
@@ -52,11 +52,12 @@ namespace KokoroIO.XamarinForms.Views
                         await Navigation.PopModalAsync();
                     }
 
-                    await _Application.BeginSelectImage(_Uploader, _Callback);
+                    await _Application.BeginSelectImage(_Uploader, _Parameter);
                 }
-                catch
+                catch (Exception ex)
                 {
                     // TODO: show alert in appvm
+                    _Parameter.OnFaulted?.Invoke(ex.Message);
 
                     while (Navigation.ModalStack.Count > 0)
                     {
@@ -65,6 +66,7 @@ namespace KokoroIO.XamarinForms.Views
                 }
             }
         }
+
         private async void CancelButton_Clicked(object sender, EventArgs e)
         {
             await Navigation.PopModalAsync();

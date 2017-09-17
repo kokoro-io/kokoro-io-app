@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
@@ -17,6 +13,7 @@ namespace KokoroIO.XamarinForms.Views
         {
             InitializeComponent();
         }
+
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
             var vm = BindingContext as UploadersViewModel;
@@ -24,7 +21,7 @@ namespace KokoroIO.XamarinForms.Views
 
             if (vm != null && up != null)
             {
-                Navigation.PushModalAsync(new UploaderAuthorizationPage(vm.Application, up, vm.Callback));
+                Navigation.PushModalAsync(new UploaderAuthorizationPage(vm.Application, up, vm.Parameter));
             }
         }
 

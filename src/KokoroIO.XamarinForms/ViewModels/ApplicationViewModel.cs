@@ -214,7 +214,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        internal async void BeginUpload(Action<string> callback)
+        internal async void BeginUpload(UploadParameter parameter)
         {
             var su = GetSelectedUploader();
 
@@ -222,15 +222,15 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 await App.Current.MainPage.Navigation.PushModalAsync(new UploadersPage()
                 {
-                    BindingContext = new UploadersViewModel(this, callback)
+                    BindingContext = new UploadersViewModel(this, parameter)
                 });
 
                 return;
             }
-            await BeginSelectImage(su, callback);
+            await BeginSelectImage(su, parameter);
         }
 
-        internal async Task BeginSelectImage(IImageUploader uploader, Action<string> callback)
+        internal async Task BeginSelectImage(IImageUploader uploader, UploadParameter parameter)
         {
             var nav = App.Current.MainPage.Navigation;
             while (nav.ModalStack.Count > 0)
@@ -238,31 +238,44 @@ namespace KokoroIO.XamarinForms.ViewModels
                 await nav.PopModalAsync();
             }
 
-            var mp = MediaPicker;
-
-            if (mp != null)
+            try
             {
-
-                try
+                string url;
+                if (parameter.Data != null)
                 {
+                    using (parameter.Data)
+                    {
+                        url = await uploader.UploadAsync(parameter.Data, "pasted");
+                    }
+                }
+                else
+                {
+                    var mp = MediaPicker;
+
+                    if (mp == null)
+                    {
+                        parameter.OnFaulted?.Invoke("no media picker defined");
+                        return;
+                    }
                     var mf = await mp.SelectPhotoAsync(new CameraMediaStorageOptions() { });
 
-                    string url;
                     using (var ms = mf.Source)
                     {
                         url = await uploader.UploadAsync(ms, Path.GetFileName(mf.Path));
                     }
-                    App.Current.Properties[nameof(GetSelectedUploader)] = uploader.GetType().FullName;
-
-                    await App.Current.SavePropertiesAsync();
-
-                    callback(url);
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                    // TODO: alerr
-                }
+
+                App.Current.Properties[nameof(GetSelectedUploader)] = uploader.GetType().FullName;
+
+                await App.Current.SavePropertiesAsync();
+
+                parameter.OnCompleted(url);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                // TODO: alerr
+                parameter.OnFaulted?.Invoke(ex.Message);
             }
         }
 
