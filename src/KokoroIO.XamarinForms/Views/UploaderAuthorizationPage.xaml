@@ -5,8 +5,22 @@
     x:Class="KokoroIO.XamarinForms.Views.UploaderAuthorizationPage"
     Title="Authorization">
     <ContentPage.Content>
-        <WebView
-            x:Name="webView"
-            Navigating="WebView_Navigating" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <WebView
+                x:Name="webView"
+                Navigating="WebView_Navigating" />
+            <Grid
+                Grid.Row="1">
+                <Button
+                    HorizontalOptions="End"
+                    Text="Cancel"
+                    Clicked="CancelButton_Clicked" />
+            </Grid>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

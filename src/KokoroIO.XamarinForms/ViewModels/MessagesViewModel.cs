@@ -234,6 +234,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region UploadImageCommand
 
+        public bool SupportsImageUpload
+            => Application.MediaPicker != null;
+
         private Command _UploadImageCommand;
 
         public Command UploadImageCommand

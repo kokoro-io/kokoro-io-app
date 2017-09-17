@@ -48,9 +48,6 @@
                     Property="BackgroundColor"
                     Value="Transparent" />
                 <Setter
-                    Property="VerticalOptions"
-                    Value="Center" />
-                <Setter
                     Property="Margin"
                     Value="0" />
             </Style>
@@ -129,7 +126,20 @@
                 <Button
                     Style="{StaticResource footerButtonStyle}"
                     Text="+"
-                    Command="{Binding UploadImageCommand}" />
+                    VerticalOptions="Start"
+                    WidthRequest="35"
+                    Command="{Binding UploadImageCommand}">
+                    <Button.Triggers>
+                        <DataTrigger
+                            TargetType="Button"
+                            Binding="{Binding SupportsImageUpload}"
+                            Value="False">
+                            <Setter
+                                Property="IsVisible"
+                                Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
                 <view:ExpandableEditor
                     Grid.Column="1"
                     FontSize="Small"
@@ -140,6 +150,8 @@
                     Grid.Column="2"
                     Style="{StaticResource footerButtonStyle}"
                     Text="Go"
+                    VerticalOptions="End"
+                    WidthRequest="45"
                     Command="{Binding PostCommand}" />
             </Grid>
         </Grid>

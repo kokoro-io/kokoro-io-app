@@ -196,7 +196,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private object _MediaPicker;
 
-        private IMediaPicker MediaPicker
+        internal IMediaPicker MediaPicker
         {
             get
             {

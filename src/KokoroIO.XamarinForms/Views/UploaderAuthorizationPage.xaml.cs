@@ -65,5 +65,9 @@ namespace KokoroIO.XamarinForms.Views
                 }
             }
         }
+        private async void CancelButton_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PopModalAsync();
+        }
     }
 }

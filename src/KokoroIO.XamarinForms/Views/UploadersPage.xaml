@@ -9,6 +9,8 @@
             <RowDefinition
                 Height="Auto" />
             <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label>Choose service to upload image</Label>
@@ -25,11 +27,21 @@
                         <StackLayout>
                             <Label
                                 Text="{Binding DisplayName}"
+                                FontSize="Large"
+                                HorizontalTextAlignment="Center"
                                 Style="{DynamicResource ListItemTextStyle}" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <Grid
+            Grid.Row="2">
+            <Button
+                HorizontalOptions="End"
+                Text="Cancel"
+                Clicked="CancelButton_Clicked" />
+        </Grid>
     </Grid>
 </ContentPage>

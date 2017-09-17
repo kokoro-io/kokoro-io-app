@@ -27,5 +27,10 @@ namespace KokoroIO.XamarinForms.Views
                 Navigation.PushModalAsync(new UploaderAuthorizationPage(vm.Application, up, vm.Callback));
             }
         }
+
+        private async void CancelButton_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PopModalAsync();
+        }
     }
 }
