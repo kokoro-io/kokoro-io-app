@@ -1,5 +1,53 @@
-﻿(function () {
-    var setMessages = window.setMessages = function (messages) {
+﻿interface MergeInfo {
+    Id: number;
+    IsMerged: boolean;
+}
+interface MessageInfo extends MergeInfo {
+    Avatar: string;
+    DisplayName: string;
+    PublishedAt: string;
+    Content: string;
+    EmbedContents: EmbedContent[];
+}
+interface EmbedContent {
+    url: string;
+    data: EmbedData;
+}
+interface EmbedData {
+    type: "MixedContent" | "SingleImage" | "SingleVideo" | "SingleAudio";
+    title: string;
+    description: string;
+    author_name: string;
+    author_url: string;
+    provider_name: string;
+    provider_url: string;
+    cache_age: number;
+    metadata_image: EmbedDataMedia;
+    url: string;
+    restriction_policy: "Unknown" | "Safe" | "Restricted";
+    medias: EmbedDataMedia[];
+}
+interface EmbedDataMedia {
+    type: "Image" | "Video" | "Audio";
+    thumbnail: EmbedDataImageInfo;
+    raw_url: string;
+    location: string;
+    restriction_policy: "Unknown" | "Safe" | "Restricted";
+}
+interface EmbedDataImageInfo {
+    url: string;
+    width: number;
+    height: number;
+}
+
+interface Window {
+    setMessages(messages: MessageInfo[]);
+    addMessages(messages: MessageInfo[], merged: MergeInfo[]);
+    removeMessages(ids: number[], merged: MergeInfo[]);
+}
+
+(function () {
+    var setMessages = window.setMessages = function (messages: MessageInfo[]) {
         console.debug("Setting " + (messages ? messages.length : 0) + " messages");
         document.body.innerHTML = "";
         _addMessagessCore(messages, null);
@@ -43,7 +91,7 @@
         document.body.scrollTop = st;
     }
 
-    function _addMessagessCore(messages, merged) {
+    function _addMessagessCore(messages: MessageInfo[], merged: MergeInfo[]) {
         if (messages) {
             var b = document.body;
             var j = 0;
@@ -99,7 +147,7 @@
         updateContinued(merged);
     }
 
-    window.addMessages = function (messages, merged) {
+    window.addMessages = function (messages: MessageInfo[], merged: MergeInfo[]) {
         console.debug("Adding " + (messages ? messages.length : 0) + " messages");
         var tid = _getTopId();
         var top = tid > 0;
@@ -110,7 +158,7 @@
         _showItem(tid, top);
     }
 
-    var removeMessages = window.removeMessages = function (ids, merged) {
+    var removeMessages = window.removeMessages = function (ids: number[], merged: MergeInfo[]) {
         console.debug("Removing " + (ids ? ids.length : 0) + " messages");
         if (ids) {
             var j = 0;
@@ -125,7 +173,7 @@
         updateContinued(merged);
     }
 
-    function updateContinued(merged) {
+    function updateContinued(merged: MergeInfo[]) {
         if (merged) {
             for (var i = 0; i < merged.length; i++) {
                 var m = merged[i];
@@ -141,7 +189,7 @@
         }
     }
 
-    function createTaklElement(m) {
+    function createTaklElement(m: MessageInfo): HTMLDivElement {
         var id = m.Id;
         var avatarUrl = m.Avatar;
         var displayName = m.DisplayName;
@@ -154,7 +202,7 @@
         talk.id = "talk" + id;
         talk.classList.add("talk");
         talk.classList.add(isMerged ? "continued" : "not-continued");
-        talk.setAttribute("data-message-id", id);
+        talk.setAttribute("data-message-id", id.toString());
 
         try {
             var avatar = document.createElement("div");
@@ -243,7 +291,7 @@
         return talk;
     }
 
-    function _createEmbedContent(d, hideInfo) {
+    function _createEmbedContent(d: EmbedData, hideInfo: boolean): HTMLDivElement {
         var r = document.createElement("div");
         r.classList.add("embed-" + d.type.toLowerCase());
 
@@ -306,7 +354,7 @@
         return r;
     }
 
-    function _createMediaDiv(m, className) {
+    function _createMediaDiv(m: EmbedDataMedia, className?: string): HTMLDivElement {
         var em = document.createElement("div");
         em.classList.add(className || "embed_media");
 
@@ -322,7 +370,7 @@
         return em;
     }
 
-    function _afterTalkInserted(talk, previousHeight) {
+    function _afterTalkInserted(talk: HTMLDivElement, previousHeight?: number) {
         if (talk.offsetTop < document.body.scrollTop) {
             var delta = talk.clientHeight - (previousHeight || 0);
             if (delta != 0) {
@@ -331,10 +379,10 @@
             }
         }
 
-        talk.setAttribute("data-height", talk.clientHeight);
+        talk.setAttribute("data-height", talk.clientHeight.toString());
 
         var imgs = talk.getElementsByTagName("img");
-        talk.setAttribute("data-loading-images", imgs.length);
+        talk.setAttribute("data-loading-images", imgs.length.toString());
 
         var handler;
         handler = function (e) {
@@ -386,7 +434,7 @@
             var talks = document.body.children;
             for (var i = 0; i < talks.length; i++) {
                 var talk = talks[i];
-                talk.setAttribute("data-height", talk.clientHeight);
+                talk.setAttribute("data-height", talk.clientHeight.toString());
             }
         });
 
@@ -395,7 +443,7 @@
 
             var talks = document.body.children;
             for (var i = 0; i < talks.length; i++) {
-                var talk = talks[i];
+                var talk = <HTMLDivElement>talks[i];
 
                 var margin = 60;
                 var hidden = (talk.offsetTop + talk.clientHeight + margin < b.scrollTop

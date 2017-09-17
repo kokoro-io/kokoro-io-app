@@ -312,78 +312,10 @@ namespace KokoroIO.XamarinForms.Views
                 await Task.Delay(100);
             }
 
-            using (var sw = new StringWriter())
-            using (var xw = XmlWriter.Create(sw, new XmlWriterSettings()
+            using (var rs = GetManifestResourceStream("Messages.html"))
+            using (var sr = new StreamReader(rs))
             {
-                CheckCharacters = false,
-                OmitXmlDeclaration = true
-            }))
-            {
-                xw.WriteDocType("html", "", "", "");
-
-                xw.WriteStartElement("html");
-                xw.WriteStartElement("head");
-
-                xw.WriteStartElement("base");
-                xw.WriteAttributeString("href", "https://kokoro.io/");
-                xw.WriteEndElement();
-
-                xw.WriteStartElement("meta");
-                xw.WriteAttributeString("name", "viewport");
-                xw.WriteAttributeString("content", "width=device-width, initial-scale=1, user-scalable=0");
-                xw.WriteEndElement();
-
-                xw.WriteStartElement("style");
-                using (var rs = GetManifestResourceStream("Application.css"))
-                using (var sr = new StreamReader(rs))
-                {
-                    xw.WriteRaw(sr.ReadToEnd());
-                }
-                xw.WriteEndElement();
-
-                xw.WriteStartElement("style");
-                using (var rs = GetManifestResourceStream("MessageBox.css"))
-                using (var sr = new StreamReader(rs))
-                {
-                    xw.WriteRaw(sr.ReadToEnd());
-                }
-                xw.WriteEndElement();
-
-                xw.WriteStartElement("style");
-                using (var rs = GetManifestResourceStream("Pygments.css"))
-                using (var sr = new StreamReader(rs))
-                {
-                    xw.WriteRaw(sr.ReadToEnd());
-                }
-                xw.WriteEndElement();
-
-                xw.WriteStartElement("style");
-                using (var rs = GetManifestResourceStream("Messages.css"))
-                using (var sr = new StreamReader(rs))
-                {
-                    xw.WriteRaw(sr.ReadToEnd());
-                }
-                xw.WriteEndElement();
-
-                xw.WriteStartElement("script");
-                using (var rs = GetManifestResourceStream("Messages.js"))
-                using (var sr = new StreamReader(rs))
-                {
-                    xw.WriteRaw(sr.ReadToEnd());
-                }
-                xw.WriteEndElement();
-
-                xw.WriteEndElement();
-                xw.WriteStartElement("body");
-
-                xw.WriteString("");
-
-                xw.WriteEndElement();
-                xw.WriteEndElement();
-
-                xw.Flush();
-
-                NavigateToStringCore(sw.ToString());
+                NavigateToStringCore(sr.ReadToEnd());
             }
         }
 
