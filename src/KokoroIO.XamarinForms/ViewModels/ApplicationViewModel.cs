@@ -85,7 +85,19 @@ namespace KokoroIO.XamarinForms.ViewModels
         public RoomViewModel SelectedRoom
         {
             get => _SelectedRoom;
-            set => SetProperty(ref _SelectedRoom, value);
+            set => SetProperty(ref _SelectedRoom, value, onChanged: () => OnUnreadCountChanged());
+        }
+
+        private bool _HasNotificationInMenu;
+        public bool HasNotificationInMenu
+        {
+            get => _HasNotificationInMenu;
+            private set => SetProperty(ref _HasNotificationInMenu, value);
+        }
+
+        internal void OnUnreadCountChanged()
+        {
+            HasNotificationInMenu = _Rooms?.Where(r => r != _SelectedRoom).Sum(r => r.UnreadCount) > 0;
         }
 
         #endregion Rooms

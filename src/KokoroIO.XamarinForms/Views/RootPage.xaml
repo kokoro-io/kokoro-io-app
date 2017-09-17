@@ -5,5 +5,4 @@
     x:Class="KokoroIO.XamarinForms.Views.RootPage"
     xmlns:pages="clr-namespace:KokoroIO.XamarinForms.Views"
     IsGestureEnabled="True">
-    
 </MasterDetailPage>

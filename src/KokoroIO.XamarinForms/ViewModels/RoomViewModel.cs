@@ -76,7 +76,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int UnreadCount
         {
             get => _UnreadCount;
-            set => SetProperty(ref _UnreadCount, value);
+            set => SetProperty(ref _UnreadCount, value, onChanged: () => Application.OnUnreadCountChanged());
         }
 
         #endregion UnreadCount

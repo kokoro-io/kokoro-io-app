@@ -25,6 +25,17 @@ namespace KokoroIO.XamarinForms.Views
             IsPresented = true;
 
             MasterBehavior = Device.Idiom == TargetIdiom.Phone ? MasterBehavior.Popover : MasterBehavior.Split;
+
+            SetBinding(HasNotificationProperty, new Binding(nameof(viewModel.HasNotificationInMenu)));
+        }
+
+        public static readonly BindableProperty HasNotificationProperty
+            = BindableProperty.Create(nameof(HasNotification), typeof(bool), typeof(RootPage), defaultValue: false);
+
+        public bool HasNotification
+        {
+            get => (bool)GetValue(HasNotificationProperty);
+            set => SetValue(HasNotificationProperty, value);
         }
 
         private void BackButton_Clicked(object sender, EventArgs e)
