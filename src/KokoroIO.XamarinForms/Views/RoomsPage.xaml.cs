@@ -3,6 +3,7 @@ using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
@@ -13,6 +14,7 @@ namespace KokoroIO.XamarinForms.Views
         public RoomsPage()
         {
             InitializeComponent();
+            LogoImage.IsVisible = XDevice.Idiom != TargetIdiom.Phone;
         }
 
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs args)

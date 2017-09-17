@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,11 +17,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class ApplicationViewModel : ObservableObject
     {
-        internal ApplicationViewModel(Client client, Profile me)
+        internal ApplicationViewModel(Client client, Profile loginUser)
         {
             Client = client;
             OpenUrlCommand = new Command(OpenUrl);
 
+            _LoginUser = GetProfile(loginUser);
+
+            client.ProfileUpdated += Client_ProfileUpdated;
             client.MessageCreated += Client_MessageCreated;
             client.MessageUpdated += Client_MessageUpdated;
         }
@@ -89,6 +91,14 @@ namespace KokoroIO.XamarinForms.ViewModels
         #endregion Rooms
 
         #region Profiles
+
+        private ProfileViewModel _LoginUser;
+
+        public ProfileViewModel LoginUser
+        {
+            get => _LoginUser;
+            private set => SetProperty(ref _LoginUser, value);
+        }
 
         private readonly Dictionary<string, ProfileViewModel> _Profiles = new Dictionary<string, ProfileViewModel>();
 
@@ -167,6 +177,14 @@ namespace KokoroIO.XamarinForms.ViewModels
             await Client.CloseAsync();
 
             // TODO: enable push notification
+        }
+
+        private void Client_ProfileUpdated(object sender, EventArgs<Profile> e)
+        {
+            if (e.Data?.Id == _LoginUser.Id)
+            {
+                LoginUser = GetProfile(e.Data);
+            }
         }
 
         private void Client_MessageCreated(object sender, EventArgs<Message> e)
@@ -274,7 +292,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             catch (Exception ex)
             {
                 ex.Trace("Image Uploader failed");
-                 
+
                 parameter.OnFaulted?.Invoke(ex.Message);
             }
         }

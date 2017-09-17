@@ -7,11 +7,42 @@
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="32" />
+                <RowDefinition
+                    Height="Auto" />
                 <RowDefinition />
                 <RowDefinition
                     Height="Auto" />
             </Grid.RowDefinitions>
+            <Grid
+                BackgroundColor="#2C3E50">
+                <Image
+                    x:Name="LogoImage"
+                    Margin="8,4"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Start"
+                    Source="kokoroio_white.png" />
+            </Grid>
+            <Grid
+                Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Image
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Margin="8"
+                    Source="{Binding Application.LoginUser.Avatar}" />
+                <Label
+                    Grid.Column="1"
+                    VerticalOptions="Center"
+                    Text="{Binding Application.LoginUser.DisplayName}" />
+            </Grid>
             <ListView
+                Grid.Row="2"
                 HasUnevenRows="true"
                 VerticalOptions="Fill"
                 CachingStrategy="RecycleElement"
@@ -63,7 +94,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             <StackLayout
-                Grid.Row="1"
+                Grid.Row="3"
                 Orientation="Horizontal">
                 <Button
                     Text="Log out"
