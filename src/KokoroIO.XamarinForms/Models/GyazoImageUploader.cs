@@ -10,6 +10,8 @@ namespace KokoroIO.XamarinForms.Models
 {
     public sealed class GyazoImageUploader : IImageUploader
     {
+        private const string ACCESS_TOKEN_KEY = nameof(GyazoImageUploader) + "." + nameof(_AccessToken);
+
         // TODO: TEMPORAL KEY. MUST BE REMOVED AND REVOKED.
         private readonly string _ClientId = "1ddda67818dd339ff8fc80a9d03885ac1e3d32a44712d5775b7be2f67b39aa66";
 
@@ -19,11 +21,13 @@ namespace KokoroIO.XamarinForms.Models
 
         public GyazoImageUploader()
         {
-            if (App.Current.Properties.TryGetValue($"{nameof(GyazoImageUploader)}.{nameof(_AccessToken)}", out var obj))
+            if (App.Current.Properties.TryGetValue(ACCESS_TOKEN_KEY, out var obj))
             {
                 _AccessToken = obj as string;
             }
         }
+
+
 
         public string DisplayName => "Gyazo";
 
@@ -38,7 +42,7 @@ namespace KokoroIO.XamarinForms.Models
             string at = null;
             try
             {
-                var m = Regex.Match(url, "[?&]code=(.*)($|&)");
+                var m = Regex.Match(url, "[?&]code=([^&]*)($|&)");
                 if (m.Success)
                 {
                     var code = m.Groups[1].Value;
@@ -73,7 +77,7 @@ namespace KokoroIO.XamarinForms.Models
                 try
                 {
                     _AccessToken = at;
-                    App.Current.Properties[$"{nameof(GyazoImageUploader)}.{nameof(_AccessToken)}"] = at;
+                    App.Current.Properties[ACCESS_TOKEN_KEY] = at;
                     await App.Current.SavePropertiesAsync().ConfigureAwait(false);
                 }
                 catch { }
@@ -124,7 +128,7 @@ namespace KokoroIO.XamarinForms.Models
                 try
                 {
                     _AccessToken = null;
-                    App.Current.Properties[$"{nameof(GyazoImageUploader)}.{nameof(_AccessToken)}"] = null;
+                    App.Current.Properties[ACCESS_TOKEN_KEY] = null;
                     await App.Current.SavePropertiesAsync().ConfigureAwait(false);
                 }
                 catch { }

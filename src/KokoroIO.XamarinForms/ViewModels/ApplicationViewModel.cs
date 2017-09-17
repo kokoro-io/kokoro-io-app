@@ -267,7 +267,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         internal static readonly IImageUploader[] Uploaders =
-            { new GyazoImageUploader() };
+            { new GyazoImageUploader(), new ImgurImageUploader() };
 
         private IImageUploader GetSelectedUploader()
         {
