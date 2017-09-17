@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
@@ -34,7 +35,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 if (_Messages == null)
                 {
                     _Messages = new ObservableRangeCollection<MessageInfo>();
-                    BeginLoadMessages();
+                    BeginLoadMessages().GetHashCode();
                 }
                 return _Messages;
             }
@@ -53,12 +54,12 @@ namespace KokoroIO.XamarinForms.ViewModels
         #endregion HasPrevious
 
         public void BeginPrepend()
-            => BeginLoadMessages(true);
+            => BeginLoadMessages(true).GetHashCode();
 
         public void BeginAppend()
-            => BeginLoadMessages(false);
+            => BeginLoadMessages(false).GetHashCode();
 
-        private async void BeginLoadMessages(bool prepend = false)
+        private async Task BeginLoadMessages(bool prepend = false)
         {
             if (IsBusy || (Room.IsArchived && Room.UnreadCount <= 0 && !prepend && _Messages?.Count > 0))
             {
@@ -229,6 +230,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Post
 
+        #region SelectedMessage
+
+        private MessageInfo _SelectedMessage;
+
+        public MessageInfo SelectedMessage
+        {
+            get => _SelectedMessage;
+            set => SetProperty(ref _SelectedMessage, value);
+        }
+
+        #endregion SelectedMessage
+
         #region ShowUnreadCommand
 
         private Command _ShowUnreadCommand;
@@ -236,10 +249,11 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Command ShowUnreadCommand
             => _ShowUnreadCommand ?? (_ShowUnreadCommand = new Command(ShowUnread));
 
-        public void ShowUnread()
+        public async void ShowUnread()
         {
-            // TODO: scroll to bottom
-            BeginAppend();
+            var msg = _Messages?.OrderBy(m => m.Id).LastOrDefault();
+            await BeginLoadMessages();
+            SelectedMessage = msg;
         }
 
         #endregion ShowUnreadCommand

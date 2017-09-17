@@ -45,7 +45,8 @@
                 LoadOlderCommand="{Binding PrependCommand}"
                 RefreshCommand="{Binding RefreshCommand}"
                 NavigatingCommand="{Binding OpenUrlCommand}"
-                Messages="{Binding Messages}" />
+                Messages="{Binding Messages}"
+                SelectedMessage="{Binding SelectedMessage}" />
             <StackLayout
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="Start">

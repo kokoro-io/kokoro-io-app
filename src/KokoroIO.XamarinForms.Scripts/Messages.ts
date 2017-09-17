@@ -44,6 +44,7 @@ interface Window {
     setMessages(messages: MessageInfo[]);
     addMessages(messages: MessageInfo[], merged: MergeInfo[]);
     removeMessages(ids: number[], merged: MergeInfo[]);
+    showMessage(id: number, toTop: boolean);
 }
 
 (function () {
@@ -172,6 +173,22 @@ interface Window {
         }
         updateContinued(merged);
     }
+
+    window.showMessage = function (id: number, toTop: boolean) {
+        console.debug(`showing message[${id}]`);
+        var talk = document.getElementById("talk" + id);
+        if (talk) {
+            var b = document.body;
+            console.log(`current scrollTo is ${b.scrollTop}, and offsetTop is ${talk.offsetTop}`);
+            if (talk.offsetTop < b.scrollTop || toTop) {
+                console.log(`scrolling to ${talk.offsetTop}`);
+                b.scrollTop = talk.offsetTop;
+            } else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
+                console.log(`scrolling to ${talk.offsetTop - b.clientHeight}`);
+                b.scrollTop = talk.offsetTop - b.clientHeight;
+            }
+        }
+    };
 
     function updateContinued(merged: MergeInfo[]) {
         if (merged) {

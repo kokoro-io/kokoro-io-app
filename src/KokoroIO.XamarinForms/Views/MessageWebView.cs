@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Xml;
 using KokoroIO.XamarinForms.ViewModels;
 using Newtonsoft.Json;
 using Shipwreck.KokoroIO;
@@ -24,6 +23,8 @@ namespace KokoroIO.XamarinForms.Views
             Navigating += MessageWebView_Navigating;
         }
 
+        #region Messages
+
         public static readonly BindableProperty MessagesProperty
             = BindableProperty.Create(nameof(Messages), typeof(IEnumerable<MessageInfo>), typeof(MessageWebView), propertyChanged: MessagesChanged);
 
@@ -32,6 +33,52 @@ namespace KokoroIO.XamarinForms.Views
             get => (IEnumerable<MessageInfo>)GetValue(MessagesProperty);
             set => SetValue(MessagesProperty, value);
         }
+
+        private static void MessagesChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var mwv = (MessageWebView)bindable;
+
+            {
+                if (oldValue is INotifyCollectionChanged cc)
+                {
+                    cc.CollectionChanged -= mwv.Messages_CollectionChanged;
+                }
+            }
+            {
+                if (newValue is INotifyCollectionChanged cc)
+                {
+                    cc.CollectionChanged += mwv.Messages_CollectionChanged;
+                }
+            }
+
+            mwv.RefreshMessages();
+        }
+
+        #endregion Messages
+
+        #region SelectedMessage
+
+        public static readonly BindableProperty SelectedMessageProperty
+            = BindableProperty.Create(nameof(SelectedMessage), typeof(MessageInfo), typeof(MessageWebView), propertyChanged: SelectedMessageChanged, defaultBindingMode: BindingMode.OneWay);
+
+        public MessageInfo SelectedMessage
+        {
+            get => (MessageInfo)GetValue(SelectedMessageProperty);
+            set => SetValue(SelectedMessageProperty, value);
+        }
+
+        private static async void SelectedMessageChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var mwv = (MessageWebView)bindable;
+
+            var m = newValue as MessageInfo;
+            if (m != null)
+            {
+                await mwv.InvokeScriptAsync($"window.showMessage({m.Id}, true)");
+            }
+        }
+
+        #endregion SelectedMessage
 
         #region LoadOlderCommand
 
@@ -71,26 +118,6 @@ namespace KokoroIO.XamarinForms.Views
         }
 
         #endregion NavigatingCommand
-
-        private static void MessagesChanged(BindableObject bindable, object oldValue, object newValue)
-        {
-            var mwv = (MessageWebView)bindable;
-
-            {
-                if (oldValue is INotifyCollectionChanged cc)
-                {
-                    cc.CollectionChanged -= mwv.Messages_CollectionChanged;
-                }
-            }
-            {
-                if (newValue is INotifyCollectionChanged cc)
-                {
-                    cc.CollectionChanged += mwv.Messages_CollectionChanged;
-                }
-            }
-
-            mwv.RefreshMessages();
-        }
 
         private async void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

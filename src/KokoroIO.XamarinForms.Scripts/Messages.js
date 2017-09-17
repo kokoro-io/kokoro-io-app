@@ -114,6 +114,22 @@
         }
         updateContinued(merged);
     };
+    window.showMessage = function (id, toTop) {
+        console.debug("showing message[" + id + "]");
+        var talk = document.getElementById("talk" + id);
+        if (talk) {
+            var b = document.body;
+            console.log("current scrollTo is " + b.scrollTop + ", and offsetTop is " + talk.offsetTop);
+            if (talk.offsetTop < b.scrollTop || toTop) {
+                console.log("scrolling to " + talk.offsetTop);
+                b.scrollTop = talk.offsetTop;
+            }
+            else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
+                console.log("scrolling to " + (talk.offsetTop - b.clientHeight));
+                b.scrollTop = talk.offsetTop - b.clientHeight;
+            }
+        }
+    };
     function updateContinued(merged) {
         if (merged) {
             for (var i = 0; i < merged.length; i++) {
