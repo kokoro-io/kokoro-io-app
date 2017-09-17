@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -167,7 +166,12 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                ex.Trace("Load message failed");
+
+                MessagingCenter.Send(this, "LoadMessageFailed");
+            }
             finally
             {
                 IsBusy = false;
@@ -217,7 +221,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                ex.Trace("Post message failed");
+
+                MessagingCenter.Send(this, "PostMessageFailed");
             }
             finally
             {
@@ -255,9 +261,14 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     NewMessage += " " + url;
                 }
-            }, c =>
+            }, error =>
             {
                 data?.Dispose();
+
+                if (error != null)
+                {
+                    MessagingCenter.Send(this, "UploadImageFailed");
+                }
             }, data: data));
         }
 

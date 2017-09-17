@@ -273,8 +273,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
-                // TODO: alerr
+                ex.Trace("Image Uploader failed");
+                 
                 parameter.OnFaulted?.Invoke(ex.Message);
             }
         }

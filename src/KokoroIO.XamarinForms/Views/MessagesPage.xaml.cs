@@ -12,6 +12,20 @@ namespace KokoroIO.XamarinForms.Views
         public MessagesPage()
         {
             InitializeComponent();
+
+            MessagingCenter.Subscribe<MessagesViewModel>(this, "LoadMessageFailed", lvm =>
+            {
+                DisplayAlert("kokoro.io", "Failed to load messages", "OK");
+            });
+            MessagingCenter.Subscribe<MessagesViewModel>(this, "PostMessageFailed", lvm =>
+            {
+                DisplayAlert("kokoro.io", "Failed to post a message", "OK");
+            });
+
+            MessagingCenter.Subscribe<MessagesViewModel>(this, "UploadImageFailed", lvm =>
+            {
+                DisplayAlert("kokoro.io", "Failed upload an image", "OK");
+            });
         }
 
         private void ExpandableEditor_FilePasted(object sender, EventArgs<Stream> e)

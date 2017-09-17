@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.ViewModels;
+using Microsoft.Azure.Mobile.Analytics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -56,7 +58,8 @@ namespace KokoroIO.XamarinForms.Views
                 }
                 catch (Exception ex)
                 {
-                    // TODO: show alert in appvm
+                    ex.Trace("Image Uploader Authentication failed");
+
                     _Parameter.OnFaulted?.Invoke(ex.Message);
 
                     while (Navigation.ModalStack.Count > 0)
@@ -69,6 +72,7 @@ namespace KokoroIO.XamarinForms.Views
 
         private async void CancelButton_Clicked(object sender, EventArgs e)
         {
+            _Parameter.OnFaulted?.Invoke(null);
             await Navigation.PopModalAsync();
         }
     }
