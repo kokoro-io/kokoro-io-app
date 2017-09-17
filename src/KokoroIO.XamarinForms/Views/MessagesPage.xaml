@@ -32,6 +32,28 @@
                     Property="TextColor"
                     Value="#fff" />
             </Style>
+            <Style
+                x:Key="footerButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="FontFamily"
+                    Value="Monospace" />
+                <Setter
+                    Property="FontSize"
+                    Value="Small" />
+                <Setter
+                    Property="TextColor"
+                    Value="#ccc" />
+                <Setter
+                    Property="BackgroundColor"
+                    Value="Transparent" />
+                <Setter
+                    Property="VerticalOptions"
+                    Value="Center" />
+                <Setter
+                    Property="Margin"
+                    Value="0" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -104,22 +126,19 @@
                     <ColumnDefinition
                         Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <!--<Button
-                    Font="Monospace,Bold,Large"
-                    TextColor="#ccc"
-                    BackgroundColor="Transparent"
-                    Text="+" />-->
+                <Button
+                    Style="{StaticResource footerButtonStyle}"
+                    Text="+"
+                    Command="{Binding UploadImageCommand}" />
                 <view:ExpandableEditor
                     Grid.Column="1"
                     FontSize="Small"
+                    HorizontalOptions="FillAndExpand"
                     Text="{Binding NewMessage}"
                     Placeholder="{Binding Room.Placeholder}" />
                 <Button
                     Grid.Column="2"
-                    Font="Monospace"
-                    FontSize="Small"
-                    TextColor="#ccc"
-                    BackgroundColor="Transparent"
+                    Style="{StaticResource footerButtonStyle}"
                     Text="Go"
                     Command="{Binding PostCommand}" />
             </Grid>

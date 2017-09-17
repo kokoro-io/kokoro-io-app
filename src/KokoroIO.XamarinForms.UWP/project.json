@@ -5,7 +5,8 @@
     "Microsoft.Azure.Mobile.Distribute": "0.15.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "Shipwreck.KokoroIO.Client": "0.0.7-pre",
-    "Xamarin.Forms": "2.3.4.270"
+    "Xamarin.Forms": "2.3.4.270",
+    "XLabs.Platform": "2.3.0-pre05"
   },
   "frameworks": {
     "uap10.0.10586": {}

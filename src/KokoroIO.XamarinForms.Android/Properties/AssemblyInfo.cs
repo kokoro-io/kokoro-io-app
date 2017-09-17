@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using Android.App;
+using XLabs.Platform.Services.Media;
 
 // Information about this assembly is defined by the following attributes. 
 // Change them to the values specific to your project.
@@ -24,4 +25,4 @@ using Android.App;
 // if desired. See the Mono documentation for more information about signing.
 
 //[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("")]
+//[assembly: AssemblyKeyFile("")] 

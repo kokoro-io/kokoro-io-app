@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Views;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
+using XLabs.Ioc;
+using XLabs.Platform.Device;
+using XLabs.Platform.Services.Media;
 using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
@@ -185,5 +191,95 @@ namespace KokoroIO.XamarinForms.ViewModels
                 mp.UpdateMessage(e.Data);
             }
         }
+
+        #region Uploader
+
+        private object _MediaPicker;
+
+        private IMediaPicker MediaPicker
+        {
+            get
+            {
+                if (_MediaPicker == null)
+                {
+                    try
+                    {
+                        _MediaPicker = DependencyService.Get<IMediaPicker>()
+                                    ?? Resolver.Resolve<IDevice>()?.MediaPicker;
+                    }
+                    catch { }
+                    _MediaPicker = _MediaPicker ?? new object();
+                }
+                return _MediaPicker as IMediaPicker;
+            }
+        }
+
+        internal async void BeginUpload(Action<string> callback)
+        {
+            var su = GetSelectedUploader();
+
+            if (su?.IsAuthorized != true)
+            {
+                await App.Current.MainPage.Navigation.PushModalAsync(new UploadersPage()
+                {
+                    BindingContext = new UploadersViewModel(this, callback)
+                });
+
+                return;
+            }
+            await BeginSelectImage(su, callback);
+        }
+
+        internal async Task BeginSelectImage(IImageUploader uploader, Action<string> callback)
+        {
+            var nav = App.Current.MainPage.Navigation;
+            while (nav.ModalStack.Count > 0)
+            {
+                await nav.PopModalAsync();
+            }
+
+            var mp = MediaPicker;
+
+            if (mp != null)
+            {
+
+                try
+                {
+                    var mf = await mp.SelectPhotoAsync(new CameraMediaStorageOptions() { });
+
+                    string url;
+                    using (var ms = mf.Source)
+                    {
+                        url = await uploader.UploadAsync(ms, Path.GetFileName(mf.Path));
+                    }
+                    App.Current.Properties[nameof(GetSelectedUploader)] = uploader.GetType().FullName;
+
+                    await App.Current.SavePropertiesAsync();
+
+                    callback(url);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                    // TODO: alerr
+                }
+            }
+        }
+
+        internal static readonly IImageUploader[] Uploaders =
+            { new GyazoImageUploader() };
+
+        private IImageUploader GetSelectedUploader()
+        {
+            if (App.Current.Properties.TryGetValue(nameof(GetSelectedUploader), out var obj)
+                && obj is string s)
+            {
+                return Uploaders.FirstOrDefault(u => u.GetType().FullName == s);
+            }
+
+            return null;
+        }
+
+        #endregion Uploader
     }
 }

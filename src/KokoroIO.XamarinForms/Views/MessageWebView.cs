@@ -426,6 +426,8 @@ namespace KokoroIO.XamarinForms.Views
                 return;
             }
 
+
+
             var c = NavigatingCommand;
 
             if (c?.CanExecute(e.Url) == true)

@@ -189,6 +189,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             set => SetProperty(ref _NewMessage, value);
         }
 
+        #region PostCommand
+
         private Command _PostCommand;
 
         public Command PostCommand
@@ -227,6 +229,32 @@ namespace KokoroIO.XamarinForms.ViewModels
                 // TODO: scroll to new message
             }
         }
+
+        #endregion PostCommand
+
+        #region UploadImageCommand
+
+        private Command _UploadImageCommand;
+
+        public Command UploadImageCommand
+            => _UploadImageCommand ?? (_UploadImageCommand = new Command(BeginUploadImage));
+
+        public void BeginUploadImage()
+        {
+            Application.BeginUpload(url =>
+            {
+                if (string.IsNullOrWhiteSpace(_NewMessage))
+                {
+                    NewMessage = url;
+                }
+                else
+                {
+                    NewMessage += " " + url;
+                }
+            });
+        }
+
+        #endregion UploadImageCommand
 
         #endregion Post
 

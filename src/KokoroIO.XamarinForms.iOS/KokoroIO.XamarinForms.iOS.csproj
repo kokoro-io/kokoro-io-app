@@ -94,6 +94,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ExifLib, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExifLib.PCL.1.0.2-pre01\lib\netstandard1.0\ExifLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.Mobile, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.0.15.0\lib\Xamarin.iOS10\Microsoft.Azure.Mobile.dll</HintPath>
     </Reference>
@@ -144,6 +147,21 @@
     </Reference>
     <Reference Include="Xamarin.iOS" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="XLabs.Core, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XLabs.Core.2.3.0-pre05\lib\portable-net45+win8+wpa81+wp8+monoandroid+monotouch+xamarinios10+xamarinmac\XLabs.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.IOC, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XLabs.IoC.2.3.0-pre05\lib\portable-net45+win8+wpa81+wp8+monoandroid+monotouch+xamarinios10+xamarinmac\XLabs.IOC.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Platform, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XLabs.Platform.2.3.0-pre05\lib\xamarinios10\XLabs.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Platform.iOS, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XLabs.Platform.2.3.0-pre05\lib\xamarinios10\XLabs.Platform.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Serialization, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XLabs.Serialization.2.3.0-pre05\lib\portable-net45+netcore45+wpa81+wp8+monoandroid+monotouch+xamarinios10+xamarinmac\XLabs.Serialization.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">

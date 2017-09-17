@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="KokoroIO.XamarinForms.Views.UploaderAuthorizationPage"
+    Title="Authorization">
+    <ContentPage.Content>
+        <WebView
+            x:Name="webView"
+            Navigating="WebView_Navigating" />
+    </ContentPage.Content>
+</ContentPage>

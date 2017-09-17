@@ -1,6 +1,8 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using XLabs.Ioc;
+using XLabs.Platform.Device;
 
 namespace KokoroIO.XamarinForms.Droid
 {
@@ -13,6 +15,10 @@ namespace KokoroIO.XamarinForms.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
+
+            var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
+
+            Resolver.SetResolver(resolver.GetResolver());
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
