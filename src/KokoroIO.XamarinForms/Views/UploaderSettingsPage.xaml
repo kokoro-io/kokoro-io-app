@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
+    x:Class="KokoroIO.XamarinForms.Views.UploaderSettingsPage"
+    Title="{Binding Title}">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <ListView
+                VerticalOptions="Fill"
+                ItemsSource="{Binding Uploaders}"
+                CachingStrategy="RecycleElement">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Label
+                                    Text="{Binding DisplayName}"
+                                    FontSize="Large"
+                                    HeightRequest="48"
+                                    Margin="8"
+                                    HorizontalTextAlignment="Center"
+                                    Style="{DynamicResource ListItemTextStyle}">
+                                    <Label.Triggers>
+                                        <DataTrigger
+                                            TargetType="Label"
+                                            Binding="{Binding HasLogoImage}"
+                                            Value="True">
+                                            <Setter
+                                                Property="IsVisible"
+                                                Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Image
+                                    HorizontalOptions="Center"
+                                    HeightRequest="48"
+                                    Margin="8"
+                                    Source="{Binding LogoImageSource}"
+                                    IsVisible="{Binding HasLogoImage}" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Grid
+                Grid.Row="1">
+                <Button
+                    HorizontalOptions="End"
+                    Text="Back"
+                    Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

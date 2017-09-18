@@ -95,10 +95,14 @@
             </ListView>
             <StackLayout
                 Grid.Row="3"
-                Orientation="Horizontal">
+                Orientation="Horizontal"
+                HorizontalOptions="End">
                 <Button
                     Text="Log out"
                     Command="{Binding Application.LogoutCommand}" />
+                <Button
+                    Text="Settings"
+                    Command="{Binding Application.SettingsCommand}" />
             </StackLayout>
         </Grid>
     </ContentPage.Content>

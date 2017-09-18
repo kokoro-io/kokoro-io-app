@@ -89,6 +89,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         private bool _HasNotificationInMenu;
+
         public bool HasNotificationInMenu
         {
             get => _HasNotificationInMenu;
@@ -163,6 +164,35 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion LogoutCommand
+
+        #region SettingCommand
+
+        private Command _SettingCommand;
+
+        public Command SettingsCommand
+            => _SettingCommand ?? (_SettingCommand = new Command(async () =>
+            {
+                await App.Current.MainPage.Navigation.PushModalAsync(new SettingsPage(new SettingsViewModel(this)));
+            }));
+
+        #endregion SettingCommand
+
+        #region SettingCommand
+
+        private static Command _PopToRootCommand;
+
+        public static Command PopToRootCommand
+            => _PopToRootCommand ?? (_PopToRootCommand = new Command(async () =>
+            {
+                var nav = App.Current.MainPage.Navigation;
+
+                while (nav.ModalStack.Any())
+                {
+                    await nav.PopModalAsync();
+                }
+            }));
+
+        #endregion SettingCommand
 
         public Command OpenUrlCommand { get; }
 
