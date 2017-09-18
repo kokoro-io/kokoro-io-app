@@ -79,6 +79,28 @@ namespace KokoroIO.XamarinForms.Views
 
         #endregion SelectedMessage
 
+        #region HasUnread
+
+        public static readonly BindableProperty HasUnreadProperty
+            = BindableProperty.Create(nameof(HasUnread), typeof(bool), typeof(RootPage), defaultValue: false, propertyChanged: OnHasUnreadChanged);
+
+        public bool HasUnread
+        {
+            get => (bool)GetValue(HasUnreadProperty);
+            set => SetValue(HasUnreadProperty, value);
+        }
+
+        private static async void OnHasUnreadChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var mwv = bindable as MessageWebView;
+            if (mwv != null)
+            {
+                await mwv.InvokeScriptAsync($"window.setHasUnread({(false.Equals(newValue) ? "false" : "true")})");
+            }
+        }
+
+        #endregion HasUnread
+
         #region LoadOlderCommand
 
         public static readonly BindableProperty LoadOlderCommandProperty

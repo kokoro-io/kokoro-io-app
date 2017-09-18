@@ -45,19 +45,28 @@ interface Window {
     addMessages(messages: MessageInfo[], merged: MergeInfo[]);
     removeMessages(ids: number[], merged: MergeInfo[]);
     showMessage(id: number, toTop: boolean, showNewMessage?: boolean);
+    setHasUnread(value: boolean);
 }
 
 (function () {
     const IS_BOTTOM_MARGIN = 15;
     const IS_TOP_MARGIN = 4;
+    const LOAD_OLDER_MARGIN = 200;
+    const LOAD_NEWER_MARGIN = 200;
+    const HIDE_CONTENT_MARGIN = 60;
 
-    var setMessages = window.setMessages = function (messages: MessageInfo[]) {
+    var _hasUnread = false;
+
+    window.setHasUnread = function (value: boolean) {
+        _hasUnread = !!value;
+    };
+
+    window.setMessages = function (messages: MessageInfo[]) {
         console.debug("Setting " + (messages ? messages.length : 0) + " messages");
         document.body.innerHTML = "";
         _addMessagessCore(messages, null, false);
 
         var b = document.body;
-        console.log(`scrollHeight: ${b.scrollHeight}, clientHeight:${b.clientHeight}, lastBottom:${b.lastElementChild ? (<HTMLElement>b.lastElementChild).offsetTop + b.lastElementChild.clientHeight : -1}`);
         b.scrollTop = b.scrollHeight - b.clientHeight;
     }
 
@@ -523,9 +532,8 @@ interface Window {
             for (var i = 0; i < talks.length; i++) {
                 var talk = <HTMLDivElement>talks[i];
 
-                var margin = 60;
-                var hidden = (talk.offsetTop + talk.clientHeight + margin < b.scrollTop
-                    || b.scrollTop + b.clientHeight < talk.offsetTop - margin)
+                var hidden = (talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < b.scrollTop
+                    || b.scrollTop + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN)
                     && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
 
                 if (hidden) {
@@ -545,13 +553,15 @@ interface Window {
                 return;
             }
 
-            if (b.scrollTop < 4) {
+            if (b.scrollTop < LOAD_OLDER_MARGIN) {
                 console.log("Loading older messages.");
                 location.href = "http://kokoro.io/client/control?event=prepend";
-            }
-            else if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
-                console.log("Loading newer messages.");
-                location.href = "http://kokoro.io/client/control?event=append";
+            } else {
+                var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
+                if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
+                    console.log("Loading newer messages.");
+                    location.href = "http://kokoro.io/client/control?event=append";
+                }
             }
         });
 

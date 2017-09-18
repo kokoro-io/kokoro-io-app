@@ -1,12 +1,18 @@
 (function () {
     var IS_BOTTOM_MARGIN = 15;
     var IS_TOP_MARGIN = 4;
-    var setMessages = window.setMessages = function (messages) {
+    var LOAD_OLDER_MARGIN = 200;
+    var LOAD_NEWER_MARGIN = 200;
+    var HIDE_CONTENT_MARGIN = 60;
+    var _hasUnread = false;
+    window.setHasUnread = function (value) {
+        _hasUnread = !!value;
+    };
+    window.setMessages = function (messages) {
         console.debug("Setting " + (messages ? messages.length : 0) + " messages");
         document.body.innerHTML = "";
         _addMessagessCore(messages, null, false);
         var b = document.body;
-        console.log("scrollHeight: " + b.scrollHeight + ", clientHeight:" + b.clientHeight + ", lastBottom:" + (b.lastElementChild ? b.lastElementChild.offsetTop + b.lastElementChild.clientHeight : -1));
         b.scrollTop = b.scrollHeight - b.clientHeight;
     };
     window.addMessages = function (messages, merged, showNewMessage) {
@@ -398,9 +404,8 @@
             var talks = document.body.children;
             for (var i = 0; i < talks.length; i++) {
                 var talk = talks[i];
-                var margin = 60;
-                var hidden = (talk.offsetTop + talk.clientHeight + margin < b.scrollTop
-                    || b.scrollTop + b.clientHeight < talk.offsetTop - margin)
+                var hidden = (talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < b.scrollTop
+                    || b.scrollTop + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN)
                     && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
                 if (hidden) {
                     if (!talk.classList.contains("hidden")) {
@@ -418,13 +423,16 @@
             if (b.scrollHeight < b.clientHeight) {
                 return;
             }
-            if (b.scrollTop < 4) {
+            if (b.scrollTop < LOAD_OLDER_MARGIN) {
                 console.log("Loading older messages.");
                 location.href = "http://kokoro.io/client/control?event=prepend";
             }
-            else if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
-                console.log("Loading newer messages.");
-                location.href = "http://kokoro.io/client/control?event=append";
+            else {
+                var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
+                if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
+                    console.log("Loading newer messages.");
+                    location.href = "http://kokoro.io/client/control?event=append";
+                }
             }
         });
         var mouseDownStart = null;

@@ -17,6 +17,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Room = room;
             Title = room.DisplayName;
             _IsArchiveBannerShown = room.IsArchived;
+            _HasUnread = Room.UnreadCount > 0;
 
             PrependCommand = new Command(BeginPrepend);
             RefreshCommand = new Command(BeginAppend);
@@ -71,7 +72,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 IsBusy = true;
 
-                const int PAGE_SIZE = 20;
+                // TODO: increase page size by depth
+                const int PAGE_SIZE = 30;
 
                 int? bid, aid;
 
@@ -114,6 +116,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     Room.UnreadCount = 0;
                 }
+                HasUnread = Room.UnreadCount > 0;
 
                 if (!messages.Any())
                 {
@@ -349,6 +352,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void OnMessageCreated(ApplicationViewModel app, Message message)
         {
+            HasUnread = Room.UnreadCount > 0;
             if (message.Room.Id == Room.Id)
             {
                 return;
@@ -407,6 +411,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public ObservableCollection<Notification> Notifications
             => _Notifications ?? (_Notifications = new ObservableCollection<Notification>());
+
+        private bool _HasUnread;
+
+        public bool HasUnread
+        {
+            get => _HasUnread;
+            private set => SetProperty(ref _HasUnread, value);
+        }
 
         #endregion Notification
     }
