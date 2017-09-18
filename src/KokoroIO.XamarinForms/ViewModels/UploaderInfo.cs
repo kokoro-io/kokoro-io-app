@@ -6,10 +6,13 @@ namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class UploaderInfo : ObservableObject
     {
-        internal UploaderInfo(IImageUploader uploader)
+        internal UploaderInfo(IImageUploader uploader, IUploaderInfoHost host = null)
         {
             Uploader = uploader;
+            Host = host;
         }
+
+        internal IUploaderInfoHost Host { get; }
 
         internal IImageUploader Uploader { get; }
 
@@ -40,5 +43,26 @@ namespace KokoroIO.XamarinForms.ViewModels
         public bool HasLogoImage => Uploader.LogoImage != null;
 
         #endregion LogoImageSource
+
+        private bool _IsSelected;
+
+        public bool IsSelected
+        {
+            get => _IsSelected;
+            set => SetProperty(ref _IsSelected, value, onChanged: () =>
+            {
+                if (Host != null)
+                {
+                    if (IsSelected)
+                    {
+                        Host.SelectedUploader = this;
+                    }
+                    else if (Host.SelectedUploader == this)
+                    {
+                        Host.SelectedUploader = null;
+                    }
+                }
+            });
+        }
     }
 }

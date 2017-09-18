@@ -325,7 +325,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
                 }
 
-                App.Current.Properties[nameof(GetSelectedUploader)] = uploader.GetType().FullName;
+                SetSelectedUploader(uploader);
 
                 await App.Current.SavePropertiesAsync();
 
@@ -342,7 +342,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal static readonly IImageUploader[] Uploaders =
             { new GyazoImageUploader(), new ImgurImageUploader() };
 
-        private IImageUploader GetSelectedUploader()
+        internal static IImageUploader GetSelectedUploader()
         {
             if (App.Current.Properties.TryGetValue(nameof(GetSelectedUploader), out var obj)
                 && obj is string s)
@@ -351,6 +351,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
 
             return null;
+        }
+
+        internal static void SetSelectedUploader(IImageUploader uploader)
+        {
+            App.Current.Properties[nameof(GetSelectedUploader)] = uploader?.GetType().FullName;
         }
 
         #endregion Uploader

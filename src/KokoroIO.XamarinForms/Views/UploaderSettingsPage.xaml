@@ -3,6 +3,7 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
+    xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.UploaderSettingsPage"
     Title="{Binding Title}">
     <ContentPage.Content>
@@ -14,18 +15,31 @@
             </Grid.RowDefinitions>
             <ListView
                 VerticalOptions="Fill"
+                CachingStrategy="RecycleElement"
                 ItemsSource="{Binding Uploaders}"
-                CachingStrategy="RecycleElement">
+                SelectedItem="{Binding SelectedUploader}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <xlabs:CheckBox
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="End"
+                                    Margin="16"
+                                    InputTransparent="True"
+                                    Checked="{Binding IsSelected}" />
                                 <Label
+                                    Grid.Column="1"
                                     Text="{Binding DisplayName}"
                                     FontSize="Large"
                                     HeightRequest="48"
                                     Margin="8"
-                                    HorizontalTextAlignment="Center"
+                                    HorizontalTextAlignment="Start"
                                     Style="{DynamicResource ListItemTextStyle}">
                                     <Label.Triggers>
                                         <DataTrigger
@@ -39,7 +53,8 @@
                                     </Label.Triggers>
                                 </Label>
                                 <Image
-                                    HorizontalOptions="Center"
+                                    Grid.Column="1"
+                                    HorizontalOptions="Start"
                                     HeightRequest="48"
                                     Margin="8"
                                     Source="{Binding LogoImageSource}"
