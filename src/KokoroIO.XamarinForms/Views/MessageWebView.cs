@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using KokoroIO.XamarinForms.ViewModels;
@@ -260,20 +259,6 @@ namespace KokoroIO.XamarinForms.Views
             }
         }
 
-        private static Stream GetManifestResourceStream(string fileName)
-        {
-            var t = typeof(MessageWebView);
-#if WINDOWS_UWP
-            return t.GetTypeInfo().Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.UWP.Resources." + fileName);
-#else
-#if __IOS__
-            return t.Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.iOS.Resources." + fileName);
-#else
-            return t.Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.Droid.Resources." + fileName);
-#endif
-#endif
-        }
-
         #region HTML and JavaScript
 
         internal Func<string, Task> InvokeScriptAsyncCore;
@@ -339,7 +324,7 @@ namespace KokoroIO.XamarinForms.Views
                 await Task.Delay(100);
             }
 
-            using (var rs = GetManifestResourceStream("Messages.html"))
+            using (var rs = RH.GetManifestResourceStream("Messages.html"))
             using (var sr = new StreamReader(rs))
             {
                 NavigateToStringCore(sr.ReadToEnd());

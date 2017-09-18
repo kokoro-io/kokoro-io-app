@@ -17,11 +17,11 @@ namespace KokoroIO.XamarinForms.Views
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
             var vm = BindingContext as UploadersViewModel;
-            var up = args.SelectedItem as IImageUploader;
+            var up = args.SelectedItem as UploaderInfo;
 
             if (vm != null && up != null)
             {
-                Navigation.PushModalAsync(new UploaderAuthorizationPage(vm.Application, up, vm.Parameter));
+                Navigation.PushModalAsync(new UploaderAuthorizationPage(vm.Application, up.Uploader, vm.Parameter));
             }
         }
 

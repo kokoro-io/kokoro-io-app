@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ImgurImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GyazoImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IImageUploader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
@@ -31,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\ProfileViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\RoomViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploadersViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploaderInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploadParameter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExpandableEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessageWebView.cs" />
@@ -98,5 +100,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\Gyazo.png" />
   </ItemGroup>
 </Project>

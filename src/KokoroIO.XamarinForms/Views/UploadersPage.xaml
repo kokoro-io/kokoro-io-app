@@ -24,13 +24,32 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout>
+                        <Grid>
                             <Label
                                 Text="{Binding DisplayName}"
                                 FontSize="Large"
+                                HeightRequest="48"
+                                Margin="8"
                                 HorizontalTextAlignment="Center"
-                                Style="{DynamicResource ListItemTextStyle}" />
-                        </StackLayout>
+                                Style="{DynamicResource ListItemTextStyle}">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        TargetType="Label"
+                                        Binding="{Binding HasLogoImage}"
+                                        Value="True">
+                                        <Setter
+                                            Property="IsVisible"
+                                            Value="False" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <Image
+                                HorizontalOptions="Center"
+                                HeightRequest="48"
+                                Margin="8"
+                                Source="{Binding LogoImageSource}"
+                                IsVisible="{Binding HasLogoImage}" />
+                        </Grid>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>

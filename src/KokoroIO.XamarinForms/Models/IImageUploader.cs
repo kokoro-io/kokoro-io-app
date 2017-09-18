@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Text.RegularExpressions;
+﻿using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace KokoroIO.XamarinForms.Models
 {
     public interface IImageUploader
     {
         string DisplayName { get; }
+
+        string LogoImage { get; }
 
         bool IsAuthorized { get; }
 
@@ -21,5 +18,4 @@ namespace KokoroIO.XamarinForms.Models
 
         Task<string> UploadAsync(Stream data, string fileName);
     }
-
 }

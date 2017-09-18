@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using KokoroIO.XamarinForms.Models;
 
 namespace KokoroIO.XamarinForms.ViewModels
@@ -15,6 +16,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal UploadParameter Parameter { get; }
 
-        public IReadOnlyList<IImageUploader> Uploaders => ApplicationViewModel.Uploaders;
+        private List<UploaderInfo> _Uploaders;
+
+        public IReadOnlyList<UploaderInfo> Uploaders
+            => _Uploaders ?? (_Uploaders = ApplicationViewModel.Uploaders.Select(u => new UploaderInfo(u)).ToList());
     }
 }

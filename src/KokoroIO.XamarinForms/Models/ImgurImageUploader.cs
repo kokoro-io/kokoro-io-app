@@ -36,6 +36,8 @@ namespace KokoroIO.XamarinForms.Models
 
         public string DisplayName => "Imgur";
 
+        public string LogoImage => null;
+
         public bool IsAuthorized => _AccessToken != null;
 
         public string AuthorizationUrl => $"https://api.imgur.com/oauth2/authorize?client_id={_ClientId}&response_type=token";

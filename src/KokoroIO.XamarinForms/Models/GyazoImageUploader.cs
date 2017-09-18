@@ -27,9 +27,9 @@ namespace KokoroIO.XamarinForms.Models
             }
         }
 
-
-
         public string DisplayName => "Gyazo";
+
+        public string LogoImage => "Gyazo.png";
 
         public bool IsAuthorized => _AccessToken != null;
 
