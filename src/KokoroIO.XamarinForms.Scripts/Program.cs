@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -45,6 +46,23 @@ namespace KokoroIO.XamarinForms.Scripts
                             foreach (var l in links)
                             {
                                 var rules = File.ReadAllText(new Uri(bu, l.Attribute("href").Value).LocalPath);
+                                
+                                rules = Regex.Replace(rules,
+                                    @"url\(([^)]+)\.svg\)",
+                                    svgm =>
+                                    {
+                                        var sfn = svgm.Value.Substring(4, svgm.Length - 5);
+                                        var svgu = new Uri(bu, sfn).LocalPath;
+                                        if (File.Exists(svgu))
+                                        {
+                                            var svg = File.ReadAllText(svgu);
+
+                                            return $"url(data:image/svg+xml," + Uri.EscapeDataString(svg) + ")";
+                                        }
+
+                                        return svgm.Value;
+                                    });
+
                                 style.Add(new XText(rules));
                                 l.Remove();
                             }

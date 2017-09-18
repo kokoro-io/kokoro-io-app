@@ -67,13 +67,27 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Application.css" />
+    <Content Include="exclamation-triangle.svg" />
+    <Content Include="Messages.css">
+      <DependentUpon>Messages.less</DependentUpon>
+    </Content>
+    <Content Include="Messages.js">
+      <DependentUpon>Messages.ts</DependentUpon>
+    </Content>
+    <Content Include="Messages.min.css">
+      <DependentUpon>Messages.css</DependentUpon>
+    </Content>
     <Content Include="Messages.template.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MessageBox.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Messages.css" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
+    <None Include="Messages.less" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Messages.ts" />

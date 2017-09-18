@@ -316,6 +316,12 @@
         img.classList.add("img-rounded");
         img.src = (m.thumbnail ? m.thumbnail.url : null) || m.raw_url;
         a.appendChild(img);
+        if (m.restriction_policy === "Restricted") {
+            em.classList.add("nsfw");
+            var i = document.createElement("i");
+            i.className = "nsfw-mark fa fa-exclamation-triangle";
+            em.appendChild(i);
+        }
         return em;
     }
     function _afterTalkInserted(talk, previousHeight) {
