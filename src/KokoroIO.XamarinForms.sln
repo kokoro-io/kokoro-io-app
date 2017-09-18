@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KokoroIO.XamarinForms", "KokoroIO.XamarinForms\KokoroIO.XamarinForms.shproj", "{9C44FF0E-FCC7-4039-8BA4-F3FD215E28FF}"
 EndProject
@@ -12,6 +12,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KokoroIO.XamarinForms.UWP", "KokoroIO.XamarinForms.UWP\KokoroIO.XamarinForms.UWP.csproj", "{7069FDA0-144B-4E5A-9C3C-8484EFD2CA98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KokoroIO.XamarinForms.Scripts", "KokoroIO.XamarinForms.Scripts\KokoroIO.XamarinForms.Scripts.csproj", "{6F5DAE2B-0ABD-4ACD-B835-881F36B412E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{D3D38449-6D2A-44FD-B089-4AC045D64A72}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{22C5F147-A27E-4513-AC87-B5FF1DC248E3}"
+	ProjectSection(SolutionItems) = preProject
+		..\doc\scrolling.md = ..\doc\scrolling.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -132,6 +142,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{22C5F147-A27E-4513-AC87-B5FF1DC248E3} = {D3D38449-6D2A-44FD-B089-4AC045D64A72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {94F9BC18-CA1E-4DEE-A459-D8BF387AC7A9}
