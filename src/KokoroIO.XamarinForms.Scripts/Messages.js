@@ -1,44 +1,53 @@
 (function () {
+    var IS_BOTTOM_MARGIN = 15;
+    var IS_TOP_MARGIN = 4;
     var setMessages = window.setMessages = function (messages) {
         console.debug("Setting " + (messages ? messages.length : 0) + " messages");
         document.body.innerHTML = "";
-        _addMessagessCore(messages, null);
-        if (messages && messages.length > 0) {
-            _showItem(messages[messages.length - 1].Id, false);
+        _addMessagessCore(messages, null, false);
+        var b = document.body;
+        console.log("scrollHeight: " + b.scrollHeight + ", clientHeight:" + b.clientHeight + ", lastBottom:" + (b.lastElementChild ? b.lastElementChild.offsetTop + b.lastElementChild.clientHeight : -1));
+        b.scrollTop = b.scrollHeight - b.clientHeight;
+    };
+    window.addMessages = function (messages, merged, showNewMessage) {
+        console.debug("Adding " + (messages ? messages.length : 0) + " messages");
+        var isEmpty = document.body.children.length === 0;
+        showNewMessage = showNewMessage && !isEmpty;
+        _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
+        if (isEmpty) {
+            var b = document.body;
+            b.scrollTop = b.scrollHeight - b.clientHeight;
+        }
+        else if (showNewMessage && messages && messages.length > 0) {
+            var minId = Number.MAX_VALUE;
+            messages.forEach(function (v) { return minId = Math.min(minId, v.Id); });
+            var talk = document.getElementById("talk" + minId);
+            if (talk) {
+                _bringToTop(talk);
+            }
         }
     };
-    function _getTopId() {
-        var e = document.elementFromPoint(8, 8);
-        while (e) {
-            if (e.classList.contains("talk")) {
-                return parseInt(e.getAttribute("data-message-id"), 10);
-            }
-            e = e.parentElement;
-        }
-        return -1;
-    }
-    function _showItem(id, top) {
-        if (!id) {
-            return;
-        }
-        console.debug("showing item[" + id + "] to " + (top ? "top" : "bottom"));
-        var talk = document.getElementById('talk' + id);
-        if (!talk) {
-            console.warn("#talk" + id + " is not found");
-            return;
-        }
-        var st;
-        if (top) {
-            st = talk.offsetTop;
-        }
-        else {
-            st = talk.offsetTop + document.body.clientHeight - talk.clientHeight;
-        }
-        document.body.scrollTop = st;
-    }
-    function _addMessagessCore(messages, merged) {
-        if (messages) {
+    var removeMessages = window.removeMessages = function (ids, merged) {
+        console.debug("Removing " + (ids ? ids.length : 0) + " messages");
+        if (ids) {
+            var j = 0;
             var b = document.body;
+            for (var i = 0; i < ids.length; i++) {
+                var talk = document.getElementById('talk' + ids[i]);
+                if (talk) {
+                    var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+                    talk.remove();
+                    b.scrollTop = nt;
+                }
+            }
+        }
+        updateContinued(merged, true);
+    };
+    function _addMessagessCore(messages, merged, scroll) {
+        var b = document.body;
+        var lastTalk = scroll && b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight ? b.lastElementChild : null;
+        scroll = scroll && !lastTalk;
+        if (messages) {
             var j = 0;
             for (var i = 0; i < messages.length; i++) {
                 var m = messages[i];
@@ -64,13 +73,18 @@
                     }
                     else if (id <= pid) {
                         var talk = createTaklElement(m);
-                        document.body.insertBefore(talk, prev);
                         if (id == pid) {
+                            var shoudScroll = scroll && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
+                            var st = b.scrollTop - prev.clientHeight;
+                            document.body.insertBefore(talk, prev);
                             _afterTalkInserted(talk, prev.clientHeight);
                             prev.remove();
+                            if (scroll) {
+                                b.scrollTop = st + talk.clientHeight;
+                            }
                         }
                         else {
-                            _afterTalkInserted(talk);
+                            _insertBefore(talk, prev, scroll);
                             j++;
                         }
                         break;
@@ -78,8 +92,7 @@
                     else if (id < aid) {
                         // console.debug("Inserting message[" + id + "] before " + aid);
                         var talk = createTaklElement(m);
-                        document.body.insertBefore(talk, aft);
-                        _afterTalkInserted(talk);
+                        _insertBefore(talk, aft, scroll);
                         j++;
                         break;
                     }
@@ -89,31 +102,11 @@
                 }
             }
         }
-        updateContinued(merged);
+        updateContinued(merged, scroll);
+        if (lastTalk) {
+            _bringToTop(lastTalk);
+        }
     }
-    window.addMessages = function (messages, merged) {
-        console.debug("Adding " + (messages ? messages.length : 0) + " messages");
-        var tid = _getTopId();
-        var top = tid > 0;
-        if (!top && messages && messages.length > 0) {
-            tid = messages[messages.length - 1].Id;
-        }
-        _addMessagessCore(messages, merged);
-        _showItem(tid, top);
-    };
-    var removeMessages = window.removeMessages = function (ids, merged) {
-        console.debug("Removing " + (ids ? ids.length : 0) + " messages");
-        if (ids) {
-            var j = 0;
-            for (var i = 0; i < ids.length; i++) {
-                var talk = document.getElementById('talk' + ids[i]);
-                if (talk) {
-                    talk.remove();
-                }
-            }
-        }
-        updateContinued(merged);
-    };
     window.showMessage = function (id, toTop) {
         console.debug("showing message[" + id + "]");
         var talk = document.getElementById("talk" + id);
@@ -130,16 +123,22 @@
             }
         }
     };
-    function updateContinued(merged) {
+    function updateContinued(merged, scroll) {
         if (merged) {
+            var b = document.body;
             for (var i = 0; i < merged.length; i++) {
                 var m = merged[i];
                 var id = m.Id;
                 var isMerged = m.IsMerged;
                 var talk = document.getElementById('talk' + id);
                 if (talk) {
+                    var shouldScroll = scroll && talk.offsetTop - IS_TOP_MARGIN < b.scrollTop;
+                    var bt = b.scrollTop - talk.clientHeight;
                     talk.classList.remove(!isMerged ? "continued" : "not-continued");
                     talk.classList.add(isMerged ? "continued" : "not-continued");
+                    if (shouldScroll) {
+                        b.scrollTop = bt + talk.clientHeight;
+                    }
                 }
             }
         }
@@ -323,6 +322,22 @@
             em.appendChild(i);
         }
         return em;
+    }
+    function _insertBefore(talk, aft, scroll) {
+        var b = document.body;
+        scroll = scroll && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
+        var st = b.scrollTop;
+        b.insertBefore(talk, aft);
+        _afterTalkInserted(talk);
+        if (scroll) {
+            b.scrollTop = st + talk.clientHeight;
+        }
+    }
+    function _bringToTop(talk) {
+        if (talk) {
+            var b = document.body;
+            b.scrollTop = talk.offsetTop;
+        }
     }
     function _afterTalkInserted(talk, previousHeight) {
         if (talk.offsetTop < document.body.scrollTop) {
