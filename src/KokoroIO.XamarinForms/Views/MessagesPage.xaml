@@ -89,19 +89,14 @@
                     Style="{StaticResource bannerButtonStyle}"
                     Text="Archived channel"
                     BackgroundColor="DarkOrange"
-                    IsVisible="False"
-                    Command="{Binding ClearArchiveBannerCommand}">
-                    <Button.Triggers>
-                        <DataTrigger
-                            TargetType="Button"
-                            Binding="{Binding IsArchiveBannerShown}"
-                            Value="True">
-                            <Setter
-                                Property="IsVisible"
-                                Value="True" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
+                    IsVisible="{Binding IsArchiveBannerShown}"
+                    Command="{Binding ClearArchiveBannerCommand}" />
+                <Button
+                    Style="{StaticResource bannerButtonStyle}"
+                    Text="Disconnected from server"
+                    BackgroundColor="Khaki"
+                    IsVisible="{Binding Application.IsDisconnected}"
+                    Command="{Binding Application.ConnectCommand}" />
                 <ListView
                     VerticalOptions="Start"
                     HorizontalOptions="End"

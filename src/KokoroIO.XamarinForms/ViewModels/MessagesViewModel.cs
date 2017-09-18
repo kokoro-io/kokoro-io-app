@@ -24,7 +24,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public RoomViewModel Room { get; }
 
-        internal ApplicationViewModel Application => Room.Application;
+        public ApplicationViewModel Application => Room.Application;
 
         public Command OpenUrlCommand => Application.OpenUrlCommand;
 

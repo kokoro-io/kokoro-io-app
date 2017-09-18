@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using Microsoft.Azure.Mobile.Analytics;
 
 namespace KokoroIO.XamarinForms
 {
     internal static class TH
     {
+        public static void TraceError(string message)
+        {
+            Debug.WriteLine(message);
+
+            Analytics.TrackEvent(message);
+        }
+
         public static void Trace(this Exception exception, string eventName)
         {
             Debug.WriteLine("Exception catched at {0}: {1}", eventName, exception);

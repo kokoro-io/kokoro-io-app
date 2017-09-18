@@ -125,8 +125,8 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Shipwreck.KokoroIO.Client, Version=0.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shipwreck.KokoroIO.Client.0.0.7-pre\lib\netstandard1.3\Shipwreck.KokoroIO.Client.dll</HintPath>
+    <Reference Include="Shipwreck.KokoroIO.Client, Version=0.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shipwreck.KokoroIO.Client.0.0.9-pre\lib\netstandard1.3\Shipwreck.KokoroIO.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Compression" />

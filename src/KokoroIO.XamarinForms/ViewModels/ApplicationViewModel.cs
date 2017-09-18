@@ -27,6 +27,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             client.ProfileUpdated += Client_ProfileUpdated;
             client.MessageCreated += Client_MessageCreated;
             client.MessageUpdated += Client_MessageUpdated;
+            client.Disconnected += Client_Disconnected;
         }
 
         internal Client Client { get; }
@@ -225,20 +226,49 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
+        #region Connection
+
         public async Task ConnectAsync()
         {
-            // TODO: disable push notification
+            if (Client.State == ClientState.Disconnected)
+            {
+                await Client.ConnectAsync();
+                await Client.SubscribeAsync(Rooms.Select(r => r.Id));
 
-            await Client.ConnectAsync();
-            await Client.SubscribeAsync(Rooms.Select(r => r.Id));
+                OnPropertyChanged(nameof(IsDisconnected));
+            }
         }
 
         public async Task CloseAsync()
         {
             await Client.CloseAsync();
-
-            // TODO: enable push notification
         }
+
+        public bool IsDisconnected
+            => Rooms.Any(r => !r.IsArchived)
+            && Client.State == ClientState.Disconnected;
+
+        private Command _ConnectCommand;
+
+        public Command ConnectCommand
+            => _ConnectCommand ?? (_ConnectCommand = new Command(async () =>
+             {
+                 if (IsDisconnected)
+                 {
+                     try
+                     {
+                         await ConnectAsync();
+                     }
+                     catch (Exception ex)
+                     {
+                         ex.Trace("Connection failed");
+
+                         BeginReconnect();
+                     }
+                 }
+             }));
+
+        #region Client Events
 
         private void Client_ProfileUpdated(object sender, EventArgs<Profile> e)
         {
@@ -284,6 +314,42 @@ namespace KokoroIO.XamarinForms.ViewModels
                 mp.UpdateMessage(e.Data);
             }
         }
+
+        private void Client_Disconnected(object sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(IsDisconnected));
+
+            TH.TraceError("Disconnected");
+
+            // TODO: check for explicit close
+
+            BeginReconnect();
+        }
+
+        #endregion Client Events
+
+        private async void BeginReconnect()
+        {
+            if (IsDisconnected)
+            {
+                await Task.Delay(5);
+                if (IsDisconnected)
+                {
+                    try
+                    {
+                        await ConnectAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.Trace("Reconnection failed");
+
+                        BeginReconnect();
+                    }
+                }
+            }
+        }
+
+        #endregion Connection
 
         #region Uploader
 
