@@ -1164,12 +1164,14 @@ body {
                 if (talk.classList.contains("talk")) {
                     talk.setAttribute("data-loading-images", Math.max(0, (parseInt(talk.getAttribute("data-loading-images"), 10) - 1) || 0));
                     var ph = parseInt(talk.getAttribute("data-height"), 10);
-                    if (ph > 0 && talk.offsetTop < document.body.scrollTop) {
-                        var delta = talk.clientHeight - ph;
-                        if (delta != 0) {
-                            document.body.scrollTop += delta;
-                            console.log("scolled " + delta);
-                        }
+                    var delta = talk.clientHeight - ph;
+                    var b = document.body;
+                    if (b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight - delta) {
+                        // previous viewport was bottom.
+                        b.scrollTop = b.scrollHeight - b.clientHeight;
+                    }
+                    else if (talk.offsetTop < document.body.scrollTop) {
+                        b.scrollTop += delta;
                     }
                     talk.setAttribute("data-height", talk.clientHeight);
                     break;
