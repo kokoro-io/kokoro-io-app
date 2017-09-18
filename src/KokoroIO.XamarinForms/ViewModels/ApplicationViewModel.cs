@@ -85,7 +85,26 @@ namespace KokoroIO.XamarinForms.ViewModels
         public RoomViewModel SelectedRoom
         {
             get => _SelectedRoom;
-            set => SetProperty(ref _SelectedRoom, value, onChanged: () => OnUnreadCountChanged());
+            set
+            {
+                if (value != _SelectedRoom)
+                {
+                    var mp = _SelectedRoom?.MessagesPage;
+
+                    if (mp != null)
+                    {
+                        mp.IsSubscribing = false;
+                    }
+
+                    _SelectedRoom = value;
+                    OnPropertyChanged();
+                    if (_SelectedRoom != null)
+                    {
+                        _SelectedRoom.GetOrCreateMessagesPage().IsSubscribing = true;
+                    }
+                    OnUnreadCountChanged();
+                }
+            }
         }
 
         private bool _HasNotificationInMenu;
@@ -231,7 +250,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MessageCreated(object sender, EventArgs<Message> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
             var rvm = _Rooms?.FirstOrDefault(r => r.Id == e.Data.Room.Id);
+
+            MessagingCenter.Send(this, "MessageCreated", e.Data);
+
             if (rvm != null)
             {
                 rvm.UnreadCount++;
@@ -245,7 +271,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MessageUpdated(object sender, EventArgs<Message> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
             var mp = _Rooms?.FirstOrDefault(r => r.Id == e.Data.Room.Id)?.MessagesPage;
+
+            MessagingCenter.Send(this, "MessageUpdated", e.Data);
+
             if (mp != null)
             {
                 mp.UpdateMessage(e.Data);
@@ -317,7 +350,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                         parameter.OnFaulted?.Invoke("no media picker defined");
                         return;
                     }
-                    var mf = await mp.SelectPhotoAsync(new CameraMediaStorageOptions() { });
+
+                    var mf = await mp.SelectPhotoAsync(new CameraMediaStorageOptions());
 
                     using (var ms = mf.Source)
                     {

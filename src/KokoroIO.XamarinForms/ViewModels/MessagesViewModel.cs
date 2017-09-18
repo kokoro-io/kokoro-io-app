@@ -1,10 +1,12 @@
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -323,5 +325,89 @@ namespace KokoroIO.XamarinForms.ViewModels
             => IsArchiveBannerShown = false;
 
         #endregion ClearArchiveBannerCommand
+
+        #region Notification
+
+        private bool _IsSubscribing;
+
+        public bool IsSubscribing
+        {
+            get => _IsSubscribing;
+            set => SetProperty(ref _IsSubscribing, value, onChanged: () =>
+            {
+                if (_IsSubscribing)
+                {
+                    MessagingCenter.Subscribe<ApplicationViewModel, Message>(this, "MessageCreated", OnMessageCreated, Application);
+                }
+                else
+                {
+                    MessagingCenter.Unsubscribe<ApplicationViewModel, Message>(this, "MessageCreated");
+                    _Notifications?.Clear();
+                }
+            });
+        }
+
+        private void OnMessageCreated(ApplicationViewModel app, Message message)
+        {
+            if (message.Room.Id == Room.Id)
+            {
+                return;
+            }
+
+            XDevice.BeginInvokeOnMainThread(() =>
+            {
+                var r = app.Rooms.FirstOrDefault(rm => rm.Id == message.Room.Id);
+
+                if (r != null)
+                {
+                    if (Notifications.Count == 0)
+                    {
+                        XDevice.StartTimer(TimeSpan.FromSeconds(1), () =>
+                        {
+                            var dt = DateTime.Now.AddSeconds(-5);
+
+                            for (int i = Notifications.Count - 1; i >= 0; i--)
+                            {
+                                if (Notifications[i].AddedAt < dt)
+                                {
+                                    Notifications.RemoveAt(i);
+                                }
+                            }
+
+                            return Notifications.Count > 0;
+                        });
+                    }
+                    Notifications.Insert(0, new Notification(Application, r, message));
+                }
+            });
+        }
+
+        public sealed class Notification
+        {
+            private ApplicationViewModel _Application;
+
+            public Notification(ApplicationViewModel application, RoomViewModel room, Message message)
+            {
+                _Application = application;
+                Room = room;
+                Profile = application.GetProfile(message);
+                AddedAt = DateTime.Now;
+            }
+
+            public ProfileViewModel Profile { get; }
+            public RoomViewModel Room { get; }
+
+            public DateTime AddedAt { get; }
+
+            public override string ToString()
+                => $"@{Profile.DisplayName} posted messages to {Room.DisplayName}";
+        }
+
+        private ObservableCollection<Notification> _Notifications;
+
+        public ObservableCollection<Notification> Notifications
+            => _Notifications ?? (_Notifications = new ObservableCollection<Notification>());
+
+        #endregion Notification
     }
 }
