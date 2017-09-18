@@ -206,6 +206,17 @@ interface Window {
         }
     }
 
+    function _padLeft(i: number, l: number): string {
+        var offset = l == 1 ? 10 : l == 2 ? 100 : Math.pow(10, l);
+
+        if (i > offset) {
+            var s = i.toFixed(0);
+            return s.substr(s.length - l, l);
+        }
+
+        return (i + offset).toFixed(0).substr(1, l);
+    }
+
     function createTaklElement(m: MessageInfo): HTMLDivElement {
         var id = m.Id;
         var avatarUrl = m.Avatar;
@@ -248,7 +259,22 @@ interface Window {
 
             var small = document.createElement("small");
             small.classList.add("timeleft", "text-muted");
-            small.innerText = publishedAt;
+            try {
+                let d = new Date(Date.parse(publishedAt));
+                small.innerText = _padLeft(d.getMonth() + 1, 2)
+                    + '/' + _padLeft(d.getDate(), 2)
+                    + ' ' + _padLeft(d.getHours(), 2)
+                    + ':' + _padLeft(d.getMinutes(), 2);
+
+                small.title = _padLeft(d.getFullYear(), 4)
+                    + '/' + _padLeft(d.getMonth() + 1, 2)
+                    + '/' + _padLeft(d.getDate(), 2)
+                    + ' ' + _padLeft(d.getHours(), 2)
+                    + ':' + _padLeft(d.getMinutes(), 2)
+                    + ':' + _padLeft(d.getSeconds(), 2);
+            } catch (ex) {
+                small.innerText = publishedAt;
+            }
             speaker.appendChild(small);
 
             var filteredText = document.createElement("div");
@@ -261,13 +287,14 @@ interface Window {
                 ecs.classList.add("embed_contents");
                 message.appendChild(ecs);
 
+                let d;
                 try {
                     for (var i = 0; i < embeds.length; i++) {
                         var e = embeds[i];
                         if (!e) {
                             continue;
                         }
-                        var d = e.data;
+                        d = e.data;
                         if (!d) {
                             continue;
                         }

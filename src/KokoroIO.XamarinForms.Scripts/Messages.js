@@ -144,6 +144,14 @@
             }
         }
     }
+    function _padLeft(i, l) {
+        var offset = l == 1 ? 10 : l == 2 ? 100 : Math.pow(10, l);
+        if (i > offset) {
+            var s = i.toFixed(0);
+            return s.substr(s.length - l, l);
+        }
+        return (i + offset).toFixed(0).substr(1, l);
+    }
     function createTaklElement(m) {
         var id = m.Id;
         var avatarUrl = m.Avatar;
@@ -178,7 +186,22 @@
             speaker.appendChild(name);
             var small = document.createElement("small");
             small.classList.add("timeleft", "text-muted");
-            small.innerText = publishedAt;
+            try {
+                var d = new Date(Date.parse(publishedAt));
+                small.innerText = _padLeft(d.getMonth() + 1, 2)
+                    + '/' + _padLeft(d.getDate(), 2)
+                    + ' ' + _padLeft(d.getHours(), 2)
+                    + ':' + _padLeft(d.getMinutes(), 2);
+                small.title = _padLeft(d.getFullYear(), 4)
+                    + '/' + _padLeft(d.getMonth() + 1, 2)
+                    + '/' + _padLeft(d.getDate(), 2)
+                    + ' ' + _padLeft(d.getHours(), 2)
+                    + ':' + _padLeft(d.getMinutes(), 2)
+                    + ':' + _padLeft(d.getSeconds(), 2);
+            }
+            catch (ex) {
+                small.innerText = publishedAt;
+            }
             speaker.appendChild(small);
             var filteredText = document.createElement("div");
             filteredText.classList.add("filtered_text");
@@ -188,13 +211,14 @@
                 var ecs = document.createElement("div");
                 ecs.classList.add("embed_contents");
                 message.appendChild(ecs);
+                var d = void 0;
                 try {
                     for (var i = 0; i < embeds.length; i++) {
                         var e = embeds[i];
                         if (!e) {
                             continue;
                         }
-                        var d = e.data;
+                        d = e.data;
                         if (!d) {
                             continue;
                         }
