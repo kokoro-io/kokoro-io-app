@@ -1,4 +1,6 @@
-﻿using Foundation;
+﻿using System.IO;
+using Foundation;
+using KokoroIO.XamarinForms.ViewModels;
 using Microsoft.Azure.Mobile.Distribute;
 using UIKit;
 using XLabs.Ioc;
@@ -20,6 +22,12 @@ namespace KokoroIO.XamarinForms.iOS
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);
+        }
+
+        public override bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
+        {
+            ApplicationViewModel.OpenFile(() => new FileStream(url.Path, FileMode.Open));
+            return true;
         }
     }
 }

@@ -45,5 +45,18 @@
 	<string>Resources/Assets.xcassets/AppIcon.appiconset</string>
 	<key>XSLaunchImageAssets</key>
 	<string>Resources/Assets.xcassets/LaunchImages.launchimage</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>ImageFiles</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.png,</string>
+				<string>public.jpeg,</string>
+				<string>com.compuserve.gif</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
