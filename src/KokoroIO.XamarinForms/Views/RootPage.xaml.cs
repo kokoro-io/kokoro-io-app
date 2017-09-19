@@ -17,7 +17,7 @@ namespace KokoroIO.XamarinForms.Views
             {
                 BindingContext = new RoomsViewModel(viewModel)
             };
-            var np = new NavigationPage(new ContentPage());
+            var np = new NavigationPage(new WelcomePage());
             SetupNavigationPage(np);
             Detail = np;
             viewModel.PropertyChanged += ViewModel_PropertyChanged;
