@@ -18,7 +18,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         internal SettingsViewModel Settings { get; }
-        internal ApplicationViewModel Application => Settings.Application;
+        public ApplicationViewModel Application => Settings.Application;
 
         public IReadOnlyList<UploaderInfo> Uploaders { get; }
 

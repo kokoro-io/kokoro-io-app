@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.ViewModels;
-using Microsoft.Azure.Mobile.Analytics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,17 +11,22 @@ namespace KokoroIO.XamarinForms.Views
     {
         private readonly ApplicationViewModel _Application;
         private readonly IImageUploader _Uploader;
-        private readonly UploadParameter _Parameter;
+
+        //private readonly UploadParameter _Parameter;
+        private readonly Action _Completed;
+
+        private readonly Action<string> _Faulted;
 
         private bool _HasNavigated;
 
-        internal UploaderAuthorizationPage(ApplicationViewModel application, IImageUploader uploader, UploadParameter parameter)
+        private UploaderAuthorizationPage(ApplicationViewModel application, IImageUploader uploader, Action completed, Action<string> faulted)
         {
             InitializeComponent();
 
             _Application = application;
             _Uploader = uploader;
-            _Parameter = parameter;
+            _Completed = completed;
+            _Faulted = faulted;
         }
 
         protected override void OnAppearing()
@@ -54,26 +57,65 @@ namespace KokoroIO.XamarinForms.Views
                         await Navigation.PopModalAsync();
                     }
 
-                    await _Application.BeginSelectImage(_Uploader, _Parameter);
+                    _Completed();
+
+                    //await _Application.BeginSelectImage(_Uploader, _Parameter);
                 }
                 catch (Exception ex)
                 {
                     ex.Trace("Image Uploader Authentication failed");
 
-                    _Parameter.OnFaulted?.Invoke(ex.Message);
-
-                    while (Navigation.ModalStack.Count > 0)
-                    {
-                        await Navigation.PopModalAsync();
-                    }
+                    _Faulted?.Invoke(ex.Message);
                 }
             }
         }
 
-        private async void CancelButton_Clicked(object sender, EventArgs e)
+        private void CancelButton_Clicked(object sender, EventArgs e)
         {
-            _Parameter.OnFaulted?.Invoke(null);
-            await Navigation.PopModalAsync();
+            _Faulted?.Invoke(null);
+        }
+
+        internal static void BeginAuthorize(ApplicationViewModel application, IImageUploader uploader, Action completed, Action<string> faulted)
+            => App.Current.MainPage.Navigation.PushModalAsync(new UploaderAuthorizationPage(application, uploader, completed, faulted)).GetHashCode();
+
+        internal static void BeginAuthorize(ApplicationViewModel application, IImageUploader uploader, UploadParameter parameter)
+            => BeginAuthorize(
+                application,
+                uploader,
+                () => application.BeginSelectImage(uploader, parameter).GetHashCode(),
+                async e =>
+                {
+                    parameter.OnFaulted?.Invoke(e);
+
+                    var nav = App.Current.MainPage.Navigation;
+
+                    while (nav.ModalStack.Count > 0)
+                    {
+                        await nav.PopModalAsync();
+                    }
+                });
+
+        internal static void BeginAuthorize(ApplicationViewModel application, IImageUploader uploader, Action completed)
+        {
+            var nav = App.Current.MainPage.Navigation;
+            var pc = nav.ModalStack.Count;
+            nav.PushModalAsync(new UploaderAuthorizationPage(application, uploader,
+                  async () =>
+                  {
+                      while (pc < nav.ModalStack.Count)
+                      {
+                          await nav.PopModalAsync();
+                      }
+                      completed();
+                  },
+                  async (e) =>
+                  {
+                      while (pc < nav.ModalStack.Count)
+                      {
+                          await nav.PopModalAsync();
+                      }
+                      completed();
+                  })).GetHashCode();
         }
     }
 }

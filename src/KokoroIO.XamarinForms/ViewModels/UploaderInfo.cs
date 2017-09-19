@@ -1,5 +1,6 @@
 ﻿using KokoroIO.XamarinForms.Helpers;
 using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
@@ -72,7 +73,21 @@ namespace KokoroIO.XamarinForms.ViewModels
         private Command _ToggleCommand;
 
         public Command ToggleCommand
-            => _ToggleCommand ?? (_ToggleCommand = new Command(() => IsSelected = !IsSelected));
+            => _ToggleCommand ?? (_ToggleCommand = new Command(() =>
+            {
+                if (IsSelected)
+                {
+                    IsSelected = false;
+                }
+                else if (Uploader.IsAuthorized)
+                {
+                    IsSelected = true;
+                }
+                else
+                {
+                    UploaderAuthorizationPage.BeginAuthorize(Host.Application, Uploader, () => IsSelected = Uploader.IsAuthorized);
+                }
+            }));
 
         #endregion ToggleCommand
 

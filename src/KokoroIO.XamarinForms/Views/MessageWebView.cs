@@ -276,7 +276,14 @@ namespace KokoroIO.XamarinForms.Views
                     sw.Write(")");
                     _RefreshMessagesRequested = false;
 
-                    await InvokeScriptAsync(sw.ToString());
+                    try
+                    {
+                        await InvokeScriptAsync(sw.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.Trace("Failed to update message");
+                    }
                 }
             }
         }
