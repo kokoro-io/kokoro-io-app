@@ -16,8 +16,7 @@
             <ListView
                 VerticalOptions="Fill"
                 CachingStrategy="RecycleElement"
-                ItemsSource="{Binding Uploaders}"
-                SelectedItem="{Binding SelectedUploader}">
+                ItemsSource="{Binding Uploaders}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -27,6 +26,10 @@
                                         Width="Auto" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding ToggleCommand}" />
+                                </Grid.GestureRecognizers>
                                 <xlabs:CheckBox
                                     VerticalOptions="Center"
                                     HorizontalOptions="End"

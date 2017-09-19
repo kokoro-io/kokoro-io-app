@@ -44,6 +44,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion LogoImageSource
 
+        #region Selection
+
         private bool _IsSelected;
 
         public bool IsSelected
@@ -64,5 +66,16 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
             });
         }
+
+        #region ToggleCommand
+
+        private Command _ToggleCommand;
+
+        public Command ToggleCommand
+            => _ToggleCommand ?? (_ToggleCommand = new Command(() => IsSelected = !IsSelected));
+
+        #endregion ToggleCommand
+
+        #endregion Selection
     }
 }
