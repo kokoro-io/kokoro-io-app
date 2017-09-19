@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="KokoroIO.XamarinForms.Views.UploadToRoomPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Image
+                WidthRequest="120"
+                HeightRequest="90"
+                Margin="8"
+                Source="{Binding Image}" />
+            <Label
+                Grid.Column="1"
+                Margin="8"
+                VerticalOptions="Center"
+                Text="Choose room to post an image" />
+            <ListView
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                ItemsSource="{Binding Rooms}"
+                CachingStrategy="RecycleElement"
+                ItemSelected="ListView_ItemSelected">>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout
+                                Padding="10"
+                                Orientation="Horizontal">
+                                <Label
+                                    Text="{Binding DisplayName}"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemTextStyle}"
+                                    FontSize="16">
+                                </Label>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Grid
+                Grid.Row="2"
+                Grid.ColumnSpan="2">
+                <Button
+                    HorizontalOptions="End"
+                    Text="Cancel"
+                    Clicked="CancelButton_Clicked" />
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

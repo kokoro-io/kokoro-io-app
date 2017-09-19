@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -463,23 +462,33 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region Document Interaction
 
-        public static void OpenFile(Func<Stream> opener)
+        private static Func<Stream> _RequestedFile;
+
+        public static async void OpenFile(Func<Stream> streamCreator)
         {
             var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
 
+            _RequestedFile = streamCreator;
             if (avm != null)
             {
                 // Logged in
-
-                // TODO: Choose a Room to post file
-
-                // TODO: Open the room
-
-                // TODO:Start uploading
+                avm.BeginProcessPendingFile();
             }
-            else
+        }
+
+        internal async void BeginProcessPendingFile()
+        {
+            var sc = _RequestedFile;
+            _RequestedFile = null;
+
+            if (sc != null)
             {
-                // TODO: wait for login
+                var nav = App.Current.MainPage.Navigation;
+
+                await nav.PushModalAsync(new UploadToRoomPage()
+                {
+                    BindingContext = new UploadToRoomViewModel(this, sc)
+                });
             }
         }
 

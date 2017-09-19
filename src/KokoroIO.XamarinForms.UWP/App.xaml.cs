@@ -4,6 +4,8 @@ using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -31,6 +33,11 @@ namespace KokoroIO.XamarinForms.UWP
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
+        {
+            LaunchCore(e);
+        }
+
+        private void LaunchCore(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -89,19 +96,48 @@ namespace KokoroIO.XamarinForms.UWP
             deferral.Complete();
         }
 
-        protected override void OnActivated(IActivatedEventArgs args)
-        {
-            base.OnActivated(args);
+        //protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
+        //{
+        //    base.OnShareTargetActivated(args);
 
-            if (args.Kind == ActivationKind.File)
-            {
-                var e = args as FileActivatedEventArgs;
+        //    if (args.ShareOperation.Data.Contains(StandardDataFormats.StorageItems))
+        //    {
+        //        var sis = await args.ShareOperation.Data.GetStorageItemsAsync();
+        //        var si = sis.OfType<StorageFile>().FirstOrDefault();
 
-                if (e != null)
-                {
-                    ApplicationViewModel.OpenFile(() => new FileStream(e.Files.FirstOrDefault().Path, FileMode.Open));
-                }
-            }
-        }
+        //        if (si != null)
+        //        {
+        //            ApplicationViewModel.OpenFile(() =>
+        //            {
+        //                var ras = si.OpenReadAsync().GetResults();
+        //                return ras.AsStreamForRead();
+        //            });
+        //        }
+        //    }
+
+        //    if (Window.Current?.Content == null)
+        //    {
+        //        LaunchCore(null);
+        //    }
+        //}
+
+        //protected override void OnActivated(IActivatedEventArgs args)
+        //{
+        //    base.OnActivated(args);
+
+        //    if (args.Kind == ActivationKind.File)
+        //    {
+        //        var e = args as FileActivatedEventArgs;
+
+        //        if (e != null)
+        //        {
+        //            ApplicationViewModel.OpenFile(() => new FileStream(e.Files.FirstOrDefault().Path, FileMode.Open));
+        //        }
+        //    }
+        //    if (Window.Current?.Content == null)
+        //    {
+        //        LaunchCore(null);
+        //    }
+        //}
     }
 }

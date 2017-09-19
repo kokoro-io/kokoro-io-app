@@ -38,6 +38,15 @@ namespace KokoroIO.XamarinForms.Views
             set => SetValue(HasNotificationProperty, value);
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            var vm = BindingContext as ApplicationViewModel;
+
+            vm?.BeginProcessPendingFile();
+        }
+
         private void BackButton_Clicked(object sender, EventArgs e)
         {
             var vm = BindingContext as ApplicationViewModel;
