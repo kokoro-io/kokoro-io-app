@@ -809,6 +809,7 @@ body {
     var IS_TOP_MARGIN = 4;
     var LOAD_OLDER_MARGIN = 200;
     var LOAD_NEWER_MARGIN = 200;
+    var HIDE_CONTENT_MARGIN = 60;
     var _hasUnread = false;
     window.setHasUnread = function (value) {
         _hasUnread = !!value;
@@ -1209,7 +1210,6 @@ body {
             var talks = document.body.children;
             for (var i = 0; i < talks.length; i++) {
                 var talk = talks[i];
-                var HIDE_CONTENT_MARGIN = 60;
                 var hidden = (talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < b.scrollTop
                     || b.scrollTop + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN)
                     && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
