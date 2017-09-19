@@ -366,7 +366,7 @@ interface Window {
                 thumb.classList.add("thumb");
                 meta.appendChild(thumb);
 
-                thumb.appendChild(_createMediaDiv(m, "embed-thumbnail"));
+                thumb.appendChild(_createMediaDiv(m, d, "embed-thumbnail"));
             }
             var info = document.createElement("div");
             info.classList.add("info");
@@ -405,7 +405,7 @@ interface Window {
             for (var i = 0; i < d.medias.length; i++) {
                 var m = d.medias[i];
                 if (m) {
-                    medias.appendChild(_createMediaDiv(m));
+                    medias.appendChild(_createMediaDiv(m, d));
                 }
             }
         }
@@ -413,12 +413,12 @@ interface Window {
         return r;
     }
 
-    function _createMediaDiv(m: EmbedDataMedia, className?: string): HTMLDivElement {
+    function _createMediaDiv(m: EmbedDataMedia, d: EmbedData, className?: string): HTMLDivElement {
         var em = document.createElement("div");
         em.classList.add(className || "embed_media");
 
         var a = document.createElement("a");
-        a.href = m.location || m.raw_url;
+        a.href = m.location || m.raw_url || d.url;
         em.appendChild(a);
 
         var img = document.createElement("img");

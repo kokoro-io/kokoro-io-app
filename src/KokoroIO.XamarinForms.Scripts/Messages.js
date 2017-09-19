@@ -273,7 +273,7 @@
                 var thumb = document.createElement("div");
                 thumb.classList.add("thumb");
                 meta.appendChild(thumb);
-                thumb.appendChild(_createMediaDiv(m, "embed-thumbnail"));
+                thumb.appendChild(_createMediaDiv(m, d, "embed-thumbnail"));
             }
             var info = document.createElement("div");
             info.classList.add("info");
@@ -305,17 +305,17 @@
             for (var i = 0; i < d.medias.length; i++) {
                 var m = d.medias[i];
                 if (m) {
-                    medias.appendChild(_createMediaDiv(m));
+                    medias.appendChild(_createMediaDiv(m, d));
                 }
             }
         }
         return r;
     }
-    function _createMediaDiv(m, className) {
+    function _createMediaDiv(m, d, className) {
         var em = document.createElement("div");
         em.classList.add(className || "embed_media");
         var a = document.createElement("a");
-        a.href = m.location || m.raw_url;
+        a.href = m.location || m.raw_url || d.url;
         em.appendChild(a);
         var img = document.createElement("img");
         img.classList.add("img-rounded");
