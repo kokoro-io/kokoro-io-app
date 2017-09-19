@@ -146,7 +146,7 @@ interface Window {
                     } else if (id <= pid) {
                         var talk = createTaklElement(m);
                         if (id == pid) {
-                            let shoudScroll = scroll && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
+                            let shoudScroll = scroll && aft && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
                             var st = b.scrollTop - prev.clientHeight;
 
                             document.body.insertBefore(talk, prev);
