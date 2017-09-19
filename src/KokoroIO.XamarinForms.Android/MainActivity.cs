@@ -17,8 +17,7 @@ namespace KokoroIO.XamarinForms.Droid
             base.OnCreate(bundle);
 
             var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
-
-            Resolver.SetResolver(resolver.GetResolver());
+            Resolver.ResetResolver(resolver.GetResolver());
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
