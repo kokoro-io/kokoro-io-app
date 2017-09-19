@@ -37,7 +37,7 @@ namespace KokoroIO.XamarinForms.UWP
             LaunchCore(e);
         }
 
-        private void LaunchCore(LaunchActivatedEventArgs e)
+        private void LaunchCore(IActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -66,7 +66,7 @@ namespace KokoroIO.XamarinForms.UWP
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                rootFrame.Navigate(typeof(MainPage));
             }
             // Ensure the current window is active
             Window.Current.Activate();
@@ -100,6 +100,11 @@ namespace KokoroIO.XamarinForms.UWP
         //{
         //    base.OnShareTargetActivated(args);
 
+        //    if (Window.Current?.Content == null)
+        //    {
+        //        LaunchCore(args);
+        //    }
+
         //    if (args.ShareOperation.Data.Contains(StandardDataFormats.StorageItems))
         //    {
         //        var sis = await args.ShareOperation.Data.GetStorageItemsAsync();
@@ -114,16 +119,26 @@ namespace KokoroIO.XamarinForms.UWP
         //            });
         //        }
         //    }
+        //    else if (args.ShareOperation.Data.Contains(StandardDataFormats.Bitmap))
+        //    {
+        //        var sis = await args.ShareOperation.Data.GetBitmapAsync();
+
+        //        ApplicationViewModel.OpenFile(() =>
+        //        {
+        //            var ras = sis.OpenReadAsync().GetResults();
+        //            return ras.AsStreamForRead();
+        //        });
+        //    }
+        //}
+
+        //protected override void OnFileActivated(FileActivatedEventArgs args)
+        //{ 
+        //    base.OnActivated(args);
 
         //    if (Window.Current?.Content == null)
         //    {
         //        LaunchCore(null);
         //    }
-        //}
-
-        //protected override void OnActivated(IActivatedEventArgs args)
-        //{
-        //    base.OnActivated(args);
 
         //    if (args.Kind == ActivationKind.File)
         //    {
@@ -133,10 +148,6 @@ namespace KokoroIO.XamarinForms.UWP
         //        {
         //            ApplicationViewModel.OpenFile(() => new FileStream(e.Files.FirstOrDefault().Path, FileMode.Open));
         //        }
-        //    }
-        //    if (Window.Current?.Content == null)
-        //    {
-        //        LaunchCore(null);
         //    }
         //}
     }

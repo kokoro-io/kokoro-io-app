@@ -21,6 +21,12 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
+        <!--<uap:Extension Category="windows.shareTarget">
+          <uap:ShareTarget Description="Bitmap">
+            <uap:DataFormat>Bitmap</uap:DataFormat>
+            <uap:DataFormat>StorageItems</uap:DataFormat>
+          </uap:ShareTarget>
+        </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="imagefile">
             <uap:SupportedFileTypes>
@@ -32,7 +38,7 @@
               <uap:FileType>.gif</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
-        </uap:Extension>
+        </uap:Extension>-->
       </Extensions>
     </Application>
   </Applications>
