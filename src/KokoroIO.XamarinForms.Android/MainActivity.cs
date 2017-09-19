@@ -20,6 +20,13 @@ namespace KokoroIO.XamarinForms.Droid
 
             base.OnCreate(bundle);
 
+            var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
+            Resolver.ResetResolver(resolver.GetResolver());
+
+            global::Xamarin.Forms.Forms.Init(this, bundle);
+
+            LoadApplication(new App());
+
             if (Intent.Action == Intent.ActionSend)
             {
                 try
@@ -36,13 +43,6 @@ namespace KokoroIO.XamarinForms.Droid
                 }
                 catch { }
             }
-
-            var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
-            Resolver.ResetResolver(resolver.GetResolver());
-
-            global::Xamarin.Forms.Forms.Init(this, bundle);
-
-            LoadApplication(new App());
         }
     }
 }
