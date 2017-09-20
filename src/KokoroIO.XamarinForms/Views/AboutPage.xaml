@@ -5,9 +5,14 @@
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.AboutPage"
     Title="About">
+    <ContentPage.BindingContext>
+        <vm:AboutViewModel />
+    </ContentPage.BindingContext>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
                 <RowDefinition
                     Height="Auto" />
                 <RowDefinition
@@ -44,11 +49,35 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 Text="****" />
+            <Label
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                Text="This application depends on these libraries." />
 
-            
-            
-            <Grid
+            <ListView
                 Grid.Row="4"
+                Grid.ColumnSpan="2"
+                ItemsSource="{Binding Dependencies}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout
+                                Padding="10"
+                                Orientation="Horizontal">
+                                <Label
+                                    Text="{Binding DisplayName}"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemTextStyle}"
+                                    FontSize="16">
+                                </Label>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Grid
+                Grid.Row="5"
                 Grid.ColumnSpan="2">
                 <Button
                     HorizontalOptions="End"
