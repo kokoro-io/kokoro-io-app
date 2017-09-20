@@ -98,9 +98,6 @@
                 Orientation="Horizontal"
                 HorizontalOptions="End">
                 <Button
-                    Text="Log out"
-                    Command="{Binding Application.LogoutCommand}" />
-                <Button
                     Text="Settings"
                     Command="{Binding Application.SettingsCommand}" />
             </StackLayout>

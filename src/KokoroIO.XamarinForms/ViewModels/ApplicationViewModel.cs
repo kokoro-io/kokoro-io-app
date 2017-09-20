@@ -163,18 +163,22 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region LogoutCommand
 
-        private Command _LogoutCommand;
+        private static Command _LogoutCommand;
 
-        public Command LogoutCommand
+        public static Command LogoutCommand
             => _LogoutCommand ?? (_LogoutCommand = new Command(BeginLogout));
 
-        public async void BeginLogout()
+        public static async void BeginLogout()
         {
-            try
+            var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
+            if (avm != null)
             {
-                await CloseAsync();
+                try
+                {
+                    await avm.CloseAsync();
+                }
+                catch { }
             }
-            catch { }
 
             App.Current.Properties.Remove(nameof(LoginViewModel.Password));
             App.Current.Properties.Remove(nameof(AccessToken));

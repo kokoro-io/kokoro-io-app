@@ -7,10 +7,13 @@
             Application = application;
 
             Uploader = new UploaderSettingsViewModel(this);
+
+            Profile = new ProfileSettingsViewModel(this);
         }
 
         internal ApplicationViewModel Application { get; }
 
         public UploaderSettingsViewModel Uploader { get; }
+        public ProfileSettingsViewModel Profile { get; }
     }
 }

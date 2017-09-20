@@ -17,6 +17,10 @@ namespace KokoroIO.XamarinForms.Views
             {
                 BindingContext = viewModel.Uploader
             });
+            Children.Add(new ProfileSettingsPage()
+            {
+                BindingContext = viewModel.Profile
+            });
         }
     }
 }
