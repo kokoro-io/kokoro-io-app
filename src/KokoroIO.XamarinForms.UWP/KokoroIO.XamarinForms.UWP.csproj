@@ -90,6 +90,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Content Include="..\KokoroIO.XamarinForms.iOS\Resources\kokoroio.png">
+      <Link>kokoroio.png</Link>
+    </Content>
     <Content Include="..\KokoroIO.XamarinForms.iOS\Resources\kokoroio_white.png">
       <Link>kokoroio_white.png</Link>
     </Content>

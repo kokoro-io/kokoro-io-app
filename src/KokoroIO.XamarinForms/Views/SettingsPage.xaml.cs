@@ -21,6 +21,10 @@ namespace KokoroIO.XamarinForms.Views
             {
                 BindingContext = viewModel.Profile
             });
+            Children.Add(new AboutPage()
+            {
+                // BindingContext = viewModel.Profile
+            });
         }
     }
 }

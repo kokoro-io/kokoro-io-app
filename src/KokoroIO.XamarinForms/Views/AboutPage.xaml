@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
+    x:Class="KokoroIO.XamarinForms.Views.AboutPage"
+    Title="About">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Image
+                Grid.ColumnSpan="2"
+                Margin="16"
+                Source="kokoroio.png" />
+
+            <Label
+                Grid.Row="1"
+                Text="Author" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="1"
+                Text="kokoro.io" />
+
+            <Label
+                Grid.Row="2"
+                Text="Version" />
+            <Label
+                Grid.Row="2"
+                Grid.Column="1"
+                Text="****" />
+
+            
+            
+            <Grid
+                Grid.Row="4"
+                Grid.ColumnSpan="2">
+                <Button
+                    HorizontalOptions="End"
+                    Text="Back"
+                    Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
