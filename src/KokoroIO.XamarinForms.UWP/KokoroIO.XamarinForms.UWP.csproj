@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <None Include="FodyWeavers.xml" />
     <Content Include="profile_generic.png" />
     <Content Include="Properties\Default.rd.xml" />
     <EmbeddedResource Include="Resources\ring.mp3" />

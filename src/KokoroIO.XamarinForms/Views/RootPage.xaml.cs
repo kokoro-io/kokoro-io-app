@@ -17,12 +17,27 @@ namespace KokoroIO.XamarinForms.Views
             {
                 BindingContext = new RoomsViewModel(viewModel)
             };
-            var np = new NavigationPage(new WelcomePage());
-            SetupNavigationPage(np);
-            Detail = np;
-            viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
-            IsPresented = true;
+            if (viewModel.SelectedRoom == null)
+            {
+                var np = new NavigationPage(new WelcomePage());
+                SetupNavigationPage(np);
+                Detail = np;
+
+                IsPresented = true;
+            }
+            else
+            {
+                var np = new NavigationPage(new MessagesPage()
+                {
+                    BindingContext = viewModel.SelectedRoom.GetOrCreateMessagesPage()
+                });
+                SetupNavigationPage(np);
+                Detail = np;
+
+                IsPresented = false;
+            }
+            viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
             MasterBehavior = Device.Idiom == TargetIdiom.Phone ? MasterBehavior.Popover : MasterBehavior.Split;
 

@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
+using KokoroIO.XamarinForms.Models.Data;
+using Realms;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
@@ -118,57 +120,42 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
                 HasUnread = Room.UnreadCount > 0;
 
-                if (!messages.Any())
+                if (messages.Any())
                 {
-                    return;
+                    InsertMessages(messages);
                 }
 
-                var minId = messages.Min(m => m.Id);
-                var maxId = messages.Max(m => m.Id);
-
-                if (!_Messages.Any() || _Messages.Last().Id < minId)
+                try
                 {
-                    var mvms = messages.OrderBy(m => m.Id).Select(m => new MessageInfo(this, m)).ToList();
-                    for (var i = 0; i < mvms.Count; i++)
+                    var rid = Room.Id;
+                    using (var realm = Realm.GetInstance())
                     {
-                        mvms[i].SetIsMerged(i == 0 ? _Messages.LastOrDefault() : mvms[i - 1]);
-                    }
-
-                    _Messages.AddRange(mvms);
-                }
-                else
-                {
-                    var i = 0;
-
-                    foreach (var m in messages.OrderBy(e => e.Id))
-                    {
-                        var vm = new MessageInfo(this, m);
-                        for (; ; i++)
+                        using (var trx = realm.BeginWrite())
                         {
-                            var prev = _Messages[i];
+                            var rup = realm.All<RoomUserProperties>().FirstOrDefault(r => r.RoomId == rid);
+                            if (rup == null)
+                            {
+                                rup = new RoomUserProperties()
+                                {
+                                    RoomId = rid,
+                                    UserId = Application.LoginUser.Id,
+                                    LastVisited = DateTimeOffset.Now
+                                };
 
-                            if (m.Id < prev.Id)
-                            {
-                                _Messages.Insert(i, vm);
-                                break;
+                                realm.Add(rup);
                             }
-                            else if (m.Id == prev.Id)
+                            else
                             {
-                                prev.Update(m);
-                                break;
+                                rup.LastVisited = DateTimeOffset.Now;
                             }
-                            else if (i + 1 >= _Messages.Count)
-                            {
-                                _Messages.Add(vm);
-                                break;
-                            }
-                            else if (m.Id < _Messages[i + 1].Id)
-                            {
-                                _Messages.Insert(i, vm);
-                                break;
-                            }
+
+                            trx.Commit();
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    ex.Trace("SavingRoomUserPropertiesFailed");
                 }
             }
             catch (Exception ex)
@@ -180,6 +167,57 @@ namespace KokoroIO.XamarinForms.ViewModels
             finally
             {
                 IsBusy = false;
+            }
+        }
+
+        private void InsertMessages(Message[] messages)
+        {
+            var minId = messages.Min(m => m.Id);
+            var maxId = messages.Max(m => m.Id);
+
+            if (!_Messages.Any() || _Messages.Last().Id < minId)
+            {
+                var mvms = messages.OrderBy(m => m.Id).Select(m => new MessageInfo(this, m)).ToList();
+                for (var i = 0; i < mvms.Count; i++)
+                {
+                    mvms[i].SetIsMerged(i == 0 ? _Messages.LastOrDefault() : mvms[i - 1]);
+                }
+
+                _Messages.AddRange(mvms);
+            }
+            else
+            {
+                var i = 0;
+
+                foreach (var m in messages.OrderBy(e => e.Id))
+                {
+                    var vm = new MessageInfo(this, m);
+                    for (; ; i++)
+                    {
+                        var prev = _Messages[i];
+
+                        if (m.Id < prev.Id)
+                        {
+                            _Messages.Insert(i, vm);
+                            break;
+                        }
+                        else if (m.Id == prev.Id)
+                        {
+                            prev.Update(m);
+                            break;
+                        }
+                        else if (i + 1 >= _Messages.Count)
+                        {
+                            _Messages.Add(vm);
+                            break;
+                        }
+                        else if (m.Id < _Messages[i + 1].Id)
+                        {
+                            _Messages.Insert(i, vm);
+                            break;
+                        }
+                    }
+                }
             }
         }
 

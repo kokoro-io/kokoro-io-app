@@ -20,6 +20,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)IAudioService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IDeviceService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Data\RoomUserProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ImgurImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GyazoImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IImageUploader.cs" />

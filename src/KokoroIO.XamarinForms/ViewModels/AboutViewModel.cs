@@ -28,8 +28,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                     _Dependencies = new ReadOnlyCollection<DependentLibrary>(new[]
                     {
                         new  DependentLibrary("XLabs", "https://github.com/XLabs/Xamarin-Forms-Labs"),
+                        new  DependentLibrary("Realm", "https://realm.io/"),
+                        new  DependentLibrary("Bootstrap 3.3.7", "https://getbootstrap.com/docs/3.3/"),
                         new  DependentLibrary("portable-exif-lib", "https://github.com/ravensorb/portable-exif-lib"),
-                        new  DependentLibrary("Bootstrap 3.3.7", "https://getbootstrap.com/docs/3.3/")
                     });
 
                 }

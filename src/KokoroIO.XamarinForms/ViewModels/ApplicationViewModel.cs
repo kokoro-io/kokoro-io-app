@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Helpers;
 using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Views;
+using Realms;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using XLabs.Ioc;
@@ -72,6 +74,43 @@ namespace KokoroIO.XamarinForms.ViewModels
                 var rvm = new RoomViewModel(this, r);
 
                 _Rooms.Add(rvm);
+            }
+
+            try
+            {
+                string roomId;
+                using (var realm = Realm.GetInstance())
+                {
+                    var rup = realm.All<RoomUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
+
+                    if (rup == null)
+                    {
+                        return;
+                    }
+                    else if (rup.UserId != _LoginUser.Id)
+                    {
+                        using (var trx = realm.BeginWrite())
+                        {
+                            realm.RemoveAll<RoomUserProperties>();
+                            trx.Commit();
+                        }
+                        return;
+                    }
+                    else
+                    {
+                        roomId = rup.RoomId;
+                    }
+                }
+
+                var rvm = _Rooms.FirstOrDefault(r => r.Id == roomId);
+                if (rvm != null)
+                {
+                    SelectedRoom = rvm;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Trace("LoadingRoomUserPropertiesFailed");
             }
         }
 
