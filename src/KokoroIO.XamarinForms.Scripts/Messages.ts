@@ -490,14 +490,14 @@ interface Window {
         talk.setAttribute("data-loading-images", imgs.length.toString());
 
         var handler;
-        handler = function (e) {
+        handler = function (e: Event) {
             var img = e.target;
 
-            var talk = img.parentElement;
+            var talk = (<HTMLElement>img).parentElement;
 
             while (talk) {
                 if (talk.classList.contains("talk")) {
-                    talk.setAttribute("data-loading-images", Math.max(0, (parseInt(talk.getAttribute("data-loading-images"), 10) - 1) || 0));
+                    talk.setAttribute("data-loading-images", (Math.max(0, (parseInt(talk.getAttribute("data-loading-images"), 10) - 1) || 0)).toString());
 
                     var ph = parseInt(talk.getAttribute("data-height"), 10);
                     var delta = talk.clientHeight - ph;
@@ -508,9 +508,20 @@ interface Window {
                     } else if (talk.offsetTop < document.body.scrollTop) {
                         b.scrollTop += delta;
                     }
-                    talk.setAttribute("data-height", talk.clientHeight);
+                    talk.setAttribute("data-height", talk.clientHeight.toString());
 
                     break;
+                } else if (/^error$/i.test(e.type) && talk.classList.contains("embed_media")) {
+                    var tp = talk.parentElement;
+
+                    talk.remove();
+
+                    if (tp.children.length === 0) {
+                        tp.remove();
+                    }
+                    break;
+                } else if (/^error$/i.test(e.type) && talk.classList.contains("thumb")) {
+                    talk.remove();
                 }
 
                 talk = talk.parentElement;
