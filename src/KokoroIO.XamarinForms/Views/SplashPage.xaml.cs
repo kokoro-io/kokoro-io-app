@@ -27,10 +27,14 @@ namespace KokoroIO.XamarinForms.Views
                     {
                         App.Current.MainPage = new RootPage(app);
 
-                        while (Navigation.ModalStack.Any())
+                        try
                         {
-                            await Navigation.PopModalAsync();
+                            while (Navigation.ModalStack.Any())
+                            {
+                                await Navigation.PopModalAsync();
+                            }
                         }
+                        catch { }
 
                         return;
                     }
@@ -46,10 +50,14 @@ namespace KokoroIO.XamarinForms.Views
                 App.Current.MainPage = new LoginPage();
             }
 
-            while (Navigation.ModalStack.Any())
+            try
             {
-                await Navigation.PopModalAsync();
+                while (Navigation.ModalStack.Any())
+                {
+                    await Navigation.PopModalAsync();
+                }
             }
+            catch { }
 
             MessagingCenter.Send(this, "LoginFailed");
         }

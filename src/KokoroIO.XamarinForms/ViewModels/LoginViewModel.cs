@@ -93,7 +93,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
             });
 
-            await App.Current.MainPage.Navigation.PushAsync(new SplashPage()
+            await App.Current.MainPage.Navigation.PushModalAsync(new SplashPage()
             {
                 BindingContext = svm
             });
