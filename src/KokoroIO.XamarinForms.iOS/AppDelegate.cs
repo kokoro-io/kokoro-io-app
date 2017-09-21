@@ -19,6 +19,7 @@ namespace KokoroIO.XamarinForms.iOS
 
             global::Xamarin.Forms.Forms.Init();
             Distribute.DontCheckForUpdatesInDebug();
+
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);

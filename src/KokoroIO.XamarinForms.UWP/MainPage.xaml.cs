@@ -7,13 +7,13 @@ namespace KokoroIO.XamarinForms.UWP
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             var resolver = new SimpleContainer().Register(t => WindowsDevice.CurrentDevice);
 
-            Resolver.SetResolver(resolver.GetResolver());
+            Resolver.ResetResolver(resolver.GetResolver());
 
-            LoadApplication(new KokoroIO.XamarinForms.App());
+            LoadApplication(new XamarinForms.App());
         }
     }
 }

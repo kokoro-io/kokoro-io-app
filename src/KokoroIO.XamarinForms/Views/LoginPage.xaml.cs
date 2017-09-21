@@ -16,7 +16,7 @@ namespace KokoroIO.XamarinForms.Views
         {
             InitializeComponent();
 
-            MessagingCenter.Subscribe<LoginViewModel>(this, "LoginFailed", lvm =>
+            MessagingCenter.Subscribe<SplashViewModel>(this, "LoginFailed", lvm =>
             {
                 DisplayAlert("kokoro.io", "Failed to login", "OK");
             });

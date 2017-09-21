@@ -102,8 +102,12 @@ namespace KokoroIO.XamarinForms.Models
                             res.EnsureSuccessStatusCode();
 
                             _AccessToken = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            App.Current.Properties[ACCESS_TOKEN_KEY] = _AccessToken;
-                            await App.Current.SavePropertiesAsync().ConfigureAwait(false);
+                            try
+                            {
+                                App.Current.Properties[ACCESS_TOKEN_KEY] = _AccessToken;
+                                await App.Current.SavePropertiesAsync().ConfigureAwait(false);
+                            }
+                            catch { }
                         }
                         try
                         {

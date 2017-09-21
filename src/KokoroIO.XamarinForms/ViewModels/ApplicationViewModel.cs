@@ -34,32 +34,36 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region Rooms
 
-        private bool _RoomsLoaded;
+        private Task _LoadInitialDataTask;
 
         private ObservableRangeCollection<RoomViewModel> _Rooms;
 
         public ObservableRangeCollection<RoomViewModel> Rooms
-            => InitRooms()._Rooms;
+        {
+            get
+            {
+                if (_Rooms == null)
+                {
+                    _Rooms = new ObservableRangeCollection<RoomViewModel>();
+                }
+                LoadInitialDataTask.GetHashCode();
 
-        private ApplicationViewModel InitRooms()
+                return _Rooms;
+            }
+        }
+
+        internal Task LoadInitialDataTask
+            => _LoadInitialDataTask ?? (_LoadInitialDataTask = LoadInitialDataAsync());
+
+        private async Task LoadInitialDataAsync()
         {
             if (_Rooms == null)
             {
                 _Rooms = new ObservableRangeCollection<RoomViewModel>();
             }
 
-            if (!_RoomsLoaded)
-            {
-                _RoomsLoaded = true;
-                LoadRooms();
-            }
+            var rooms = await Client.GetRoomsAsync().ConfigureAwait(false);
 
-            return this;
-        }
-
-        private async void LoadRooms()
-        {
-            var rooms = await Client.GetRoomsAsync();
             foreach (var r in rooms.OrderBy(e => e.IsArchived ? 1 : 0)
                                     .ThenBy(e => (int)e.Kind)
                                     .ThenBy(e => e.ChannelName, StringComparer.Ordinal)
@@ -68,16 +72,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                 var rvm = new RoomViewModel(this, r);
 
                 _Rooms.Add(rvm);
-            }
-
-            if (rooms.Any())
-            {
-                try
-                {
-                    await Client.ConnectAsync();
-                    await Client.SubscribeAsync(rooms);
-                }
-                catch { }
             }
         }
 
@@ -104,6 +98,11 @@ namespace KokoroIO.XamarinForms.ViewModels
                         _SelectedRoom.GetOrCreateMessagesPage().IsSubscribing = true;
                     }
                     OnUnreadCountChanged();
+                    if (Client.State == ClientState.Disconnected
+                        && _Rooms.Any())
+                    {
+                        ConnectAsync().GetHashCode();
+                    }
                 }
             }
         }
@@ -431,7 +430,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 SetSelectedUploader(uploader);
 
-                await App.Current.SavePropertiesAsync();
+                try
+                {
+                    await App.Current.SavePropertiesAsync();
+                }
+                catch { }
 
                 parameter.OnCompleted(url);
             }

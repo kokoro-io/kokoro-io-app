@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\ProfileViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\RoomViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SettingsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SplashViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploaderSettingsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploadersViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UploaderInfo.cs" />
@@ -52,6 +53,10 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\ProfileSettingsPage.xaml.cs">
       <DependentUpon>ProfileSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\SplashPage.xaml.cs">
+      <DependentUpon>SplashPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\WelcomePage.xaml.cs">
@@ -166,6 +171,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\SplashPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

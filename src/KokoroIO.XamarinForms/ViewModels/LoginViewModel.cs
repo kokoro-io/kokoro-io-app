@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Views;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
@@ -54,93 +55,48 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var em = _MailAddress;
             var pw = _Password;
-
-            if (IsBusy)
+            var svm = new SplashViewModel(async () =>
             {
-                return;
-            }
-
-            var preserve = false;
-            var c = new Client();
-            try
-            {
-                IsBusy = true;
-
-                const string TokenName = nameof(KokoroIO) + "." + nameof(XamarinForms);
-                var ds = DependencyService.Get<IDeviceService>();
-
-                var hash = TokenName.Select(ch => (byte)ch).Concat(ds.GetIdentifier()).ToArray();
-
-                hash = SHA256.Create().ComputeHash(hash);
-
-                var di = Convert.ToBase64String(hash);
-
-                var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, di);
-                c.AccessToken = device.AccessToken.Token;
-
-                var me = await c.GetProfileAsync();
-
-                App.Current.Properties[nameof(MailAddress)] = em;
-                App.Current.Properties[nameof(Password)] = pw;
-                App.Current.Properties[nameof(AccessToken)] = c.AccessToken;
-                await App.Current.SavePropertiesAsync();
-
-                preserve = true;
-
-                var app = new ApplicationViewModel(c, me);
-
-                App.SetMainPage(app);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-
-                MessagingCenter.Send(this, "LoginFailed");
-            }
-            finally
-            {
-                if (!preserve)
+                var preserve = false;
+                var c = new Client();
+                try
                 {
-                    c.Dispose();
+                    const string TokenName = nameof(KokoroIO) + "." + nameof(XamarinForms);
+                    var ds = DependencyService.Get<IDeviceService>();
+
+                    var hash = TokenName.Select(ch => (byte)ch).Concat(ds.GetIdentifier()).ToArray();
+
+                    hash = SHA256.Create().ComputeHash(hash);
+
+                    var di = Convert.ToBase64String(hash);
+
+                    var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, di);
+                    c.AccessToken = device.AccessToken.Token;
+
+                    var me = await c.GetProfileAsync();
+
+                    App.Current.Properties[nameof(MailAddress)] = em;
+                    App.Current.Properties[nameof(Password)] = pw;
+                    App.Current.Properties[nameof(AccessToken)] = c.AccessToken;
+                    await App.Current.SavePropertiesAsync();
+
+                    preserve = true;
+
+                    return new ApplicationViewModel(c, me);
                 }
-                IsBusy = false;
-            }
-        }
-
-        public static async Task<ApplicationViewModel> LoginAsync()
-        {
-            if (!App.Current.Properties.TryGetValue(nameof(AccessToken), out var at)
-                || !(at is string ats))
-            {
-                return null;
-            }
-
-            var preserve = false;
-            var c = new Client()
-            {
-                AccessToken = ats
-            };
-            try
-            {
-                var me = await c.GetProfileAsync().ConfigureAwait(false);
-
-                preserve = true;
-
-                return new ApplicationViewModel(c, me);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                if (!preserve)
+                finally
                 {
-                    c.Dispose();
+                    if (!preserve)
+                    {
+                        c.Dispose();
+                    }
                 }
-            }
+            });
 
-            return null;
+            await App.Current.MainPage.Navigation.PushAsync(new SplashPage()
+            {
+                BindingContext = svm
+            });
         }
     }
 }

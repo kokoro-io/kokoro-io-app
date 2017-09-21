@@ -37,7 +37,7 @@ namespace KokoroIO.XamarinForms.UWP
             LaunchCore(e);
         }
 
-        private void LaunchCore(IActivatedEventArgs e)
+        private void LaunchCore(IActivatedEventArgs e, string tmp = null)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -47,6 +47,7 @@ namespace KokoroIO.XamarinForms.UWP
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
+                // rootFrame.Visibility = Visibility.Collapsed;
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
@@ -70,6 +71,14 @@ namespace KokoroIO.XamarinForms.UWP
             }
             // Ensure the current window is active
             Window.Current.Activate();
+
+            if (tmp != null)
+            {
+                Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+                {
+                    ApplicationViewModel.OpenFile(() => new FileStream(tmp, FileMode.Open));
+                });
+            }
         }
 
         /// <summary>
@@ -98,13 +107,7 @@ namespace KokoroIO.XamarinForms.UWP
 
         //protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
         //{
-        //    base.OnShareTargetActivated(args);
-
-        //    if (Window.Current?.Content == null)
-        //    {
-        //        LaunchCore(args);
-        //    }
-
+        //    string tmp = null;
         //    if (args.ShareOperation.Data.Contains(StandardDataFormats.StorageItems))
         //    {
         //        var sis = await args.ShareOperation.Data.GetStorageItemsAsync();
@@ -112,43 +115,51 @@ namespace KokoroIO.XamarinForms.UWP
 
         //        if (si != null)
         //        {
-        //            ApplicationViewModel.OpenFile(() =>
-        //            {
-        //                var ras = si.OpenReadAsync().GetResults();
-        //                return ras.AsStreamForRead();
-        //            });
+        //            tmp = Path.GetTempFileName();
+        //            var tf = await StorageFile.GetFileFromPathAsync(tmp);
+        //            await si.CopyAsync(await tf.GetParentAsync(), Path.GetFileName(tmp), NameCollisionOption.ReplaceExisting);
         //        }
         //    }
         //    else if (args.ShareOperation.Data.Contains(StandardDataFormats.Bitmap))
         //    {
         //        var sis = await args.ShareOperation.Data.GetBitmapAsync();
 
-        //        ApplicationViewModel.OpenFile(() =>
+        //        using (var ras = await sis.OpenReadAsync())
+        //        using (var ss = ras.AsStreamForRead())
+        //        using (var fs = new FileStream(tmp, FileMode.Create))
         //        {
-        //            var ras = sis.OpenReadAsync().GetResults();
-        //            return ras.AsStreamForRead();
-        //        });
-        //    }
-        //}
-
-        //protected override void OnFileActivated(FileActivatedEventArgs args)
-        //{ 
-        //    base.OnActivated(args);
-
-        //    if (Window.Current?.Content == null)
-        //    {
-        //        LaunchCore(null);
-        //    }
-
-        //    if (args.Kind == ActivationKind.File)
-        //    {
-        //        var e = args as FileActivatedEventArgs;
-
-        //        if (e != null)
-        //        {
-        //            ApplicationViewModel.OpenFile(() => new FileStream(e.Files.FirstOrDefault().Path, FileMode.Open));
+        //            await ss.CopyToAsync(fs);
         //        }
         //    }
+
+        //    if (tmp == null)
+        //    {
+        //        Window.Current.Close();
+        //    }
+        //    else
+        //    {
+        //        LaunchCore(args, tmp);
+        //    }
         //}
+
+        protected override async void OnFileActivated(FileActivatedEventArgs args)
+        {
+            var p = args.Files.OfType<StorageFile>().FirstOrDefault();
+
+            if (p == null)
+            {
+                Window.Current.Close();
+            }
+            else
+            {
+                var tmp = Path.GetTempFileName();
+
+                var tf = await StorageFile.GetFileFromPathAsync(tmp);
+
+                await p.CopyAsync(await tf.GetParentAsync(), Path.GetFileName(tmp), NameCollisionOption.ReplaceExisting);
+
+                LaunchCore(args, tmp);
+            }
+        }
     }
 }

@@ -4,9 +4,9 @@ using Microsoft.Azure.Mobile;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
 using Microsoft.Azure.Mobile.Distribute;
+using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using XDevice = Xamarin.Forms.Device;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 
@@ -18,25 +18,43 @@ namespace KokoroIO.XamarinForms
         {
             InitializeComponent();
 
-            try
+            if (App.Current.Properties.TryGetValue(nameof(AccessToken), out var at)
+                && at is string ats)
             {
-                var app = LoginViewModel.LoginAsync().GetAwaiter().GetResult();
-
-                if (app != null)
+                var svm = new SplashViewModel(async () =>
                 {
-                    SetMainPage(app);
-                    return;
-                }
+                    var preserve = false;
+                    var c = new Client();
+                    try
+                    {
+                        c = new Client()
+                        {
+                            AccessToken = ats
+                        };
+                        var me = await c.GetProfileAsync().ConfigureAwait(false);
+
+                        preserve = true;
+
+                        return new ApplicationViewModel(c, me);
+                    }
+                    finally
+                    {
+                        if (!preserve)
+                        {
+                            c.Dispose();
+                        }
+                    }
+                });
+
+                MainPage = new SplashPage()
+                {
+                    BindingContext = svm
+                };
             }
-            catch { }
-
-            MainPage = new LoginPage();
-        }
-
-
-        internal static void SetMainPage(ApplicationViewModel app)
-        {
-            App.Current.MainPage = new RootPage(app);
+            else
+            {
+                MainPage = new LoginPage();
+            }
         }
 
         protected override void OnStart()
