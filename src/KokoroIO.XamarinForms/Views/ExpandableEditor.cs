@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Input;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
@@ -24,6 +25,19 @@ namespace KokoroIO.XamarinForms.Views
         }
 
         #endregion Placeholder
+
+        #region PostCommand
+
+        public static readonly BindableProperty PostCommandProperty
+            = BindableProperty.Create(nameof(PostCommand), typeof(ICommand), typeof(ExpandableEditor));
+
+        public ICommand PostCommand
+        {
+            get => (ICommand)GetValue(PostCommandProperty);
+            set => SetValue(PostCommandProperty, value);
+        }
+
+        #endregion PostCommand
 
         private void ExpandableEditor_TextChanged(object sender, TextChangedEventArgs e)
         {

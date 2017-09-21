@@ -8,6 +8,9 @@ using Shipwreck.KokoroIO;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Xaml.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
@@ -26,9 +29,29 @@ namespace KokoroIO.XamarinForms.UWP
                 Control.PlaceholderText = (e.NewElement as ExpandableEditor)?.Placeholder ?? string.Empty;
 
                 Control.AllowDrop = true;
+                Control.AddHandler(FormsTextBox.KeyDownEvent, (KeyEventHandler)Control_KeyDown, true);
                 Control.DragEnter += Control_DragOver;
                 Control.DragOver += Control_DragOver;
                 Control.Drop += Control_Drop;
+            }
+        }
+
+        private void Control_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter
+                && Xamarin.Forms.Device.Idiom == TargetIdiom.Desktop)
+            {
+                var shift = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift);
+                if ((shift & CoreVirtualKeyStates.Down) != CoreVirtualKeyStates.Down)
+                {
+                    var cmd = (Element as ExpandableEditor)?.PostCommand;
+
+                    if (cmd?.CanExecute(null) ?? false)
+                    {
+                        cmd.Execute(null);
+                        e.Handled = true;
+                    }
+                }
             }
         }
 

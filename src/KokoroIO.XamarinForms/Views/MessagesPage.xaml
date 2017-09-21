@@ -194,6 +194,7 @@
                     HorizontalOptions="FillAndExpand"
                     Text="{Binding NewMessage}"
                     Placeholder="{Binding Room.Placeholder}"
+                    PostCommand="{Binding PostCommand}"
                     FilePasted="ExpandableEditor_FilePasted" />
                 <Button
                     Grid.Column="2"
