@@ -13,6 +13,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             ChannelName = model.ChannelName;
             Kind = model.Kind;
             IsArchived = model.IsArchived;
+            NotificationDisabled = model.Membership?.DisableNotification ?? false;
         }
 
         internal ApplicationViewModel Application { get; }
@@ -28,6 +29,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public RoomKind Kind { get; }
         public bool IsArchived { get; }
+        public bool NotificationDisabled { get; }
 
         public string KindName
         {

@@ -333,11 +333,14 @@ namespace KokoroIO.XamarinForms.ViewModels
             if (rvm != null)
             {
                 rvm.UnreadCount++;
-                try
+                if (!rvm.NotificationDisabled)
                 {
-                    DependencyService.Get<IAudioService>()?.PlayNotification();
+                    try
+                    {
+                        DependencyService.Get<IAudioService>()?.PlayNotification();
+                    }
+                    catch { }
                 }
-                catch { }
             }
         }
 
