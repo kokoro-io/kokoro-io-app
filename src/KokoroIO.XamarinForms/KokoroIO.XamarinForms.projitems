@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ImgurImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GyazoImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IImageUploader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />

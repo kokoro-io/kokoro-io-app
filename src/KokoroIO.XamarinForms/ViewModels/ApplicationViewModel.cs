@@ -333,7 +333,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             if (rvm != null)
             {
                 rvm.UnreadCount++;
-                if (!rvm.NotificationDisabled)
+                if (!rvm.NotificationDisabled
+                    && UserSettings.PlayRingtone)
                 {
                     try
                     {
