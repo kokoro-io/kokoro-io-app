@@ -1,27 +1,33 @@
-﻿//using Android.Media;
-//using KokoroIO.XamarinForms.Droid;
-//using Xamarin.Forms;
+﻿using System.IO;
+using Android.Media;
+using KokoroIO.XamarinForms.Droid;
+using Xamarin.Forms;
 
-//[assembly: Dependency(typeof(AudioService))]
+[assembly: Dependency(typeof(AudioService))]
 
-//namespace KokoroIO.XamarinForms.Droid
-//{
-//    public sealed class AudioService : IAudioService
-//    {
-//        private MediaPlayer _NotificationPlayer;
+namespace KokoroIO.XamarinForms.Droid
+{
+    public sealed class AudioService : IAudioService
+    {
+        private string _FilePath;
 
-//        public void PlayNotification()
-//        {
-//            if (_NotificationPlayer == null)
-//            {
-//                _NotificationPlayer = MediaPlayer.Create(Android.App.Application.Context, Resource.Raw.ring);
-//                _NotificationPlayer.Start();
-//            }
-//            else
-//            {
-//                _NotificationPlayer.Reset();
-//                _NotificationPlayer.Start();
-//            }
-//        }
-//    }
-//}
+        public void PlayNotification()
+        {
+            if (_FilePath == null)
+            {
+                _FilePath = Path.GetTempFileName();
+                _FilePath = Path.ChangeExtension(_FilePath, ".mp3");
+                using (var fs = new FileStream(_FilePath, FileMode.Create))
+                using (var rs = GetType().Assembly.GetManifestResourceStream("KokoroIO.XamarinForms.Droid.Resources.ring.mp3"))
+                {
+                    rs.CopyTo(fs);
+                }
+            }
+
+            var mp = new MediaPlayer();
+            mp.SetDataSource(_FilePath);
+            mp.Prepare();
+            mp.Start();
+        }
+    }
+}
