@@ -146,6 +146,11 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
+            <ActivityIndicator
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                IsRunning="True"
+                IsVisible="{Binding IsBusy}" />
             <Grid
                 Grid.Row="1"
                 Margin="4">

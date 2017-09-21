@@ -7,7 +7,8 @@
         <StackLayout
             VerticalOptions="Center"
             HorizontalOptions="Center">
-            <ActivityIndicator />
+            <ActivityIndicator
+                IsRunning="True" />
             <Label
                 Text="Connecting to kokoro.io.." />
         </StackLayout>
