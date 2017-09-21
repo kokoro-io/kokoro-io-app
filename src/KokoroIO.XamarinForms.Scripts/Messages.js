@@ -232,12 +232,12 @@
                         ecs.appendChild(ec);
                         switch (d.type) {
                             case 'MixedContent':
-                                ec.appendChild(_createEmbedContent(d, false));
+                                ec.appendChild(_createEmbedContent(m, d, false));
                                 break;
                             case 'SingleImage':
                             case 'SingleVideo':
                             case 'SingleAudio':
-                                ec.appendChild(_createEmbedContent(d, true));
+                                ec.appendChild(_createEmbedContent(m, d, true));
                                 break;
                             default:
                                 console.warn("Unknown embed data: ", d);
@@ -261,7 +261,7 @@
         }
         return talk;
     }
-    function _createEmbedContent(d, hideInfo) {
+    function _createEmbedContent(message, d, hideInfo) {
         var r = document.createElement("div");
         r.classList.add("embed-" + d.type.toLowerCase());
         if (!hideInfo) {
@@ -270,10 +270,13 @@
             r.appendChild(meta);
             if (d.metadata_image) {
                 var m = d.metadata_image;
-                var thumb = document.createElement("div");
-                thumb.classList.add("thumb");
-                meta.appendChild(thumb);
-                thumb.appendChild(_createMediaDiv(m, d, "embed-thumbnail"));
+                var thd = _createMediaDiv(m, d, message, "embed-thumbnail");
+                if (thd) {
+                    var thumb = document.createElement("div");
+                    thumb.classList.add("thumb");
+                    meta.appendChild(thumb);
+                    thumb.appendChild(thd);
+                }
             }
             var info = document.createElement("div");
             info.classList.add("info");
@@ -301,27 +304,37 @@
         if (d.medias && d.medias.length > 0) {
             var medias = document.createElement("div");
             medias.classList.add("medias");
-            r.appendChild(medias);
             for (var i = 0; i < d.medias.length; i++) {
                 var m = d.medias[i];
                 if (m) {
-                    medias.appendChild(_createMediaDiv(m, d));
+                    var md = _createMediaDiv(m, d, message);
+                    if (md) {
+                        medias.appendChild(md);
+                    }
                 }
+            }
+            if (medias.children.length > 0) {
+                r.appendChild(medias);
             }
         }
         return r;
     }
-    function _createMediaDiv(m, d, className) {
+    function _createMediaDiv(media, data, message, className) {
+        var tu = (media.thumbnail ? media.thumbnail.url : null) || media.raw_url;
+        if (!tu) {
+            return null;
+        }
         var em = document.createElement("div");
         em.classList.add(className || "embed_media");
         var a = document.createElement("a");
-        a.href = m.location || m.raw_url || d.url;
+        a.href = media.location || media.raw_url || data.url;
         em.appendChild(a);
         var img = document.createElement("img");
         img.classList.add("img-rounded");
-        img.src = (m.thumbnail ? m.thumbnail.url : null) || m.raw_url;
+        img.src = tu;
         a.appendChild(img);
-        if (m.restriction_policy === "Restricted") {
+        if (media.restriction_policy === "Restricted"
+            || (media.restriction_policy === "Unknown" && (message.IsNsfw || data.restriction_policy === "Restricted"))) {
             em.classList.add("nsfw");
             var i = document.createElement("i");
             i.className = "nsfw-mark fa fa-exclamation-triangle";

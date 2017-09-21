@@ -13,6 +13,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Id = message.Id;
             Profile = page.Application.GetProfile(message);
             PublishedAt = message.PublishedAt;
+            IsNsfw = message.IsNsfw;
 
             _Content = message.Content;
 
@@ -32,6 +33,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         public ProfileViewModel Profile { get; }
 
         public DateTime PublishedAt { get; }
+
+        public bool IsNsfw { get; }
 
         #region Content
 

@@ -301,6 +301,7 @@ namespace KokoroIO.XamarinForms.Views
                 Avatar = m.Profile.Avatar;
                 DisplayName = m.Profile.DisplayName;
                 PublishedAt = m.PublishedAt;
+                IsNsfw = m.IsNsfw;
                 Content = m.Content;
                 IsMerged = m.IsMerged;
                 EmbedContents = m.EmbedContents;
@@ -310,6 +311,8 @@ namespace KokoroIO.XamarinForms.Views
             public string Avatar { get; }
             public string DisplayName { get; }
             public DateTime PublishedAt { get; }
+
+            public bool IsNsfw { get; }
             public string Content { get; }
             public bool IsMerged { get; }
             public IList<EmbedContent> EmbedContents { get; }
