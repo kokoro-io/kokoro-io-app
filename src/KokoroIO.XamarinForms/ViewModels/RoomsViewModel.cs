@@ -7,9 +7,9 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal RoomsViewModel(ApplicationViewModel application)
         {
             Application = application;
-
             Title = "Rooms";
         }
+
 
         public ApplicationViewModel Application { get; }
 

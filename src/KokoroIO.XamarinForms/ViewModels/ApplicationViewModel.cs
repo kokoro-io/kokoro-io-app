@@ -123,17 +123,25 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 if (value != _SelectedRoom)
                 {
-                    var mp = _SelectedRoom?.MessagesPage;
-
-                    if (mp != null)
+                    if (_SelectedRoom != null)
                     {
-                        mp.IsSubscribing = false;
+                        _SelectedRoom.IsSelected = false;
+
+                        var mp = _SelectedRoom.MessagesPage;
+
+                        if (mp != null)
+                        {
+                            mp.IsSubscribing = false;
+                        }
                     }
 
                     _SelectedRoom = value;
+
                     OnPropertyChanged();
+
                     if (_SelectedRoom != null)
                     {
+                        _SelectedRoom.IsSelected = true;
                         _SelectedRoom.GetOrCreateMessagesPage().IsSubscribing = true;
                     }
                     OnUnreadCountChanged();

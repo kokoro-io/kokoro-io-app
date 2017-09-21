@@ -82,5 +82,17 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion UnreadCount
+
+        #region IsSelected
+
+        private bool _IsSelected;
+
+        public bool IsSelected
+        {
+            get => _IsSelected;
+            internal set => SetProperty(ref _IsSelected, value);
+        }
+
+        #endregion IsSelected
     }
 }
