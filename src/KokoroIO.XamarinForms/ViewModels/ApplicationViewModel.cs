@@ -460,6 +460,11 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
 
                     var mf = await mp.SelectPhotoAsync(new CameraMediaStorageOptions());
+                    if (mf == null)
+                    {
+                        parameter.OnFaulted?.Invoke(null);
+                        return;
+                    }
 
                     using (var ms = mf.Source)
                     {
