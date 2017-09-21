@@ -172,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioService.cs" />
+    <Compile Include="CustomListViewRenderer.cs" />
     <Compile Include="DeviceService.cs" />
     <Compile Include="ExpandableEditorRenderer.cs" />
     <Compile Include="MainActivity.cs" />
