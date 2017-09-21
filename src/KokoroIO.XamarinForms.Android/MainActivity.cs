@@ -13,12 +13,15 @@ namespace KokoroIO.XamarinForms.Droid
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "image/*")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-        protected override async void OnCreate(Bundle bundle)
+        private static System.WeakReference<MainActivity> _Current;
+
+        protected override void OnCreate(Bundle bundle)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
+            _Current = new System.WeakReference<MainActivity>(this);
 
             var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
             Resolver.ResetResolver(resolver.GetResolver());
@@ -43,6 +46,15 @@ namespace KokoroIO.XamarinForms.Droid
                 }
                 catch { }
             }
+        }
+
+        internal static Context GetCurrentContext()
+        {
+            if (_Current != null && _Current.TryGetTarget(out var c))
+            {
+                return c.ApplicationContext;
+            }
+            return null;
         }
     }
 }

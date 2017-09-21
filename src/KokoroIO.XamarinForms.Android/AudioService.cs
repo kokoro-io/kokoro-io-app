@@ -23,11 +23,20 @@ namespace KokoroIO.XamarinForms.Droid
                     rs.CopyTo(fs);
                 }
             }
+            var c = MainActivity.GetCurrentContext();
 
-            var mp = new MediaPlayer();
-            mp.SetDataSource(_FilePath);
-            mp.Prepare();
-            mp.Start();
+            if (c != null)
+            {
+                var rm = RingtoneManager.GetRingtone(c, Android.Net.Uri.FromFile(new Java.IO.File(_FilePath)));
+                rm.Play();
+            }
+            else
+            {
+                var mp = new MediaPlayer();
+                mp.SetDataSource(_FilePath);
+                mp.Prepare();
+                mp.Start();
+            }
         }
     }
 }
