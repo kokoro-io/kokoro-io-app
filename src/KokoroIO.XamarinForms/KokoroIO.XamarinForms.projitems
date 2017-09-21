@@ -33,6 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\NotificationSettingsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProfileSettingsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\ProfileViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\RoomViewModel.cs" />
@@ -51,6 +52,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessageWebView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPage.xaml.cs">
       <DependentUpon>MessagesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\NotificationSettingsPage.xaml.cs">
+      <DependentUpon>NotificationSettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\ProfileSettingsPage.xaml.cs">
@@ -179,6 +184,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\SplashPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\NotificationSettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

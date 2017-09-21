@@ -6,14 +6,15 @@
         {
             Application = application;
 
-            Uploader = new UploaderSettingsViewModel(this);
-
             Profile = new ProfileSettingsViewModel(this);
+            Notification = new NotificationSettingsViewModel(this);
+            Uploader = new UploaderSettingsViewModel(this);
         }
 
         internal ApplicationViewModel Application { get; }
 
-        public UploaderSettingsViewModel Uploader { get; }
         public ProfileSettingsViewModel Profile { get; }
+        public NotificationSettingsViewModel Notification { get; }
+        public UploaderSettingsViewModel Uploader { get; }
     }
 }

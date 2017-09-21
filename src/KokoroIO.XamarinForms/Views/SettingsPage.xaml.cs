@@ -13,13 +13,17 @@ namespace KokoroIO.XamarinForms.Views
 
             BindingContext = viewModel;
 
-            Children.Add(new UploaderSettingsPage()
-            {
-                BindingContext = viewModel.Uploader
-            });
             Children.Add(new ProfileSettingsPage()
             {
                 BindingContext = viewModel.Profile
+            });
+            Children.Add(new NotificationSettingsPage()
+            {
+                BindingContext = viewModel.Notification
+            });
+            Children.Add(new UploaderSettingsPage()
+            {
+                BindingContext = viewModel.Uploader
             });
             Children.Add(new AboutPage()
             {
