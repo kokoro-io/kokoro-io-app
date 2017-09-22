@@ -176,6 +176,7 @@
     <Compile Include="DeviceService.cs" />
     <Compile Include="ExpandableEditorRenderer.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="MembersLabelRenderer.cs" />
     <Compile Include="MessageWebViewRenderer.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

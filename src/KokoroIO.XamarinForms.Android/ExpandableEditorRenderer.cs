@@ -39,6 +39,7 @@ namespace KokoroIO.XamarinForms.Droid
         private void Control_KeyPress(object sender, KeyEventArgs e)
         {
             UpdateSelection();
+            e.Handled = false;
         }
 
         private void UpdateSelection()
