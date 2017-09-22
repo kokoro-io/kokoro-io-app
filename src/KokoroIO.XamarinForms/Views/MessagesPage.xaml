@@ -155,26 +155,42 @@
                 IsRunning="True"
                 IsVisible="{Binding IsBusy}" />
 
-            <StackLayout
+            <Grid
                 Grid.Row="1"
                 HeightRequest="32"
-                Orientation="Horizontal"
                 IsVisible="{Binding CanPost}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-                <Button
-                    Style="{StaticResource footerButtonStyle}"
-                    WidthRequest="32"
-                    Text="+"
-                    Command="{Binding UploadImageCommand}"
-                    IsVisible="{Binding SupportsImageUpload}" />
+                <StackLayout
+                    Orientation="Horizontal">
 
-                <Button
-                    Style="{StaticResource footerButtonStyle}"
-                    WidthRequest="32"
-                    Text="Ph"
-                    Command="{Binding TakePhotoCommand}"
-                    IsVisible="{Binding SupportsTakePhoto}" />
-            </StackLayout>
+                    <Button
+                        Style="{StaticResource footerButtonStyle}"
+                        WidthRequest="32"
+                        Text="+"
+                        Command="{Binding UploadImageCommand}"
+                        IsVisible="{Binding SupportsImageUpload}" />
+
+                    <Button
+                        Style="{StaticResource footerButtonStyle}"
+                        WidthRequest="32"
+                        Text="Ph"
+                        Command="{Binding TakePhotoCommand}"
+                        IsVisible="{Binding SupportsTakePhoto}" />
+                </StackLayout>
+
+                <view:MembersLabel
+                    Grid.Column="1"
+                    LineBreakMode="NoWrap"
+                    VerticalTextAlignment="Center"
+                    IsVisible="{Binding ShowMemberCandicates}"
+                    Members="{Binding MemberCandicates}"
+                    SelectCommand="{Binding SelectMemberCommand}" />
+            </Grid>
 
             <Grid
                 Grid.Row="2"
@@ -191,6 +207,8 @@
                     HorizontalOptions="FillAndExpand"
                     Text="{Binding NewMessage}"
                     Placeholder="{Binding Room.Placeholder}"
+                    SelectionStart="{Binding SelectionStart}"
+                    SelectionLength="{Binding SelectionLength}"
                     PostCommand="{Binding PostCommand}"
                     FilePasted="ExpandableEditor_FilePasted" />
                 <Button

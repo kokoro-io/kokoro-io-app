@@ -41,11 +41,48 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
+        private ObservableRangeCollection<ProfileViewModel> _AllMembers;
+
+        public ObservableRangeCollection<ProfileViewModel> AllMembers
+        {
+            get
+            {
+                if (_AllMembers == null)
+                {
+                    _AllMembers = new ObservableRangeCollection<ProfileViewModel>();
+
+                    BeginLoadMembers();
+                }
+                return _AllMembers;
+            }
+        }
+
+        private async void BeginLoadMembers()
+        {
+            try
+            {
+                // TODO: Get room members
+                var ps = await Application.Client.GetProfilesAsync();
+
+                _AllMembers.AddRange(ps.Select(p => Application.GetProfile(p)));
+
+                UpdateMemberCandicates();
+            }
+            catch (Exception ex)
+            {
+                ex.Trace("LoadingRoomMemberFailed");
+            }
+        }
+
         #endregion Room
 
         public ApplicationViewModel Application => Room.Application;
 
         public Command OpenUrlCommand => Application.OpenUrlCommand;
+
+        #region Showing Messages
+
+        #region Messages
 
         private ObservableRangeCollection<MessageInfo> _Messages;
 
@@ -61,6 +98,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return _Messages;
             }
         }
+
+        #endregion Messages
 
         #region HasPrevious
 
@@ -243,15 +282,161 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Command PrependCommand { get; set; }
         public Command RefreshCommand { get; set; }
 
-        #region Post
+        #region SelectedMessage
+
+        private MessageInfo _SelectedMessage;
+
+        public MessageInfo SelectedMessage
+        {
+            get => _SelectedMessage;
+            set => SetProperty(ref _SelectedMessage, value);
+        }
+
+        #endregion SelectedMessage
+
+        #endregion Showing Messages
+
+        #region Post Message
+
+        #region NewMessage
 
         private string _NewMessage = string.Empty;
 
         public string NewMessage
         {
             get => _NewMessage;
-            set => SetProperty(ref _NewMessage, value);
+            set => SetProperty(ref _NewMessage, value, onChanged: UpdateMemberCandicates);
         }
+
+        #endregion NewMessage
+
+        #region Candicates
+
+        #region SelectionStart
+
+        private int _SelectionStart;
+
+        public int SelectionStart
+        {
+            get => _SelectionStart;
+            set => SetProperty(ref _SelectionStart, value, onChanged: UpdateMemberCandicates);
+        }
+
+        #endregion SelectionStart
+
+        #region SelectionLength
+
+        private int _SelectionLength;
+
+        public int SelectionLength
+        {
+            get => _SelectionLength;
+            set => SetProperty(ref _SelectionLength, value, onChanged: UpdateMemberCandicates);
+        }
+
+        #endregion SelectionLength
+
+        #region ShowMemberCandicates
+
+        private bool _ShowMemberCandicates;
+
+        public bool ShowMemberCandicates
+        {
+            get => _ShowMemberCandicates;
+            private set => SetProperty(ref _ShowMemberCandicates, value);
+        }
+
+        #endregion ShowMemberCandicates
+
+        #region MemberCandicates
+
+        private ObservableRangeCollection<ProfileViewModel> _MemberCandicates;
+
+        public ObservableRangeCollection<ProfileViewModel> MemberCandicates
+            => _MemberCandicates ?? (_MemberCandicates = new ObservableRangeCollection<ProfileViewModel>());
+
+        #endregion MemberCandicates
+
+        private void UpdateMemberCandicates()
+        {
+            var t = _NewMessage;
+            var s = _SelectionStart;
+            var l = _SelectionLength;
+
+            if (t != null && 0 < s && l >= 0 && AllMembers.Count > 0)
+            {
+                var i = s + l;
+                if (i == t.Length || (i < t.Length && char.IsWhiteSpace(t[i])))
+                {
+                    for (i--; i >= 0; i--)
+                    {
+                        var c = t[i];
+                        if (c == '@')
+                        {
+                            var pref = t.Substring(i + 1, s + l - i - 1);
+
+                            MemberCandicates.ReplaceRange(AllMembers.Where(p => p.ScreenName.StartsWith(pref, StringComparison.OrdinalIgnoreCase)));
+                            ShowMemberCandicates = MemberCandicates.Any();
+                            return;
+                        }
+                        else if (char.IsDigit(c) || char.IsLetter(c))
+                        {
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            ShowMemberCandicates = false;
+            MemberCandicates.Clear();
+        }
+
+        private Command _SelectMemberCommand;
+
+        public Command SelectMemberCommand 
+            => _SelectMemberCommand ?? (_SelectMemberCommand = new Command(OnSelectMember));
+
+        private void OnSelectMember(object parameter)
+        {
+            if (!(parameter is ProfileViewModel p))
+            {
+                return;
+            }
+            var t = _NewMessage;
+            var s = _SelectionStart;
+            var l = _SelectionLength;
+
+            if (t != null && 0 < s && l >= 0)
+            {
+                var i = s + l;
+                if (i == t.Length || (i < t.Length && char.IsWhiteSpace(t[i])))
+                {
+                    for (i--; i >= 0; i--)
+                    {
+                        var c = t[i];
+                        if (c == '@')
+                        {
+                            NewMessage = t.Substring(0, i) + "@" + p.ScreenName + (s + l == t.Length ? " " : (" " + t.Substring(s + l + 1)));
+                            SelectionStart = i + p.ScreenName.Length + 2;
+                            SelectionLength = 0;
+                            return;
+                        }
+                        else if (char.IsDigit(c) || char.IsLetter(c))
+                        {
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion Candicates
 
         #region Post Message
 
@@ -366,19 +551,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        #endregion Post
-
-        #region SelectedMessage
-
-        private MessageInfo _SelectedMessage;
-
-        public MessageInfo SelectedMessage
-        {
-            get => _SelectedMessage;
-            set => SetProperty(ref _SelectedMessage, value);
-        }
-
-        #endregion SelectedMessage
+        #endregion Post Message
 
         #region ShowUnreadCommand
 

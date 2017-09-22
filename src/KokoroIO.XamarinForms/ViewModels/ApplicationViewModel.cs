@@ -183,11 +183,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal ProfileViewModel GetProfile(Message model)
         {
-            var key = model.Profile.Id + '\0' + model.Avatar + '\0' + model.DisplayName;
+            var key = model.Profile.Id + '\0' + model.Profile.ScreenName + '\0' + model.Avatar + '\0' + model.DisplayName;
 
             if (!_Profiles.TryGetValue(key, out var p))
             {
-                p = new ProfileViewModel(model.Profile.Id, model.Avatar, model.DisplayName);
+                p = new ProfileViewModel(model.Profile.Id, model.Avatar, model.DisplayName, model.Profile.ScreenName);
                 _Profiles[key] = p;
             }
             return p;
@@ -195,7 +195,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal ProfileViewModel GetProfile(Profile model)
         {
-            var key = model.Id + '\0' + model.Avatar + '\0' + model.DisplayName;
+            var key = model.Id + '\0' + model.ScreenName + '\0' + model.Avatar + '\0' + model.DisplayName;
 
             if (!_Profiles.TryGetValue(key, out var p))
             {

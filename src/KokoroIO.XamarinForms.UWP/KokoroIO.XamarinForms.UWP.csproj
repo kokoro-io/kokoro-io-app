@@ -137,6 +137,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MediaPicker.cs" />
+    <Compile Include="MembersLabelRenderer.cs" />
     <Compile Include="MessageWebViewRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
