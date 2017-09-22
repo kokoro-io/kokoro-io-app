@@ -2,8 +2,9 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
+    xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
     Title="{Binding Title}">
     <ContentPage.Resources>
@@ -35,22 +36,22 @@
             </Style>
             <Style
                 x:Key="footerButtonStyle"
-                TargetType="Button">
-                <Setter
-                    Property="FontFamily"
-                    Value="Monospace" />
-                <Setter
-                    Property="FontSize"
-                    Value="Small" />
-                <Setter
-                    Property="TextColor"
-                    Value="#ccc" />
+                TargetType="xlabs:ImageButton">
                 <Setter
                     Property="BackgroundColor"
                     Value="Transparent" />
                 <Setter
                     Property="Margin"
                     Value="0" />
+                <Setter
+                    Property="ImageWidthRequest"
+                    Value="24" />
+                <Setter
+                    Property="ImageHeightRequest"
+                    Value="24" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="48" />
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -168,19 +169,33 @@
                 <StackLayout
                     Orientation="Horizontal">
 
-                    <Button
+                    <xlabs:ImageButton
                         Style="{StaticResource footerButtonStyle}"
-                        WidthRequest="32"
-                        Text="+"
+                        Image="image.png"
                         Command="{Binding UploadImageCommand}"
                         IsVisible="{Binding SupportsImageUpload}" />
 
-                    <Button
+                    <xlabs:ImageButton
                         Style="{StaticResource footerButtonStyle}"
-                        WidthRequest="32"
-                        Text="Ph"
+                        Image="camera.png"
                         Command="{Binding TakePhotoCommand}"
                         IsVisible="{Binding SupportsTakePhoto}" />
+
+                    <xlabs:ImageButton
+                        Style="{StaticResource footerButtonStyle}"
+                        Image="visibility.png"
+                        Command="{Binding ToggleNsfwCommand}">
+                        <xlabs:ImageButton.Triggers>
+                            <DataTrigger
+                                TargetType="xlabs:ImageButton"
+                                Binding="{Binding IsNsfw}"
+                                Value="True">
+                                <Setter
+                                    Property="Image"
+                                    Value="visibility_off.png" />
+                            </DataTrigger>
+                        </xlabs:ImageButton.Triggers>
+                    </xlabs:ImageButton>
                 </StackLayout>
 
                 <view:MembersLabel
@@ -213,12 +228,11 @@
                     PostCommand="{Binding PostCommand}"
                     FilePasted="ExpandableEditor_FilePasted"
                     Unfocused="ExpandableEditor_Unfocused" />
-                <Button
+                <xlabs:ImageButton
                     Grid.Column="1"
                     Style="{StaticResource footerButtonStyle}"
-                    Text="Go"
+                    Image="send.png"
                     VerticalOptions="End"
-                    WidthRequest="45"
                     Command="{Binding PostCommand}" />
             </Grid>
         </Grid>

@@ -470,7 +470,6 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var m = _NewMessage;
 
-            var nsfw = false;// TODO: NSFW UI
             var succeeded = false;
 
             if (IsBusy || string.IsNullOrEmpty(m))
@@ -480,7 +479,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             try
             {
                 IsBusy = true;
-                await Application.Client.PostMessageAsync(Room.Id, m, nsfw);
+                await Application.Client.PostMessageAsync(Room.Id, m, _IsNsfw);
                 NewMessage = string.Empty;
                 succeeded = true;
             }
@@ -499,6 +498,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 BeginAppend();
                 // TODO: scroll to new message
+
+                // TODO: reset nsfw
             }
         }
 
@@ -552,6 +553,27 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion TakePhotoCommand
+
+        #region IsNsfw
+
+        private bool _IsNsfw; // TODo: user default value
+
+        public bool IsNsfw
+        {
+            get => _IsNsfw;
+            set => SetProperty(ref _IsNsfw, value);
+        }
+
+        #endregion IsNsfw
+
+        #region ToggleNsfwCommand
+
+        private Command _ToggleNsfwCommand;
+
+        public Command ToggleNsfwCommand
+            => _ToggleNsfwCommand ?? (_ToggleNsfwCommand = new Command(() => IsNsfw = !_IsNsfw));
+
+        #endregion ToggleNsfwCommand
 
         #endregion Post Message
 
