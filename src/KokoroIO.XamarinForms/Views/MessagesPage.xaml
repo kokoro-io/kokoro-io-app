@@ -158,7 +158,8 @@
             <StackLayout
                 Grid.Row="1"
                 HeightRequest="32"
-                Orientation="Horizontal">
+                Orientation="Horizontal"
+                IsVisible="{Binding CanPost}">
 
                 <Button
                     Style="{StaticResource footerButtonStyle}"
@@ -177,17 +178,8 @@
 
             <Grid
                 Grid.Row="2"
-                Margin="4">
-                <Grid.Triggers>
-                    <DataTrigger
-                        TargetType="Grid"
-                        Binding="{Binding Room.IsArchived}"
-                        Value="True">
-                        <Setter
-                            Property="IsVisible"
-                            Value="False" />
-                    </DataTrigger>
-                </Grid.Triggers>
+                Margin="4"
+                IsVisible="{Binding CanPost}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition

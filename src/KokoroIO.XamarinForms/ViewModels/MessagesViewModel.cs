@@ -23,9 +23,25 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             PrependCommand = new Command(BeginPrepend);
             RefreshCommand = new Command(BeginAppend);
+
+            Room.PropertyChanged += Room_PropertyChanged;
         }
 
+        #region Room
+
         public RoomViewModel Room { get; }
+
+        private void Room_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(Room.IsArchived):
+                    OnPropertyChanged(nameof(CanPost));
+                    break;
+            }
+        }
+
+        #endregion Room
 
         public ApplicationViewModel Application => Room.Application;
 
@@ -237,6 +253,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             set => SetProperty(ref _NewMessage, value);
         }
 
+        #region Post Message
+
+        public bool CanPost
+            => !Room.IsArchived;
+
         #region PostCommand
 
         private Command _PostCommand;
@@ -330,6 +351,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion TakePhotoCommand
+
+        #endregion Post Message
 
         private void AppendUrl(string url)
         {
