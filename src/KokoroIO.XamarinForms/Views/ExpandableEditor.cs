@@ -26,6 +26,32 @@ namespace KokoroIO.XamarinForms.Views
 
         #endregion Placeholder
 
+        #region SelectionStart
+
+        public static readonly BindableProperty SelectionStartProperty
+            = BindableProperty.Create(nameof(SelectionStart), typeof(int), typeof(ExpandableEditor), defaultValue: 0, defaultBindingMode: BindingMode.TwoWay);
+
+        public int SelectionStart
+        {
+            get => (int)GetValue(SelectionStartProperty);
+            set => SetValue(SelectionStartProperty, value);
+        }
+
+        #endregion SelectionStart
+
+        #region SelectionLength
+
+        public static readonly BindableProperty SelectionLengthProperty
+            = BindableProperty.Create(nameof(SelectionLength), typeof(int), typeof(ExpandableEditor), defaultValue: 0, defaultBindingMode: BindingMode.TwoWay);
+
+        public int SelectionLength
+        {
+            get => (int)GetValue(SelectionLengthProperty);
+            set => SetValue(SelectionLengthProperty, value);
+        }
+
+        #endregion SelectionLength
+
         #region PostCommand
 
         public static readonly BindableProperty PostCommandProperty

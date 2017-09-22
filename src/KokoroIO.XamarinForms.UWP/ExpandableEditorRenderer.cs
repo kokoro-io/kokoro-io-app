@@ -30,6 +30,7 @@ namespace KokoroIO.XamarinForms.UWP
 
                 Control.AllowDrop = true;
                 Control.AddHandler(FormsTextBox.KeyDownEvent, (KeyEventHandler)Control_KeyDown, true);
+                Control.SelectionChanged += Control_SelectionChanged;
                 Control.DragEnter += Control_DragOver;
                 Control.DragOver += Control_DragOver;
                 Control.Drop += Control_Drop;
@@ -52,6 +53,16 @@ namespace KokoroIO.XamarinForms.UWP
                         e.Handled = true;
                     }
                 }
+            }
+        }
+
+        private void Control_SelectionChanged(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var ee = Element as ExpandableEditor;
+            if (ee != null)
+            {
+                ee.SelectionStart = Control.SelectionStart;
+                ee.SelectionLength = Control.SelectionLength;
             }
         }
 
@@ -104,16 +115,36 @@ namespace KokoroIO.XamarinForms.UWP
             catch { }
         }
 
-
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ExpandableEditor.Placeholder))
+            if (Control != null)
             {
-                if (Control != null)
+                switch (e.PropertyName)
                 {
-                    Control.PlaceholderText = (Element as ExpandableEditor)?.Placeholder ?? string.Empty;
+                    case nameof(ExpandableEditor.Placeholder):
+                        Control.PlaceholderText = (Element as ExpandableEditor)?.Placeholder ?? string.Empty;
+
+                        break;
+
+                    case nameof(ExpandableEditor.SelectionStart):
+                    case nameof(ExpandableEditor.SelectionLength):
+                        if (Element is ExpandableEditor ee)
+                        {
+                            if (0 <= ee.SelectionStart
+                                && ee.SelectionLength >= 0
+                                && ee.SelectionStart + ee.SelectionLength < Control.Text.Length)
+                            {
+                                if (!Control.PointerCaptures.Any()
+                                    && (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down)
+                                {
+                                    Control.Select(ee.SelectionStart, ee.SelectionLength);
+                                }
+                            }
+                        }
+                        break;
                 }
             }
+
             base.OnElementPropertyChanged(sender, e);
         }
     }
