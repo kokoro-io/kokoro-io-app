@@ -354,8 +354,18 @@
     }
     function _bringToTop(talk) {
         if (talk) {
-            var b = document.body;
-            b.scrollTop = talk.offsetTop;
+            if (talk.offsetTop === 0) {
+                if (talk.previousElementSibling) {
+                    setTimeout(function () {
+                        var b = document.body;
+                        b.scrollTop = talk.offsetTop;
+                    }, 1);
+                }
+            }
+            else {
+                var b = document.body;
+                b.scrollTop = talk.offsetTop;
+            }
         }
     }
     function _afterTalkInserted(talk, previousHeight) {
