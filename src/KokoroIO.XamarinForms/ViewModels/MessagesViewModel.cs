@@ -336,6 +336,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion SelectionLength
 
+        #region NewMessageFocused
+
+        private bool _NewMessageFocused;
+
+        public bool NewMessageFocused
+        {
+            get => _NewMessageFocused;
+            set => SetProperty(ref _NewMessageFocused, value);
+        }
+
+        #endregion NewMessageFocused
+
         #region ShowMemberCandicates
 
         private bool _ShowMemberCandicates;
@@ -396,7 +408,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private Command _SelectMemberCommand;
 
-        public Command SelectMemberCommand 
+        public Command SelectMemberCommand
             => _SelectMemberCommand ?? (_SelectMemberCommand = new Command(OnSelectMember));
 
         private void OnSelectMember(object parameter)
@@ -422,6 +434,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                             NewMessage = t.Substring(0, i) + "@" + p.ScreenName + (s + l == t.Length ? " " : (" " + t.Substring(s + l + 1)));
                             SelectionStart = i + p.ScreenName.Length + 2;
                             SelectionLength = 0;
+                            NewMessageFocused = true;
                             return;
                         }
                         else if (char.IsDigit(c) || char.IsLetter(c))

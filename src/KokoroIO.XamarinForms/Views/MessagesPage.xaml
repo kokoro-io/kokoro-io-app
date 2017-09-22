@@ -209,6 +209,7 @@
                     Placeholder="{Binding Room.Placeholder}"
                     SelectionStart="{Binding SelectionStart}"
                     SelectionLength="{Binding SelectionLength}"
+                    HasFocus="{Binding NewMessageFocused, Mode=TwoWay}"
                     PostCommand="{Binding PostCommand}"
                     FilePasted="ExpandableEditor_FilePasted" />
                 <Button

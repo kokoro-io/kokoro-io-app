@@ -10,6 +10,8 @@ namespace KokoroIO.XamarinForms.Views
     {
         public ExpandableEditor()
         {
+            this.Focused += (_, __) => HasFocus = IsFocused;
+            this.Unfocused += (_, __) => HasFocus = IsFocused;
             this.TextChanged += ExpandableEditor_TextChanged;
         }
 
@@ -51,6 +53,34 @@ namespace KokoroIO.XamarinForms.Views
         }
 
         #endregion SelectionLength
+
+        #region HasFocus
+
+        public static readonly BindableProperty HasFocusProperty
+            = BindableProperty.Create(nameof(HasFocus), typeof(bool), typeof(ExpandableEditor), defaultValue: false, propertyChanged: OnHasFocusChanged);
+
+        public bool HasFocus
+        {
+            get => (bool)GetValue(HasFocusProperty);
+            set => SetValue(HasFocusProperty, value);
+        }
+
+        private static void OnHasFocusChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is ExpandableEditor ee)
+            {
+                if (true.Equals(newValue))
+                {
+                    ee.Focus();
+                }
+                else
+                {
+                    ee.Unfocus();
+                }
+            }
+        }
+
+        #endregion HasFocus
 
         #region PostCommand
 
