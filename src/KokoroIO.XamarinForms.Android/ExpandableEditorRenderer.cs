@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Android.Views;
 using KokoroIO.XamarinForms.Droid;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
@@ -66,11 +67,12 @@ namespace KokoroIO.XamarinForms.Droid
                     case nameof(ExpandableEditor.SelectionLength):
                         if (Element is ExpandableEditor ee)
                         {
-                            if (0 <= ee.SelectionStart
+                            if (!_IsTouching
+                                && 0 <= ee.SelectionStart
                                 && ee.SelectionLength >= 0
                                 && ee.SelectionStart + ee.SelectionLength < Control.Text.Length)
                             {
-                                Control.SetSelection(ee.SelectionStart, ee.SelectionLength);
+                                Control.SetSelection(ee.SelectionStart, ee.SelectionStart + ee.SelectionLength);
                             }
                         }
                         break;
@@ -78,6 +80,14 @@ namespace KokoroIO.XamarinForms.Droid
             }
 
             base.OnElementPropertyChanged(sender, e);
+        }
+
+        private bool _IsTouching;
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            _IsTouching = e.Action == MotionEventActions.Up;
+            return base.OnTouchEvent(e);
         }
     }
 }

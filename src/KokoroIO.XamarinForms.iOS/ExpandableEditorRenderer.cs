@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Foundation;
 using KokoroIO.XamarinForms.iOS;
 using KokoroIO.XamarinForms.Views;
+using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
@@ -31,7 +32,8 @@ namespace KokoroIO.XamarinForms.iOS
                     case nameof(ExpandableEditor.SelectionLength):
                         if (Element is ExpandableEditor ee)
                         {
-                            if (0 <= ee.SelectionStart
+                            if (!_IsTouching
+                                && 0 <= ee.SelectionStart
                                 && ee.SelectionLength >= 0
                                 && ee.SelectionStart + ee.SelectionLength < Control.Text.Length)
                             {
@@ -53,6 +55,20 @@ namespace KokoroIO.XamarinForms.iOS
                 ee.SelectionStart = (int)Control.SelectedRange.Location;
                 ee.SelectionLength = (int)Control.SelectedRange.Length;
             }
+        }
+
+        private bool _IsTouching;
+
+        public override void TouchesBegan(NSSet touches, UIEvent evt)
+        {
+            _IsTouching = true;
+            base.TouchesBegan(touches, evt);
+        }
+
+        public override void TouchesEnded(NSSet touches, UIEvent evt)
+        {
+            base.TouchesEnded(touches, evt);
+            _IsTouching = false;
         }
 
         // TODO: implement placeholder
