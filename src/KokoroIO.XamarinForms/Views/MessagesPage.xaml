@@ -211,7 +211,8 @@
                     SelectionLength="{Binding SelectionLength}"
                     HasFocus="{Binding NewMessageFocused, Mode=TwoWay}"
                     PostCommand="{Binding PostCommand}"
-                    FilePasted="ExpandableEditor_FilePasted" />
+                    FilePasted="ExpandableEditor_FilePasted"
+                    Unfocused="ExpandableEditor_Unfocused" />
                 <Button
                     Grid.Column="1"
                     Style="{StaticResource footerButtonStyle}"

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using KokoroIO.XamarinForms.ViewModels;
 using Shipwreck.KokoroIO;
 using Xamarin.Forms;
@@ -27,7 +28,7 @@ namespace KokoroIO.XamarinForms.Views
                 DisplayAlert("kokoro.io", "Failed to upload an image", "OK");
             });
             MessagingCenter.Subscribe<MessagesViewModel>(this, "TakePhotoFailed", lvm =>
-            { 
+            {
                 DisplayAlert("kokoro.io", "Failed to take a photo", "OK");
             });
         }
@@ -43,6 +44,15 @@ namespace KokoroIO.XamarinForms.Views
             }
 
             vm.BeginUploadImage(e.Data);
+        }
+        private void ExpandableEditor_Unfocused(object sender, FocusEventArgs e)
+        {
+            var vm = BindingContext as MessagesViewModel;
+
+            if (vm?.CandicateClicked > DateTime.Now.AddSeconds(-0.5))
+            {
+                e.VisualElement.Focus();
+            }
         }
     }
 }

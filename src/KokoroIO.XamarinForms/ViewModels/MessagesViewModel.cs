@@ -435,6 +435,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                             SelectionStart = i + p.ScreenName.Length + 2;
                             SelectionLength = 0;
                             NewMessageFocused = true;
+                            CandicateClicked = DateTime.Now;
                             return;
                         }
                         else if (char.IsDigit(c) || char.IsLetter(c))
@@ -448,6 +449,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
             }
         }
+
+        internal DateTime? CandicateClicked { get; set; }
 
         #endregion Candicates
 
