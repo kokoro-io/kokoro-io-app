@@ -134,7 +134,7 @@ namespace KokoroIO.XamarinForms.UWP
                                 && ee.SelectionLength >= 0
                                 && ee.SelectionStart + ee.SelectionLength < Control.Text.Length)
                             {
-                                if (!Control.PointerCaptures.Any()
+                                if (!(Control.PointerCaptures?.Count > 0)
                                     && (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down)
                                 {
                                     Control.Select(ee.SelectionStart, ee.SelectionLength);
