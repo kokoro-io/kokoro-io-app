@@ -285,7 +285,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         #region UploadImageCommand
 
         public bool SupportsImageUpload
-            => Application.MediaPicker != null;
+            => Application.MediaPicker?.IsPhotosSupported == true;
 
         private Command _UploadImageCommand;
 
@@ -294,17 +294,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public void BeginUploadImage(Stream data = null)
         {
-            Application.BeginUpload(new UploadParameter(url =>
-            {
-                if (string.IsNullOrWhiteSpace(_NewMessage))
-                {
-                    NewMessage = url;
-                }
-                else
-                {
-                    NewMessage += " " + url;
-                }
-            }, error =>
+            Application.BeginUpload(new UploadParameter(AppendUrl, error =>
             {
                 data?.Dispose();
 
@@ -316,6 +306,42 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion UploadImageCommand
+
+        #region TakePhotoCommand
+
+        public bool SupportsTakePhoto
+            => Application.MediaPicker?.IsPhotosSupported == true
+                && Application.MediaPicker?.IsCameraAvailable == true;
+
+        private Command _TakePhotoCommand;
+
+        public Command TakePhotoCommand
+            => _TakePhotoCommand ?? (_TakePhotoCommand = new Command(BeginTakePhoto));
+
+        public void BeginTakePhoto()
+        {
+            Application.BeginUpload(new UploadParameter(AppendUrl, error =>
+            {
+                if (error != null)
+                {
+                    MessagingCenter.Send(this, "TakePhotoFailed");
+                }
+            }, useCamera: true));
+        }
+
+        #endregion TakePhotoCommand
+
+        private void AppendUrl(string url)
+        {
+            if (string.IsNullOrWhiteSpace(_NewMessage))
+            {
+                NewMessage = url;
+            }
+            else
+            {
+                NewMessage += " " + url;
+            }
+        }
 
         #endregion Post
 

@@ -24,7 +24,11 @@ namespace KokoroIO.XamarinForms.Views
 
             MessagingCenter.Subscribe<MessagesViewModel>(this, "UploadImageFailed", lvm =>
             {
-                DisplayAlert("kokoro.io", "Failed upload an image", "OK");
+                DisplayAlert("kokoro.io", "Failed to upload an image", "OK");
+            });
+            MessagingCenter.Subscribe<MessagesViewModel>(this, "TakePhotoFailed", lvm =>
+            { 
+                DisplayAlert("kokoro.io", "Failed to take a photo", "OK");
             });
         }
 

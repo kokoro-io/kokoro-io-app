@@ -3,6 +3,7 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
     Title="{Binding Title}">
     <ContentPage.Resources>
@@ -57,6 +58,8 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
                 <RowDefinition
                     Height="Auto" />
             </Grid.RowDefinitions>
@@ -151,8 +154,29 @@
                 HorizontalOptions="Center"
                 IsRunning="True"
                 IsVisible="{Binding IsBusy}" />
-            <Grid
+
+            <StackLayout
                 Grid.Row="1"
+                HeightRequest="32"
+                Orientation="Horizontal">
+
+                <Button
+                    Style="{StaticResource footerButtonStyle}"
+                    WidthRequest="32"
+                    Text="+"
+                    Command="{Binding UploadImageCommand}"
+                    IsVisible="{Binding SupportsImageUpload}" />
+
+                <Button
+                    Style="{StaticResource footerButtonStyle}"
+                    WidthRequest="32"
+                    Text="Ph"
+                    Command="{Binding TakePhotoCommand}"
+                    IsVisible="{Binding SupportsTakePhoto}" />
+            </StackLayout>
+
+            <Grid
+                Grid.Row="2"
                 Margin="4">
                 <Grid.Triggers>
                     <DataTrigger
@@ -165,31 +189,12 @@
                     </DataTrigger>
                 </Grid.Triggers>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="Auto" />
                     <ColumnDefinition />
                     <ColumnDefinition
                         Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Button
-                    Style="{StaticResource footerButtonStyle}"
-                    Text="+"
-                    VerticalOptions="Start"
-                    WidthRequest="35"
-                    Command="{Binding UploadImageCommand}">
-                    <Button.Triggers>
-                        <DataTrigger
-                            TargetType="Button"
-                            Binding="{Binding SupportsImageUpload}"
-                            Value="False">
-                            <Setter
-                                Property="IsVisible"
-                                Value="False" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
                 <view:ExpandableEditor
-                    Grid.Column="1"
+                    x:Name="editor"
                     FontSize="Small"
                     HorizontalOptions="FillAndExpand"
                     Text="{Binding NewMessage}"
@@ -197,7 +202,7 @@
                     PostCommand="{Binding PostCommand}"
                     FilePasted="ExpandableEditor_FilePasted" />
                 <Button
-                    Grid.Column="2"
+                    Grid.Column="1"
                     Style="{StaticResource footerButtonStyle}"
                     Text="Go"
                     VerticalOptions="End"
