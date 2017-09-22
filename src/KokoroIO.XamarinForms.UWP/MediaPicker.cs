@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.UWP;
+using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Xamarin.Forms;
@@ -13,7 +14,7 @@ namespace KokoroIO.XamarinForms.UWP
 {
     public sealed class MediaPicker : IMediaPicker
     {
-        public bool IsCameraAvailable => false;
+        public bool IsCameraAvailable => true;
 
         public bool IsPhotosSupported => true;
         public bool IsVideosSupported => false;
@@ -56,9 +57,26 @@ namespace KokoroIO.XamarinForms.UWP
             throw new NotSupportedException();
         }
 
-        public Task<MediaFile> TakePhotoAsync(CameraMediaStorageOptions options)
+        public async Task<MediaFile> TakePhotoAsync(CameraMediaStorageOptions options)
         {
-            throw new NotSupportedException();
+            var camera = new CameraCaptureUI();
+
+            var file = await camera.CaptureFileAsync(CameraCaptureUIMode.Photo);
+            if (file != null)
+            {
+                var tmp = Path.GetTempFileName();
+                var tf = await StorageFile.GetFileFromPathAsync(tmp);
+                await file.CopyAsync(await tf.GetParentAsync(), Path.GetFileName(tmp), NameCollisionOption.ReplaceExisting);
+                var mf = new MediaFile(file.Path, () => new FileStream(tmp, FileMode.Open));
+
+                OnMediaSelected?.Invoke(this, new MediaPickerArgs(mf));
+
+                return mf;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public Task<MediaFile> TakeVideoAsync(VideoMediaStorageOptions options)
