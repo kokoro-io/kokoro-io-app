@@ -6,23 +6,23 @@ using Windows.UI.Xaml.Documents;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
-[assembly: ExportRenderer(typeof(MembersLabel), typeof(MembersLabelRenderer))]
+[assembly: ExportRenderer(typeof(EntitiesLabel), typeof(EntitiesLabelRenderer))]
 
 namespace KokoroIO.XamarinForms.UWP
 {
-    public sealed class MembersLabelRenderer : LabelRenderer
+    public sealed class EntitiesLabelRenderer : LabelRenderer
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
         {
             base.OnElementChanged(e);
 
-            if (Element is MembersLabel ml)
+            if (Element is EntitiesLabel ml)
             {
-                ml.TextUpdater = UpdateMemberText;
+                ml.TextUpdater = UpdateEntitiesText;
             }
         }
 
-        private void UpdateMemberText()
+        private void UpdateEntitiesText()
         {
             if (Control == null)
             {
@@ -34,11 +34,11 @@ namespace KokoroIO.XamarinForms.UWP
                 hl.Click -= Hl_Click;
             }
             Control.Inlines.Clear();
-            if (Element is MembersLabel ml)
+            if (Element is EntitiesLabel ml)
             {
-                if (ml.Members != null)
+                if (ml.Entities != null)
                 {
-                    foreach (var m in ml.Members)
+                    foreach (var m in ml.Entities)
                     {
                         if (Control.Inlines.Any())
                         {
@@ -56,7 +56,7 @@ namespace KokoroIO.XamarinForms.UWP
                         hl.FontWeight = Control.FontWeight;
                         hl.Inlines.Add(new Run()
                         {
-                            Text = "@" + m.ScreenName
+                            Text = ml.GetText(m)
                         });
                         hl.Click += Hl_Click;
 
@@ -72,9 +72,10 @@ namespace KokoroIO.XamarinForms.UWP
 
             if (c != null)
             {
-                var sc = ((Run)sender.Inlines[0]).Text.Substring(1);
+                var sc = ((Run)sender.Inlines[0]).Text;
 
-                var mb = (Element as MembersLabel)?.Members?.FirstOrDefault(m => m.ScreenName.Equals(sc, StringComparison.OrdinalIgnoreCase));
+                var ml = Element as EntitiesLabel;
+                var mb = ml?.Entities.Cast<object>()?.FirstOrDefault(m => ml.GetText(m).Equals(sc, StringComparison.OrdinalIgnoreCase));
 
                 c.Execute(mb);
             }

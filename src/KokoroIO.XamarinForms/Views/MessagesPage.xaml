@@ -208,7 +208,7 @@
                     LineBreakMode="NoWrap"
                     VerticalTextAlignment="Center"
                     IsVisible="{Binding ProfileCandicates.HasResult}"
-                    Members="{Binding ProfileCandicates.Result}"
+                    Entities="{Binding ProfileCandicates.Result}"
                     SelectCommand="{Binding  ProfileCandicates.SelectCommand}" />
             </Grid>
 
