@@ -25,7 +25,7 @@ namespace KokoroIO.XamarinForms.Views
         #region SelectCommand
 
         public static readonly BindableProperty SelectCommandProperty
-            = BindableProperty.Create(nameof(SelectCommand), typeof(ICommand), typeof(MembersLabel));
+            = BindableProperty.Create(nameof(SelectCommand), typeof(ICommand), typeof(EntitiesLabel));
 
         public ICommand SelectCommand
         {

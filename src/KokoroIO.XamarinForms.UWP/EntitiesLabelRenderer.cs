@@ -10,7 +10,7 @@ using Xamarin.Forms.Platform.UWP;
 
 namespace KokoroIO.XamarinForms.UWP
 {
-    public sealed class EntitiesLabelRenderer : LabelRenderer
+    public class EntitiesLabelRenderer : LabelRenderer
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
         {
@@ -68,7 +68,7 @@ namespace KokoroIO.XamarinForms.UWP
 
         private void Hl_Click(Hyperlink sender, HyperlinkClickEventArgs args)
         {
-            var c = (Element as MembersLabel)?.SelectCommand;
+            var c = (Element as EntitiesLabel)?.SelectCommand;
 
             if (c != null)
             {

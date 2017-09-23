@@ -173,6 +173,14 @@
                                 Property="IsVisible"
                                 Value="False" />
                         </DataTrigger>
+                        <DataTrigger
+                            TargetType="StackLayout"
+                            Binding="{Binding RoomCandicates.HasResult}"
+                            Value="True">
+                            <Setter
+                                Property="IsVisible"
+                                Value="False" />
+                        </DataTrigger>
                     </StackLayout.Triggers>
 
                     <xlabs:ImageButton
@@ -210,6 +218,13 @@
                     IsVisible="{Binding ProfileCandicates.HasResult}"
                     Entities="{Binding ProfileCandicates.Result}"
                     SelectCommand="{Binding  ProfileCandicates.SelectCommand}" />
+
+                <view:RoomsLabel
+                    LineBreakMode="NoWrap"
+                    VerticalTextAlignment="Center"
+                    IsVisible="{Binding RoomCandicates.HasResult}"
+                    Entities="{Binding RoomCandicates.Result}"
+                    SelectCommand="{Binding  RoomCandicates.SelectCommand}" />
             </Grid>
 
             <Grid

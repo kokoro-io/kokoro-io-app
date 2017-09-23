@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Windows.Input;
-using KokoroIO.XamarinForms.ViewModels;
-using Xamarin.Forms;
+﻿using KokoroIO.XamarinForms.ViewModels;
 
 namespace KokoroIO.XamarinForms.Views
 {

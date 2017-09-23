@@ -34,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesProfileCandicates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesRoomCandicates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\NotificationSettingsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProfileSettingsViewModel.cs" />
@@ -66,6 +67,7 @@
       <DependentUpon>ProfileSettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\RoomsLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\SplashPage.xaml.cs">
       <DependentUpon>SplashPage.xaml</DependentUpon>
       <SubType>Code</SubType>

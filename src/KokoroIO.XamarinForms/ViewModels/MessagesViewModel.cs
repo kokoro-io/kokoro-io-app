@@ -337,7 +337,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string NewMessage
         {
             get => _NewMessage;
-            set => SetProperty(ref _NewMessage, value, onChanged: ProfileCandicates.UpdateResult);
+            set => SetProperty(ref _NewMessage, value, onChanged: UpdateCandicates);
         }
 
         #endregion NewMessage
@@ -351,7 +351,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int SelectionStart
         {
             get => _SelectionStart;
-            set => SetProperty(ref _SelectionStart, value, onChanged: ProfileCandicates.UpdateResult);
+            set => SetProperty(ref _SelectionStart, value, onChanged: UpdateCandicates);
         }
 
         #endregion SelectionStart
@@ -363,7 +363,13 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int SelectionLength
         {
             get => _SelectionLength;
-            set => SetProperty(ref _SelectionLength, value, onChanged: ProfileCandicates.UpdateResult);
+            set => SetProperty(ref _SelectionLength, value, onChanged: UpdateCandicates);
+        }
+
+        private void UpdateCandicates()
+        {
+            ProfileCandicates.UpdateResult();
+            RoomCandicates.UpdateResult();
         }
 
         #endregion SelectionLength
@@ -384,6 +390,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public MessagesProfileCandicates ProfileCandicates
             => _ProfileCandicates ?? (_ProfileCandicates = new MessagesProfileCandicates(this));
+
+        private MessagesRoomCandicates _RoomCandicates;
+
+        public MessagesRoomCandicates RoomCandicates
+            => _RoomCandicates ?? (_RoomCandicates = new MessagesRoomCandicates(this));
 
         internal DateTime? CandicateClicked { get; set; }
 
