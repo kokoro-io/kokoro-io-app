@@ -159,16 +159,10 @@
     }
     function createTaklElement(m) {
         var id = m.Id;
-        var avatarUrl = m.Avatar;
-        var displayName = m.DisplayName;
-        var publishedAt = m.PublishedAt;
-        var content = m.Content;
-        var isMerged = m.IsMerged;
-        var embeds = m.EmbedContents;
         var talk = document.createElement("div");
         talk.id = "talk" + id;
         talk.classList.add("talk");
-        talk.classList.add(isMerged ? "continued" : "not-continued");
+        talk.classList.add(m.IsMerged ? "continued" : "not-continued");
         talk.setAttribute("data-message-id", id.toString());
         try {
             var avatar = document.createElement("div");
@@ -178,7 +172,7 @@
             imgLink.classList.add("img-rounded");
             avatar.appendChild(imgLink);
             var img = document.createElement("img");
-            img.src = avatarUrl;
+            img.src = m.Avatar;
             imgLink.appendChild(img);
             var message = document.createElement("div");
             message.classList.add("message");
@@ -187,12 +181,18 @@
             speaker.classList.add("speaker");
             message.appendChild(speaker);
             var name = document.createElement("a");
-            name.innerText = displayName;
+            name.innerText = m.DisplayName;
             speaker.appendChild(name);
+            if (m.IsBot) {
+                var small = document.createElement("small");
+                small.className = "label label-default";
+                small.innerText = "bot";
+                speaker.appendChild(small);
+            }
             var small = document.createElement("small");
             small.classList.add("timeleft", "text-muted");
             try {
-                var d = new Date(Date.parse(publishedAt));
+                var d = new Date(Date.parse(m.PublishedAt));
                 small.innerText = _padLeft(d.getMonth() + 1, 2)
                     + '/' + _padLeft(d.getDate(), 2)
                     + ' ' + _padLeft(d.getHours(), 2)
@@ -205,21 +205,21 @@
                     + ':' + _padLeft(d.getSeconds(), 2);
             }
             catch (ex) {
-                small.innerText = publishedAt;
+                small.innerText = m.PublishedAt;
             }
             speaker.appendChild(small);
             var filteredText = document.createElement("div");
             filteredText.classList.add("filtered_text");
-            filteredText.innerHTML = content;
+            filteredText.innerHTML = m.Content;
             message.appendChild(filteredText);
-            if (embeds && embeds.length > 0) {
+            if (m.EmbedContents && m.EmbedContents.length > 0) {
                 var ecs = document.createElement("div");
                 ecs.classList.add("embed_contents");
                 message.appendChild(ecs);
                 var d = void 0;
                 try {
-                    for (var i = 0; i < embeds.length; i++) {
-                        var e = embeds[i];
+                    for (var i = 0; i < m.EmbedContents.length; i++) {
+                        var e = m.EmbedContents[i];
                         if (!e) {
                             continue;
                         }

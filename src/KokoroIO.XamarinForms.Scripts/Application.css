@@ -261,3 +261,20 @@ pre {
         background-color: transparent;
         border-radius: 0
     }
+
+.label-default {
+    background-color: #95a5a6;
+}
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+}

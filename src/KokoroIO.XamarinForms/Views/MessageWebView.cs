@@ -300,6 +300,7 @@ namespace KokoroIO.XamarinForms.Views
                 Id = m.Id;
                 Avatar = m.Profile.Avatar;
                 DisplayName = m.Profile.DisplayName;
+                IsBot = m.Profile.IsBot;
                 PublishedAt = m.PublishedAt;
                 IsNsfw = m.IsNsfw;
                 Content = m.Content;
@@ -310,6 +311,7 @@ namespace KokoroIO.XamarinForms.Views
             public int Id { get; }
             public string Avatar { get; }
             public string DisplayName { get; }
+            public bool IsBot { get; }
             public DateTime PublishedAt { get; }
 
             public bool IsNsfw { get; }

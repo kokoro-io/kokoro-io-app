@@ -187,7 +187,15 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (!_Profiles.TryGetValue(key, out var p))
             {
-                p = new ProfileViewModel(model.Profile.Id, model.Avatar, model.DisplayName, model.Profile.ScreenName);
+                p = new ProfileViewModel
+                    (
+                        model.Profile.Id,
+                        model.Avatar,
+                        model.DisplayName,
+                        model.Profile.ScreenName,
+                        model.Profile.Type == ProfileType.Bot
+                    );
+
                 _Profiles[key] = p;
             }
             return p;
