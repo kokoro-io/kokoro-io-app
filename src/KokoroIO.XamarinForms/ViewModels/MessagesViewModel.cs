@@ -71,7 +71,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                                             .OrderBy(p => p.ScreenName, StringComparer.OrdinalIgnoreCase)
                                             .ThenBy(p => p.Id));
 
-                UpdateMemberCandicates();
+                ProfileCandicates.UpdateResult();
             }
             catch (Exception ex)
             {
@@ -337,7 +337,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string NewMessage
         {
             get => _NewMessage;
-            set => SetProperty(ref _NewMessage, value, onChanged: UpdateMemberCandicates);
+            set => SetProperty(ref _NewMessage, value, onChanged: ProfileCandicates.UpdateResult);
         }
 
         #endregion NewMessage
@@ -351,7 +351,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int SelectionStart
         {
             get => _SelectionStart;
-            set => SetProperty(ref _SelectionStart, value, onChanged: UpdateMemberCandicates);
+            set => SetProperty(ref _SelectionStart, value, onChanged: ProfileCandicates.UpdateResult);
         }
 
         #endregion SelectionStart
@@ -363,7 +363,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int SelectionLength
         {
             get => _SelectionLength;
-            set => SetProperty(ref _SelectionLength, value, onChanged: UpdateMemberCandicates);
+            set => SetProperty(ref _SelectionLength, value, onChanged: ProfileCandicates.UpdateResult);
         }
 
         #endregion SelectionLength
@@ -380,107 +380,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion NewMessageFocused
 
-        #region ShowMemberCandicates
+        private MessagesProfileCandicates _ProfileCandicates;
 
-        private bool _ShowMemberCandicates;
-
-        public bool ShowMemberCandicates
-        {
-            get => _ShowMemberCandicates;
-            private set => SetProperty(ref _ShowMemberCandicates, value);
-        }
-
-        #endregion ShowMemberCandicates
-
-        #region MemberCandicates
-
-        private ObservableRangeCollection<ProfileViewModel> _MemberCandicates;
-
-        public ObservableRangeCollection<ProfileViewModel> MemberCandicates
-            => _MemberCandicates ?? (_MemberCandicates = new ObservableRangeCollection<ProfileViewModel>());
-
-        #endregion MemberCandicates
-
-        private void UpdateMemberCandicates()
-        {
-            var t = _NewMessage;
-            var s = _SelectionStart;
-            var l = _SelectionLength;
-
-            if (t != null && 0 < s && l >= 0 && AllMembers.Count > 0)
-            {
-                var i = s + l;
-                if (i == t.Length || (i < t.Length && char.IsWhiteSpace(t[i])))
-                {
-                    for (i--; i >= 0; i--)
-                    {
-                        var c = t[i];
-                        if (c == '@')
-                        {
-                            var pref = t.Substring(i + 1, s + l - i - 1);
-
-                            MemberCandicates.ReplaceRange(AllMembers.Where(p => p.ScreenName.StartsWith(pref, StringComparison.OrdinalIgnoreCase)));
-                            ShowMemberCandicates = MemberCandicates.Any();
-                            return;
-                        }
-                        else if (char.IsDigit(c) || char.IsLetter(c))
-                        {
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            ShowMemberCandicates = false;
-            MemberCandicates.Clear();
-        }
-
-        private Command _SelectMemberCommand;
-
-        public Command SelectMemberCommand
-            => _SelectMemberCommand ?? (_SelectMemberCommand = new Command(OnSelectMember));
-
-        private void OnSelectMember(object parameter)
-        {
-            if (!(parameter is ProfileViewModel p))
-            {
-                return;
-            }
-            var t = _NewMessage;
-            var s = _SelectionStart;
-            var l = _SelectionLength;
-
-            if (t != null && 0 < s && l >= 0)
-            {
-                var i = s + l;
-                if (i == t.Length || (i < t.Length && char.IsWhiteSpace(t[i])))
-                {
-                    for (i--; i >= 0; i--)
-                    {
-                        var c = t[i];
-                        if (c == '@')
-                        {
-                            NewMessage = t.Substring(0, i) + "@" + p.ScreenName + (s + l == t.Length ? " " : (" " + t.Substring(s + l + 1)));
-                            SelectionStart = i + p.ScreenName.Length + 2;
-                            SelectionLength = 0;
-                            NewMessageFocused = true;
-                            CandicateClicked = DateTime.Now;
-                            return;
-                        }
-                        else if (char.IsDigit(c) || char.IsLetter(c))
-                        {
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        public MessagesProfileCandicates ProfileCandicates
+            => _ProfileCandicates ?? (_ProfileCandicates = new MessagesProfileCandicates(this));
 
         internal DateTime? CandicateClicked { get; set; }
 

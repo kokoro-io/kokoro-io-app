@@ -160,14 +160,20 @@
                 Grid.Row="1"
                 HeightRequest="32"
                 IsVisible="{Binding CanPost}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="Auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
 
                 <StackLayout
                     Orientation="Horizontal">
+
+                    <StackLayout.Triggers>
+                        <DataTrigger
+                            TargetType="StackLayout"
+                            Binding="{Binding ProfileCandicates.HasResult}"
+                            Value="True">
+                            <Setter
+                                Property="IsVisible"
+                                Value="False" />
+                        </DataTrigger>
+                    </StackLayout.Triggers>
 
                     <xlabs:ImageButton
                         Style="{StaticResource footerButtonStyle}"
@@ -199,12 +205,11 @@
                 </StackLayout>
 
                 <view:MembersLabel
-                    Grid.Column="1"
                     LineBreakMode="NoWrap"
                     VerticalTextAlignment="Center"
-                    IsVisible="{Binding ShowMemberCandicates}"
-                    Members="{Binding MemberCandicates}"
-                    SelectCommand="{Binding SelectMemberCommand}" />
+                    IsVisible="{Binding ProfileCandicates.HasResult}"
+                    Members="{Binding ProfileCandicates.Result}"
+                    SelectCommand="{Binding  ProfileCandicates.SelectCommand}" />
             </Grid>
 
             <Grid

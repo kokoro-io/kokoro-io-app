@@ -29,9 +29,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)TH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\EntityCandicates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\IUploaderInfoHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessageInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesProfileCandicates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\MessagesViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\NotificationSettingsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProfileSettingsViewModel.cs" />
