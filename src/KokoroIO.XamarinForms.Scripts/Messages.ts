@@ -4,6 +4,7 @@
 }
 interface MessageInfo extends MergeInfo {
     Avatar: string;
+    ScreenName: string;
     DisplayName: string;
     PublishedAt: string;
     IsBot: boolean;
@@ -236,7 +237,7 @@ interface Window {
 
     function createTaklElement(m: MessageInfo): HTMLDivElement {
         var id = m.Id;
- 
+
         var talk = document.createElement("div");
         talk.id = "talk" + id;
         talk.classList.add("talk");
@@ -266,6 +267,7 @@ interface Window {
 
             var name = document.createElement("a");
             name.innerText = m.DisplayName;
+            name.href = 'https://kokoro.io/@' + m.ScreenName;
             speaker.appendChild(name);
 
             if (m.IsBot) {

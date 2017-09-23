@@ -142,7 +142,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                     if (_SelectedRoom != null)
                     {
                         _SelectedRoom.IsSelected = true;
-                        _SelectedRoom.GetOrCreateMessagesPage().IsSubscribing = true;
+                        var mp = _SelectedRoom.GetOrCreateMessagesPage();
+                        mp.IsSubscribing = true;
+                        mp.SelectedProfile = null;
                     }
                     OnUnreadCountChanged();
                     if (Client.State == ClientState.Disconnected
@@ -280,6 +282,22 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (u != null)
             {
+                if (u.Scheme == "https"
+                    && u.Host == "kokoro.io")
+                {
+                    if (u.AbsolutePath.StartsWith("/@"))
+                    {
+                        var mp = SelectedRoom.MessagesPage;
+
+                        if (mp != null)
+                        {
+                            mp.SelectProfile(u.AbsolutePath.Substring(2));
+
+                            return;
+                        }
+                    }
+                }
+
                 XDevice.OpenUri(u);
             }
         }
@@ -537,7 +555,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private static Func<Stream> _RequestedFile;
 
-        public static async void OpenFile(Func<Stream> streamCreator)
+        public static void OpenFile(Func<Stream> streamCreator)
         {
             var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
 

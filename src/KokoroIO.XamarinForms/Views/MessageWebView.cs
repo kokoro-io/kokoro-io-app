@@ -299,6 +299,7 @@ namespace KokoroIO.XamarinForms.Views
             {
                 Id = m.Id;
                 Avatar = m.Profile.Avatar;
+                ScreenName = m.Profile.ScreenName;
                 DisplayName = m.Profile.DisplayName;
                 IsBot = m.Profile.IsBot;
                 PublishedAt = m.PublishedAt;
@@ -310,6 +311,7 @@ namespace KokoroIO.XamarinForms.Views
 
             public int Id { get; }
             public string Avatar { get; }
+            public string ScreenName { get; }
             public string DisplayName { get; }
             public bool IsBot { get; }
             public DateTime PublishedAt { get; }

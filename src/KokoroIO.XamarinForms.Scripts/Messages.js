@@ -182,6 +182,7 @@
             message.appendChild(speaker);
             var name = document.createElement("a");
             name.innerText = m.DisplayName;
+            name.href = 'https://kokoro.io/@' + m.ScreenName;
             speaker.appendChild(name);
             if (m.IsBot) {
                 var small = document.createElement("small");

@@ -51,20 +51,26 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     _AllMembers = new ObservableRangeCollection<ProfileViewModel>();
 
-                    BeginLoadMembers();
+                    _LoadAllMembersTask = BeginLoadMembers();
                 }
                 return _AllMembers;
             }
         }
 
-        private async void BeginLoadMembers()
+        private Task _LoadAllMembersTask;
+
+        private async Task BeginLoadMembers()
         {
             try
             {
                 // TODO: Get room members
                 var ps = await Application.Client.GetProfilesAsync();
 
-                _AllMembers.AddRange(ps.Select(p => Application.GetProfile(p)));
+                _AllMembers.AddRange(
+                        ps.Select(p => Application.GetProfile(p))
+                                            .Concat(new[] { Application.LoginUser })
+                                            .OrderBy(p => p.ScreenName, StringComparer.OrdinalIgnoreCase)
+                                            .ThenBy(p => p.Id));
 
                 UpdateMemberCandicates();
             }
@@ -293,6 +299,33 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion SelectedMessage
+
+        #region SelectedProfile
+
+        private ProfileViewModel _SelectedProfile;
+
+        public ProfileViewModel SelectedProfile
+        {
+            get => _SelectedProfile;
+            set => SetProperty(ref _SelectedProfile, value, onChanged: () => OnPropertyChanged(nameof(HasProfile)));
+        }
+
+        public bool HasProfile => _SelectedProfile != null;
+
+        internal async void SelectProfile(string screenName)
+        {
+            AllMembers.GetHashCode();
+            await _LoadAllMembersTask;
+
+            SelectedProfile = AllMembers.FirstOrDefault(p => p.ScreenName.Equals(screenName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private Command _ClearProfileCommand;
+
+        public Command ClearProfileCommand
+            => _ClearProfileCommand ?? (_ClearProfileCommand = new Command(() => SelectedProfile = null));
+
+        #endregion SelectedProfile
 
         #endregion Showing Messages
 
