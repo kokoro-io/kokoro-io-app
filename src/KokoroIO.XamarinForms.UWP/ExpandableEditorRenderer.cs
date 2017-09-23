@@ -147,5 +147,21 @@ namespace KokoroIO.XamarinForms.UWP
 
             base.OnElementPropertyChanged(sender, e);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (Control != null)
+                {
+                    Control.RemoveHandler(FormsTextBox.KeyDownEvent, (KeyEventHandler)Control_KeyDown);
+                    Control.SelectionChanged -= Control_SelectionChanged;
+                    Control.DragEnter -= Control_DragOver;
+                    Control.DragOver -= Control_DragOver;
+                    Control.Drop -= Control_Drop;
+                }
+            }
+            base.Dispose(disposing);
+        }
     }
 }

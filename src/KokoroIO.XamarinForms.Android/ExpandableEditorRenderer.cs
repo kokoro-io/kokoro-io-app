@@ -90,5 +90,19 @@ namespace KokoroIO.XamarinForms.Droid
             _IsTouching = e.Action == MotionEventActions.Up;
             return base.OnTouchEvent(e);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (Control != null)
+                {
+                    Control.TextChanged -= Control_TextChanged;
+                    Control.KeyPress -= Control_KeyPress;
+                    Control.Click -= Control_Click;
+                }
+            }
+            base.Dispose(disposing);
+        }
     }
 }

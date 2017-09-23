@@ -71,28 +71,18 @@ namespace KokoroIO.XamarinForms.iOS
             _IsTouching = false;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (Control != null)
+                {
+                    Control.SelectionChanged -= Control_SelectionChanged;
+                }
+            }
+            base.Dispose(disposing);
+        }
+
         // TODO: implement placeholder
-
-        //protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
-        //{
-        //    base.OnElementChanged(e);
-
-        //    if (Control != null)
-        //    {
-        //        Control.PlaceholderText = (e.NewElement as ExpandableEditor)?.Placeholder ?? string.Empty;
-        //    }
-        //}
-
-        //protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        //{
-        //    if (e.PropertyName == nameof(ExpandableEditor.Placeholder))
-        //    {
-        //        if (Control != null)
-        //        {
-        //            Control.PlaceholderText = (Element as ExpandableEditor)?.Placeholder ?? string.Empty;
-        //        }
-        //    }
-        //    base.OnElementPropertyChanged(sender, e);
-        //}
     }
 }
