@@ -63,7 +63,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             try
             {
                 // TODO: Get room members
-                var ps = await Application.Client.GetProfilesAsync();
+                var ps = await Application.GetProfilesAsync();
 
                 _AllMembers.AddRange(
                         ps.Select(p => Application.GetProfile(p))
@@ -159,7 +159,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     aid = _Messages.Last().Id;
                 }
 
-                var messages = await Application.Client.GetMessagesAsync(Room.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
+                var messages = await Application.GetMessagesAsync(Room.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
 
                 HasPrevious &= aid != null || messages.Length >= PAGE_SIZE;
 
@@ -511,7 +511,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             try
             {
                 IsBusy = true;
-                await Application.Client.PostMessageAsync(Room.Id, m, _IsNsfw);
+                await Application.PostMessageAsync(Room.Id, m, _IsNsfw);
                 NewMessage = string.Empty;
                 succeeded = true;
             }

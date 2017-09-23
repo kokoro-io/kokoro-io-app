@@ -31,7 +31,82 @@ namespace KokoroIO.XamarinForms.ViewModels
             client.Disconnected += Client_Disconnected;
         }
 
-        internal Client Client { get; }
+        #region kokoro.io API Client
+
+        private readonly Client Client;
+        private readonly Queue<Func<Task>> _ClientTasks = new Queue<Func<Task>>();
+
+        private void EnqueueClientTaskCore(Func<Task> taskExecutor)
+        {
+            lock (_ClientTasks)
+            {
+                _ClientTasks.Enqueue(taskExecutor);
+
+                if (_ClientTasks.Count == 1)
+                {
+                    ExecuteClientTasks().GetHashCode();
+                }
+            }
+        }
+
+        private async Task ExecuteClientTasks()
+        {
+            for (; ; )
+            {
+                Func<Task> e;
+                lock (_ClientTasks)
+                {
+                    if (!_ClientTasks.Any())
+                    {
+                        return;
+                    }
+                    e = _ClientTasks.Dequeue();
+                }
+
+                try
+                {
+                    await e().ConfigureAwait(false);
+                }
+                catch { }
+            }
+        }
+
+        private Task<T> EnqueueClientTask<T>(Func<Task<T>> task)
+        {
+            var tcs = new TaskCompletionSource<T>();
+
+            EnqueueClientTaskCore(() => task().ContinueWith(t =>
+            {
+                if (t.Status == TaskStatus.RanToCompletion)
+                {
+                    tcs.SetResult(t.Result);
+                }
+                else if (t.IsFaulted)
+                {
+                    tcs.SetException(t.Exception);
+                }
+                else
+                {
+                    tcs.SetCanceled();
+                }
+            }));
+
+            return tcs.Task;
+        }
+
+        public Task<Profile[]> GetProfilesAsync()
+            => EnqueueClientTask(() => Client.GetProfilesAsync());
+
+        public Task<Room[]> GetRoomsAsync(bool? archived = null)
+            => EnqueueClientTask(() => Client.GetRoomsAsync(archived: archived));
+
+        public Task<Message[]> GetMessagesAsync(string roomId, int? limit = null, int? beforeId = null, int? afterId = null)
+            => EnqueueClientTask(() => Client.GetMessagesAsync(roomId, limit: limit, beforeId: beforeId, afterId: afterId));
+
+        public Task<Message> PostMessageAsync(string roomId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
+            => EnqueueClientTask(() => Client.PostMessageAsync(roomId, message, isNsfw, idempotentKey));
+
+        #endregion kokoro.io API Client
 
         #region Rooms
 
@@ -63,7 +138,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 _Rooms = new ObservableRangeCollection<RoomViewModel>();
             }
 
-            var rooms = await Client.GetRoomsAsync().ConfigureAwait(false);
+            var rooms = await GetRoomsAsync().ConfigureAwait(false);
 
             foreach (var r in rooms.OrderBy(e => e.IsArchived ? 1 : 0)
                                     .ThenBy(e => (int)e.Kind)

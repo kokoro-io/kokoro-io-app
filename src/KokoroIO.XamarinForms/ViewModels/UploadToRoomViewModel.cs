@@ -44,7 +44,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 _Rooms = new ObservableCollection<RoomViewModel>();
 
-                var rooms = await Application.Client.GetRoomsAsync(false);
+                var rooms = await Application.GetRoomsAsync(false);
 
                 foreach (var r in rooms)
                 {
