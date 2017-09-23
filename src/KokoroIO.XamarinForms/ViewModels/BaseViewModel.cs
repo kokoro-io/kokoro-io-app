@@ -1,6 +1,4 @@
-﻿using KokoroIO.XamarinForms.Helpers;
-
-namespace KokoroIO.XamarinForms.ViewModels
+﻿namespace KokoroIO.XamarinForms.ViewModels
 {
     public class BaseViewModel : ObservableObject
     {

@@ -1,5 +1,4 @@
-﻿using KokoroIO.XamarinForms.Helpers;
-using KokoroIO.XamarinForms.Models;
+﻿using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 

@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using KokoroIO.XamarinForms.Helpers;
 using KokoroIO.XamarinForms.Models.Data;
 using Realms;
 using Shipwreck.KokoroIO;

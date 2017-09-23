@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using KokoroIO.XamarinForms.Helpers;
 using Shipwreck.KokoroIO;
 
 namespace KokoroIO.XamarinForms.ViewModels
