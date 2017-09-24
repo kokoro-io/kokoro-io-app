@@ -1,11 +1,14 @@
+using System;
 using Shipwreck.KokoroIO;
+using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class ProfileViewModel
     {
-        internal ProfileViewModel(Profile model)
+        internal ProfileViewModel(ApplicationViewModel application, Profile model)
         {
+            Application = application;
             Id = model.Id;
             Avatar = model.Avatar;
             DisplayName = model.DisplayName;
@@ -13,8 +16,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             IsBot = model.Type == ProfileType.Bot;
         }
 
-        internal ProfileViewModel(string id, string avatar, string displayName, string screenName, bool isBot)
+        internal ProfileViewModel(ApplicationViewModel application, string id, string avatar, string displayName, string screenName, bool isBot)
         {
+            Application = application;
             Id = id;
             Avatar = avatar;
             DisplayName = displayName;
@@ -22,10 +26,37 @@ namespace KokoroIO.XamarinForms.ViewModels
             IsBot = isBot;
         }
 
+        public ApplicationViewModel Application { get; }
+
         public string Id { get; }
         public string Avatar { get; }
         public string DisplayName { get; }
         public string ScreenName { get; }
         public bool IsBot { get; }
+
+        public bool IsOtherUser
+            => !IsBot && Id != Application.LoginUser.Id;
+
+        private Command _BeginDirectMessageCommand;
+
+        public Command BeginDirectMessageCommand
+            => _BeginDirectMessageCommand ?? (_BeginDirectMessageCommand = new Command(async () =>
+            {
+                try
+                {
+                    if (!IsOtherUser)
+                    {
+                        return;
+                    }
+
+                    var room = await Application.PostDirectMessageRoomAsync(Id);
+
+                    Application.SelectedRoom = room;
+                }
+                catch (Exception ex)
+                {
+                    ex.Trace("PostDirectMessageFailed");
+                }
+            }));
     }
 }

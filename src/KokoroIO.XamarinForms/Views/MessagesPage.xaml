@@ -267,6 +267,7 @@
                 <xlabs:PopupLayout.Content>
 
                     <Grid
+                        BindingContext="{Binding SelectedProfile}"
                         HorizontalOptions="Center"
                         VerticalOptions="Center"
                         BackgroundColor="White">
@@ -291,19 +292,20 @@
                                 WidthRequest="40"
                                 HeightRequest="40"
                                 Margin="8"
-                                Source="{Binding SelectedProfile.Avatar}" />
+                                Source="{Binding Avatar}" />
                             <Label
                                 Grid.Column="1"
                                 VerticalOptions="Center"
-                                Text="{Binding SelectedProfile.DisplayName}"
+                                Text="{Binding DisplayName}"
                                 Margin="8,4,32,4" />
                         </Grid>
                         <Button
                             Grid.Row="2"
                             Margin="8,4"
                             HorizontalOptions="End"
-                            IsEnabled="False"
-                            Text="Send Direct Message" />
+                            IsVisible="{Binding IsOtherUser}"
+                            Text="Send Direct Message"
+                            Command="{Binding BeginDirectMessageCommand}"/>
                     </Grid>
                 </xlabs:PopupLayout.Content>
             </xlabs:PopupLayout>

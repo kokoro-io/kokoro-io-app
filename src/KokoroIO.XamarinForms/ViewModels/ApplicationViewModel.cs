@@ -106,6 +106,34 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Task<Message> PostMessageAsync(string roomId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
             => EnqueueClientTask(() => Client.PostMessageAsync(roomId, message, isNsfw, idempotentKey));
 
+        public async Task<RoomViewModel> PostDirectMessageRoomAsync(string targetUserProfileId)
+        {
+            var room = await EnqueueClientTask(() => Client.PostDirectMessageRoomAsync(targetUserProfileId));
+
+            var rvm = Rooms.FirstOrDefault(r => r.Id == room.Id);
+
+            if (rvm == null)
+            {
+                rvm = new RoomViewModel(this, room);
+
+                for (var i = 0; i < Rooms.Count; i++)
+                {
+                    var aft = Rooms[i];
+
+                    if ((aft.Kind == RoomKind.DirectMessage && aft.ChannelName.CompareTo(rvm.ChannelName) > 0)
+                        || aft.IsArchived)
+                    {
+                        Rooms.Insert(i, rvm);
+                        return rvm;
+                    }
+                }
+
+                Rooms.Add(rvm);
+            }
+
+            return rvm;
+        }
+
         #endregion kokoro.io API Client
 
         #region Rooms
@@ -265,6 +293,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 p = new ProfileViewModel
                     (
+                        this,
                         model.Profile.Id,
                         model.Avatar,
                         model.DisplayName,
@@ -283,7 +312,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (!_Profiles.TryGetValue(key, out var p))
             {
-                p = new ProfileViewModel(model);
+                p = new ProfileViewModel(this, model);
                 _Profiles[key] = p;
             }
             return p;
