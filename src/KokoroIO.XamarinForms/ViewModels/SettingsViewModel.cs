@@ -1,4 +1,6 @@
-﻿namespace KokoroIO.XamarinForms.ViewModels
+﻿using System;
+
+namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class SettingsViewModel : BaseViewModel
     {
@@ -16,5 +18,6 @@
         public ProfileSettingsViewModel Profile { get; }
         public NotificationSettingsViewModel Notification { get; }
         public UploaderSettingsViewModel Uploader { get; }
+        public Type InitialPageType { get; internal set; }
     }
 }

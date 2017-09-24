@@ -1,4 +1,5 @@
-﻿using KokoroIO.XamarinForms.ViewModels;
+﻿using System.Linq;
+using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -29,6 +30,9 @@ namespace KokoroIO.XamarinForms.Views
             {
                 // BindingContext = viewModel.Profile
             });
+
+            SelectedItem = Children.FirstOrDefault(c => c.GetType() == viewModel.InitialPageType) ?? SelectedItem;
+            viewModel.InitialPageType = null;
         }
     }
 }

@@ -324,9 +324,12 @@ namespace KokoroIO.XamarinForms.ViewModels
         private Command _SettingCommand;
 
         public Command SettingsCommand
-            => _SettingCommand ?? (_SettingCommand = new Command(async () =>
+            => _SettingCommand ?? (_SettingCommand = new Command(async (p) =>
             {
-                await App.Current.MainPage.Navigation.PushModalAsync(new SettingsPage(new SettingsViewModel(this)));
+                await App.Current.MainPage.Navigation.PushModalAsync(new SettingsPage(new SettingsViewModel(this)
+                {
+                    InitialPageType = p as Type
+                }));
             }));
 
         #endregion SettingCommand
