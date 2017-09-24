@@ -34,6 +34,8 @@ namespace KokoroIO.XamarinForms.UWP
                 Control.DragEnter += Control_DragOver;
                 Control.DragOver += Control_DragOver;
                 Control.Drop += Control_Drop;
+
+                Control.Paste += Control_Paste;
             }
         }
 
@@ -115,6 +117,60 @@ namespace KokoroIO.XamarinForms.UWP
             catch { }
         }
 
+        private void Control_Paste(object sender, Windows.UI.Xaml.Controls.TextControlPasteEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                var dataPackageView = Clipboard.GetContent();
+
+                if (dataPackageView != null)
+                {
+                    e.Handled = CanHandleData(dataPackageView);
+                    OnDataPasted(dataPackageView);
+                }
+            }
+        }
+
+        private static bool CanHandleData(DataPackageView dataPackageView)
+            => dataPackageView.Contains(StandardDataFormats.StorageItems)
+            || dataPackageView.Contains(StandardDataFormats.Bitmap);
+
+        private async void OnDataPasted(DataPackageView dataPackageView)
+        {
+            try
+            {
+                var h = (Element as ExpandableEditor)?._FilePasted;
+
+                if (h != null)
+                {
+                    IRandomAccessStreamWithContentType ras = null;
+                    if (dataPackageView.Contains(StandardDataFormats.StorageItems))
+                    {
+                        var sis = await dataPackageView.GetStorageItemsAsync();
+                        var si = sis.OfType<StorageFile>().FirstOrDefault();
+
+                        if (si != null)
+                        {
+                            ras = await si.OpenReadAsync();
+                            var s = ras.AsStreamForRead();
+                        }
+                    }
+                    else if (dataPackageView.Contains(StandardDataFormats.Bitmap))
+                    {
+                        var re = await dataPackageView.GetBitmapAsync();
+                        ras = await re.OpenReadAsync();
+                    }
+
+                    if (ras != null)
+                    {
+                        // TODO: add handled to dispose stream
+                        h(Element, new EventArgs<Stream>(ras.AsStreamForRead()));
+                    }
+                }
+            }
+            catch { }
+        }
+
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (Control != null)
@@ -159,6 +215,8 @@ namespace KokoroIO.XamarinForms.UWP
                     Control.DragEnter -= Control_DragOver;
                     Control.DragOver -= Control_DragOver;
                     Control.Drop -= Control_Drop;
+
+                    Control.Paste -= Control_Paste;
                 }
             }
             base.Dispose(disposing);
