@@ -101,7 +101,9 @@ namespace KokoroIO.XamarinForms.Models
 
                             res.EnsureSuccessStatusCode();
 
-                            _AccessToken = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            var json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            var jo = JObject.Parse(json);
+                            _RefreshToken = jo.Property("refresh_token")?.Value?.Value<string>();
                             try
                             {
                                 App.Current.Properties[ACCESS_TOKEN_KEY] = _AccessToken;
