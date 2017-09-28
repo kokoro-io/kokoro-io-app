@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using KokoroIO.XamarinForms.ViewModels;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

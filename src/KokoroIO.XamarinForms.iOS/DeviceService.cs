@@ -1,5 +1,4 @@
 using KokoroIO.XamarinForms.iOS;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(AudioService))]

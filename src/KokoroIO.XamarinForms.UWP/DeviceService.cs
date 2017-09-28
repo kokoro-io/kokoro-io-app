@@ -1,6 +1,5 @@
 using System.Linq;
 using KokoroIO.XamarinForms.UWP;
-using Shipwreck.KokoroIO;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Xamarin.Forms;

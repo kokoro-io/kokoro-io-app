@@ -1,7 +1,5 @@
-using System;
 using System.Text;
 using KokoroIO.XamarinForms.Droid;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(DeviceService))]

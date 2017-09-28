@@ -15,20 +15,50 @@
                     Height="Auto" />
             </Grid.RowDefinitions>
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="Auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                </Grid.RowDefinitions>
+
                 <Image
                     WidthRequest="40"
                     HeightRequest="40"
                     Margin="8"
                     Source="{Binding Application.LoginUser.Avatar}" />
                 <Label
-                    Grid.Column="1"
-                    VerticalOptions="Center"
-                    Text="{Binding Application.LoginUser.DisplayName}" />
+                    Grid.Row="1"
+                    FontSize="Medium"
+                    FontAttributes="Bold"
+                    Text="Screen Name" />
+                <Entry
+                    Grid.Row="2"
+                    FontSize="Large"
+                    Keyboard="Email"
+                    Text="{Binding ScreenName}" />
+                <Label
+                    Grid.Row="3"
+                    FontSize="Medium"
+                    FontAttributes="Bold"
+                    Text="Display Name" />
+                <Entry
+                    Grid.Row="4"
+                    FontSize="Large"
+                    Text="{Binding DisplayName}" />
+                <Button
+                    Grid.Row="5"
+                    FontSize="Medium"
+                    Text="Save Profile"
+                    Command="{Binding SaveCommand}" />
             </Grid>
             <StackLayout
                 Grid.Row="2"

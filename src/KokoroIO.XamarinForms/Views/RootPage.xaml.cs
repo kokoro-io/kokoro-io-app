@@ -3,6 +3,7 @@ using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
@@ -39,7 +40,7 @@ namespace KokoroIO.XamarinForms.Views
             }
             viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
-            MasterBehavior = Device.Idiom == TargetIdiom.Phone ? MasterBehavior.Popover : MasterBehavior.Split;
+            MasterBehavior = XDevice.Idiom == TargetIdiom.Phone ? MasterBehavior.Popover : MasterBehavior.Split;
 
             SetBinding(HasNotificationProperty, new Binding(nameof(viewModel.HasNotificationInMenu)));
         }

@@ -1,5 +1,3 @@
-using Shipwreck.KokoroIO;
-
 namespace KokoroIO.XamarinForms
 {
     public interface IDeviceService

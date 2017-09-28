@@ -58,6 +58,9 @@
     <Reference Include="FormsViewGroup, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Xamarin.Forms.2.3.4.270\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
     </Reference>
+    <Reference Include="KokoroIO.Client, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\KokoroIO.Client.0.0.1-pre\lib\netstandard1.3\KokoroIO.Client.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.Mobile, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.dll</HintPath>
     </Reference>
@@ -98,9 +101,6 @@
     </Reference>
     <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
       <HintPath>..\packages\Remotion.Linq.2.1.1\lib\portable-net45+win+wpa81+wp80\Remotion.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="Shipwreck.KokoroIO.Client, Version=0.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shipwreck.KokoroIO.Client.0.0.9-pre\lib\netstandard1.3\Shipwreck.KokoroIO.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Compression" />

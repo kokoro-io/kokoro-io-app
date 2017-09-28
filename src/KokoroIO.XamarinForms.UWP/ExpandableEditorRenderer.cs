@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using KokoroIO.XamarinForms.UWP;
 using KokoroIO.XamarinForms.Views;
-using Shipwreck.KokoroIO;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 

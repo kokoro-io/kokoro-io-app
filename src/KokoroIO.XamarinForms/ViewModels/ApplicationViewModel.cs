@@ -7,7 +7,6 @@ using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Views;
 using Realms;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -96,6 +95,17 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public Task<Profile[]> GetProfilesAsync()
             => EnqueueClientTask(() => Client.GetProfilesAsync());
+
+        public async Task<ProfileViewModel> PutProfileAsync(string screenName = null, string displayName = null, Stream avatar = null)
+        {
+            var p = await EnqueueClientTask(() => Client.PutProfileAsync(screenName: screenName, displayName: displayName, avatar: avatar));
+
+            var pvm = GetProfile(p);
+
+            LoginUser = pvm;
+
+            return pvm;
+        }
 
         public Task<Membership[]> GetMembershipsAsync(bool? archived = null, Authority? authority = null)
             => EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority));

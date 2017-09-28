@@ -1,5 +1,4 @@
 using System;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels

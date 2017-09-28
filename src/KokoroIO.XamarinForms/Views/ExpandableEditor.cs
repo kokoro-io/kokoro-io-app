@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Input;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.Views

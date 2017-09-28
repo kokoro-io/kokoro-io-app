@@ -4,7 +4,6 @@ using Microsoft.Azure.Mobile;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
 using Microsoft.Azure.Mobile.Distribute;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -68,8 +67,7 @@ namespace KokoroIO.XamarinForms
         {
             base.OnSleep();
 
-            var avm = MainPage?.BindingContext as ApplicationViewModel;
-            if (avm != null)
+            if (MainPage?.BindingContext is ApplicationViewModel avm)
             {
                 try
                 {

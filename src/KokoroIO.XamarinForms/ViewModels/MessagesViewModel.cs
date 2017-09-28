@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models.Data;
 using Realms;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 

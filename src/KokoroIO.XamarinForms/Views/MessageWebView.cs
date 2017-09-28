@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using KokoroIO.XamarinForms.ViewModels;
 using Newtonsoft.Json;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 

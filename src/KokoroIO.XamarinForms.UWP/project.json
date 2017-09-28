@@ -1,11 +1,11 @@
 ﻿{
   "dependencies": {
+    "KokoroIO.Client": "0.0.1-pre",
     "Microsoft.Azure.Mobile.Analytics": "0.15.0",
     "Microsoft.Azure.Mobile.Crashes": "0.15.0",
     "Microsoft.Azure.Mobile.Distribute": "0.15.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "Realm.Database": "1.6.0",
-    "Shipwreck.KokoroIO.Client": "0.0.9-pre",
     "Xamarin.Forms": "2.3.4.270",
     "XLabs.Forms": "2.3.0-pre05",
     "XLabs.Platform": "2.3.0-pre05"

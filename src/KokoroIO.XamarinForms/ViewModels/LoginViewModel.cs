@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Views;
-using Shipwreck.KokoroIO;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
