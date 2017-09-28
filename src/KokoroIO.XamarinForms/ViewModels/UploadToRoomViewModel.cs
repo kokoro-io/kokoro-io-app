@@ -44,10 +44,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 _Rooms = new ObservableCollection<RoomViewModel>();
 
-                var rooms = await Application.GetRoomsAsync(false);
+                var memberships = await Application.GetMembershipsAsync(archived: false).ConfigureAwait(false);
 
-                foreach (var r in rooms)
+                foreach (var m in memberships)
                 {
+                    var r = m.Room;
                     var rvm = Application.Rooms.FirstOrDefault(rm => rm.Id == r.Id);
                     if (rvm != null)
                     {

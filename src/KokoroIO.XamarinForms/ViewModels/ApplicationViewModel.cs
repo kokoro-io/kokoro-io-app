@@ -97,6 +97,9 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Task<Profile[]> GetProfilesAsync()
             => EnqueueClientTask(() => Client.GetProfilesAsync());
 
+        public Task<Membership[]> GetMembershipsAsync(bool? archived = null, Authority? authority = null)
+            => EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority));
+
         public Task<Room[]> GetRoomsAsync(bool? archived = null)
             => EnqueueClientTask(() => Client.GetRoomsAsync(archived: archived));
 
@@ -166,7 +169,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 _Rooms = new ObservableRangeCollection<RoomViewModel>();
             }
 
-            var rooms = await GetRoomsAsync().ConfigureAwait(false);
+            var memberships = await GetMembershipsAsync().ConfigureAwait(false);
+            var rooms = memberships.Select(m => m.Room);
 
             foreach (var r in rooms.OrderBy(e => e.IsArchived ? 1 : 0)
                                     .ThenBy(e => (int)e.Kind)
