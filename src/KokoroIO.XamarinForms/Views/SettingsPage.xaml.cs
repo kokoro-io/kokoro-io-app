@@ -2,6 +2,7 @@
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
@@ -30,6 +31,15 @@ namespace KokoroIO.XamarinForms.Views
             {
                 // BindingContext = viewModel.Profile
             });
+
+            if (XDevice.Idiom == TargetIdiom.Phone
+                && XDevice.RuntimePlatform != XDevice.Windows)
+            {
+                foreach (var c in Children)
+                {
+                    c.Title = null;
+                }
+            }
 
             SelectedItem = Children.FirstOrDefault(c => c.GetType() == viewModel.InitialPageType) ?? SelectedItem;
             viewModel.InitialPageType = null;

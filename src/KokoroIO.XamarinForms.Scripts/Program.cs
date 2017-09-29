@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -29,6 +30,14 @@ namespace KokoroIO.XamarinForms.Scripts
             GenerateIcon(inDir, "ic_send_black_24px.svg", "send");
             GenerateIcon(inDir, "ic_visibility_black_24px.svg", "visibility");
             GenerateIcon(inDir, "ic_visibility_off_black_24px.svg", "visibility_off");
+
+            GenerateIcon(inDir, "ic_account_circle_black_24px.svg", "account");
+            GenerateIcon(inDir, "ic_account_circle_black_24px.svg", "account_white", color: -1);
+            GenerateIcon(inDir, "ic_info_outline_black_24px.svg", "info");
+            GenerateIcon(inDir, "ic_info_outline_black_24px.svg", "info_white", color: -1);
+            GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications");
+            GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications_white", color: -1);
+            GenerateIcon(inDir, "ic_image_black_24px.svg", "image_white", color: -1);
         }
 
         private static void Generate(string inDir, string outDir)
@@ -174,6 +183,8 @@ namespace KokoroIO.XamarinForms.Scripts
                 var dirs = new[] { "m", "h", "xh", "xxh", "xxxh" };
                 var sizes = new[] { 24, 36, 48, 72, 96 };
 
+                var procs = new List<Process>();
+
                 for (var i = 0; i < dirs.Length; i++)
                 {
                     var size = sizes[i];
@@ -188,6 +199,13 @@ namespace KokoroIO.XamarinForms.Scripts
                     psi.RedirectStandardError = true;
 
                     var p = Process.Start(psi);
+
+                    procs.Add(p);
+                }
+
+                foreach (var p in procs)
+                {
+                    p.WaitForExit();
                 }
             }
             {

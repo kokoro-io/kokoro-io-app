@@ -6,6 +6,13 @@
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.ProfileSettingsPage"
     Title="{Binding Title}">
+    <ContentPage.Icon>
+        <OnPlatform
+            x:TypeArguments="FileImageSource"
+            WinPhone="account.png"
+            iOS="account_white.png"
+            Android="account_white.png" />
+    </ContentPage.Icon>
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style

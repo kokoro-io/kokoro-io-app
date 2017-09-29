@@ -6,6 +6,13 @@
     xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.UploaderSettingsPage"
     Title="{Binding Title}">
+    <ContentPage.Icon>
+        <OnPlatform
+            x:TypeArguments="FileImageSource"
+            WinPhone="image.png"
+            iOS="image_white.png"
+            Android="image_white.png" />
+    </ContentPage.Icon>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>

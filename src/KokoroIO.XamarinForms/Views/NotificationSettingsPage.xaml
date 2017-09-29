@@ -6,6 +6,13 @@
     xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.NotificationSettingsPage"
     Title="{Binding Title}">
+    <ContentPage.Icon>
+        <OnPlatform
+            x:TypeArguments="FileImageSource"
+            WinPhone="notifications.png"
+            iOS="notifications_white.png"
+            Android="notifications_white.png" />
+    </ContentPage.Icon>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>

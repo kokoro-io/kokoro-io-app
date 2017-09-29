@@ -5,6 +5,13 @@
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.AboutPage"
     Title="About">
+    <ContentPage.Icon>
+        <OnPlatform
+            x:TypeArguments="FileImageSource"
+            WinPhone="info.png"
+            iOS="info_white.png"
+            Android="info_white.png" />
+    </ContentPage.Icon>
     <ContentPage.BindingContext>
         <vm:AboutViewModel />
     </ContentPage.BindingContext>
