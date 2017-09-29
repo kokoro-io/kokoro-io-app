@@ -6,15 +6,15 @@ using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
-    public sealed class UploadToRoomViewModel : BaseViewModel
+    public sealed class UploadToChannelViewModel : BaseViewModel
     {
-        internal UploadToRoomViewModel(ApplicationViewModel application, Func<Stream> streamCreator)
+        internal UploadToChannelViewModel(ApplicationViewModel application, Func<Stream> streamCreator)
         {
             Application = application;
             StreamCreator = streamCreator;
-            if (application.Rooms.Any())
+            if (application.Channels.Any())
             {
-                _Rooms = new ObservableCollection<RoomViewModel>(application.Rooms.Where(r => !r.IsArchived));
+                _Channels = new ObservableCollection<ChannelViewModel>(application.Channels.Where(r => !r.IsArchived));
             }
         }
 
@@ -27,32 +27,32 @@ namespace KokoroIO.XamarinForms.ViewModels
         public ImageSource Image
             => _Image ?? (_Image = ImageSource.FromStream(StreamCreator));
 
-        private ObservableCollection<RoomViewModel> _Rooms;
+        private ObservableCollection<ChannelViewModel> _Channels;
 
-        public ObservableCollection<RoomViewModel> Rooms
+        public ObservableCollection<ChannelViewModel> Channels
         {
             get
             {
-                InitRooms();
-                return _Rooms;
+                InitChannels();
+                return _Channels;
             }
         }
 
-        private async void InitRooms()
+        private async void InitChannels()
         {
-            if (_Rooms == null)
+            if (_Channels == null)
             {
-                _Rooms = new ObservableCollection<RoomViewModel>();
+                _Channels = new ObservableCollection<ChannelViewModel>();
 
                 var memberships = await Application.GetMembershipsAsync(archived: false).ConfigureAwait(false);
 
                 foreach (var m in memberships)
                 {
-                    var r = m.Room;
-                    var rvm = Application.Rooms.FirstOrDefault(rm => rm.Id == r.Id);
+                    var r = m.Channel;
+                    var rvm = Application.Channels.FirstOrDefault(rm => rm.Id == r.Id);
                     if (rvm != null)
                     {
-                        _Rooms.Add(rvm);
+                        _Channels.Add(rvm);
                     }
                 }
             }

@@ -2,9 +2,9 @@ using System;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
-    public sealed class RoomViewModel : ObservableObject
+    public sealed class ChannelViewModel : ObservableObject
     {
-        internal RoomViewModel(ApplicationViewModel application, Room model)
+        internal ChannelViewModel(ApplicationViewModel application, Channel model)
         {
             Application = application;
             Id = model.Id;
@@ -20,12 +20,12 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string ChannelName { get; }
 
         public string DisplayName
-            => (Kind == RoomKind.DirectMessage ? '@' : '#') + ChannelName;
+            => (Kind == ChannelKind.DirectMessage ? '@' : '#') + ChannelName;
 
         public string Placeholder
-            => "Let's talk" + (Kind == RoomKind.DirectMessage ? " to " : " at ") + ChannelName;
+            => "Let's talk" + (Kind == ChannelKind.DirectMessage ? " to " : " at ") + ChannelName;
 
-        public RoomKind Kind { get; }
+        public ChannelKind Kind { get; }
         public bool IsArchived { get; }
         public bool NotificationDisabled { get; }
 
@@ -35,13 +35,13 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 switch (Kind)
                 {
-                    case RoomKind.PublicChannel:
+                    case ChannelKind.PublicChannel:
                         return "Public Channels";
 
-                    case RoomKind.PrivateChannel:
+                    case ChannelKind.PrivateChannel:
                         return "Private Channels";
 
-                    case RoomKind.DirectMessage:
+                    case ChannelKind.DirectMessage:
                         return "Direct Messages";
                 }
 

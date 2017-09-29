@@ -48,9 +48,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                         return;
                     }
 
-                    var room = await Application.PostDirectMessageRoomAsync(Id);
+                    var channel = await Application.PostDirectMessageChannelAsync(Id);
 
-                    Application.SelectedRoom = room;
+                    Application.SelectedChannel = channel;
                 }
                 catch (Exception ex)
                 {

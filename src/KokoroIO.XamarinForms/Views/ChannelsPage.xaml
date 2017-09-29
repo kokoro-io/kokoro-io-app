@@ -5,7 +5,7 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
-    x:Class="KokoroIO.XamarinForms.Views.RoomsPage"
+    x:Class="KokoroIO.XamarinForms.Views.ChannelsPage"
     Title="{Binding Title}">
     <ContentPage.Content>
         <Grid>
@@ -59,7 +59,7 @@
                 HasUnevenRows="true"
                 VerticalOptions="Fill"
                 CachingStrategy="RecycleElement"
-                ItemsSource="{Binding Rooms}"
+                ItemsSource="{Binding Channels}"
                 ItemSelected="ListView_ItemSelected">
                 <ListView.ItemTemplate>
                     <DataTemplate>

@@ -7,25 +7,25 @@ using Xamarin.Forms.Xaml;
 namespace KokoroIO.XamarinForms.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class UploadToRoomPage : ContentPage
+    public partial class UploadToChannelPage : ContentPage
     {
-        public UploadToRoomPage()
+        public UploadToChannelPage()
         {
             InitializeComponent();
         }
 
         private async void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            var vm = BindingContext as UploadToRoomViewModel;
+            var vm = BindingContext as UploadToChannelViewModel;
             var lv = sender as ListView;
 
-            var item = lv?.SelectedItem as RoomViewModel;
+            var item = lv?.SelectedItem as ChannelViewModel;
 
             if (item != null)
             {
                 var app = item.Application;
 
-                app.SelectedRoom = item;
+                app.SelectedChannel = item;
 
                 while (Navigation.ModalStack.Any())
                 {

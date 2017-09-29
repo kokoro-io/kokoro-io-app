@@ -110,38 +110,38 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Task<Membership[]> GetMembershipsAsync(bool? archived = null, Authority? authority = null)
             => EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority));
 
-        public Task<Room[]> GetRoomsAsync(bool? archived = null)
-            => EnqueueClientTask(() => Client.GetRoomsAsync(archived: archived));
+        public Task<Channel[]> GetChannelsAsync(bool? archived = null)
+            => EnqueueClientTask(() => Client.GetChannelsAsync(archived: archived));
 
-        public Task<Message[]> GetMessagesAsync(string roomId, int? limit = null, int? beforeId = null, int? afterId = null)
-            => EnqueueClientTask(() => Client.GetMessagesAsync(roomId, limit: limit, beforeId: beforeId, afterId: afterId));
+        public Task<Message[]> GetMessagesAsync(string channelId, int? limit = null, int? beforeId = null, int? afterId = null)
+            => EnqueueClientTask(() => Client.GetMessagesAsync(channelId, limit: limit, beforeId: beforeId, afterId: afterId));
 
-        public Task<Message> PostMessageAsync(string roomId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
-            => EnqueueClientTask(() => Client.PostMessageAsync(roomId, message, isNsfw, idempotentKey));
+        public Task<Message> PostMessageAsync(string channelId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
+            => EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey));
 
-        public async Task<RoomViewModel> PostDirectMessageRoomAsync(string targetUserProfileId)
+        public async Task<ChannelViewModel> PostDirectMessageChannelAsync(string targetUserProfileId)
         {
-            var room = await EnqueueClientTask(() => Client.PostDirectMessageRoomAsync(targetUserProfileId));
+            var channel = await EnqueueClientTask(() => Client.PostDirectMessageChannelAsync(targetUserProfileId));
 
-            var rvm = Rooms.FirstOrDefault(r => r.Id == room.Id);
+            var rvm = Channels.FirstOrDefault(r => r.Id == channel.Id);
 
             if (rvm == null)
             {
-                rvm = new RoomViewModel(this, room);
+                rvm = new ChannelViewModel(this, channel);
 
-                for (var i = 0; i < Rooms.Count; i++)
+                for (var i = 0; i < Channels.Count; i++)
                 {
-                    var aft = Rooms[i];
+                    var aft = Channels[i];
 
-                    if ((aft.Kind == RoomKind.DirectMessage && aft.ChannelName.CompareTo(rvm.ChannelName) > 0)
+                    if ((aft.Kind == ChannelKind.DirectMessage && aft.ChannelName.CompareTo(rvm.ChannelName) > 0)
                         || aft.IsArchived)
                     {
-                        Rooms.Insert(i, rvm);
+                        Channels.Insert(i, rvm);
                         return rvm;
                     }
                 }
 
-                Rooms.Add(rvm);
+                Channels.Add(rvm);
             }
 
             return rvm;
@@ -149,23 +149,23 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion kokoro.io API Client
 
-        #region Rooms
+        #region Channels
 
         private Task _LoadInitialDataTask;
 
-        private ObservableRangeCollection<RoomViewModel> _Rooms;
+        private ObservableRangeCollection<ChannelViewModel> _Channels;
 
-        public ObservableRangeCollection<RoomViewModel> Rooms
+        public ObservableRangeCollection<ChannelViewModel> Channels
         {
             get
             {
-                if (_Rooms == null)
+                if (_Channels == null)
                 {
-                    _Rooms = new ObservableRangeCollection<RoomViewModel>();
+                    _Channels = new ObservableRangeCollection<ChannelViewModel>();
                 }
                 LoadInitialDataTask.GetHashCode();
 
-                return _Rooms;
+                return _Channels;
             }
         }
 
@@ -174,30 +174,30 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private async Task LoadInitialDataAsync()
         {
-            if (_Rooms == null)
+            if (_Channels == null)
             {
-                _Rooms = new ObservableRangeCollection<RoomViewModel>();
+                _Channels = new ObservableRangeCollection<ChannelViewModel>();
             }
 
             var memberships = await GetMembershipsAsync().ConfigureAwait(false);
-            var rooms = memberships.Select(m => m.Room);
+            var channels = memberships.Select(m => m.Channel);
 
-            foreach (var r in rooms.OrderBy(e => e.IsArchived ? 1 : 0)
+            foreach (var r in channels.OrderBy(e => e.IsArchived ? 1 : 0)
                                     .ThenBy(e => (int)e.Kind)
                                     .ThenBy(e => e.ChannelName, StringComparer.Ordinal)
                                     .ThenBy(e => e.Id))
             {
-                var rvm = new RoomViewModel(this, r);
+                var rvm = new ChannelViewModel(this, r);
 
-                _Rooms.Add(rvm);
+                _Channels.Add(rvm);
             }
 
             try
             {
-                string roomId;
+                string channelId;
                 using (var realm = Realm.GetInstance())
                 {
-                    var rup = realm.All<RoomUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
+                    var rup = realm.All<ChannelUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
 
                     if (rup == null)
                     {
@@ -207,43 +207,43 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         using (var trx = realm.BeginWrite())
                         {
-                            realm.RemoveAll<RoomUserProperties>();
+                            realm.RemoveAll<ChannelUserProperties>();
                             trx.Commit();
                         }
                         return;
                     }
                     else
                     {
-                        roomId = rup.RoomId;
+                        channelId = rup.ChannelId;
                     }
                 }
 
-                var rvm = _Rooms.FirstOrDefault(r => r.Id == roomId);
+                var rvm = _Channels.FirstOrDefault(r => r.Id == channelId);
                 if (rvm != null)
                 {
-                    SelectedRoom = rvm;
+                    SelectedChannel = rvm;
                 }
             }
             catch (Exception ex)
             {
-                ex.Trace("LoadingRoomUserPropertiesFailed");
+                ex.Trace("LoadingChannelUserPropertiesFailed");
             }
         }
 
-        private RoomViewModel _SelectedRoom;
+        private ChannelViewModel _SelectedChannel;
 
-        public RoomViewModel SelectedRoom
+        public ChannelViewModel SelectedChannel
         {
-            get => _SelectedRoom;
+            get => _SelectedChannel;
             set
             {
-                if (value != _SelectedRoom)
+                if (value != _SelectedChannel)
                 {
-                    if (_SelectedRoom != null)
+                    if (_SelectedChannel != null)
                     {
-                        _SelectedRoom.IsSelected = false;
+                        _SelectedChannel.IsSelected = false;
 
-                        var mp = _SelectedRoom.MessagesPage;
+                        var mp = _SelectedChannel.MessagesPage;
 
                         if (mp != null)
                         {
@@ -251,20 +251,20 @@ namespace KokoroIO.XamarinForms.ViewModels
                         }
                     }
 
-                    _SelectedRoom = value;
+                    _SelectedChannel = value;
 
                     OnPropertyChanged();
 
-                    if (_SelectedRoom != null)
+                    if (_SelectedChannel != null)
                     {
-                        _SelectedRoom.IsSelected = true;
-                        var mp = _SelectedRoom.GetOrCreateMessagesPage();
+                        _SelectedChannel.IsSelected = true;
+                        var mp = _SelectedChannel.GetOrCreateMessagesPage();
                         mp.IsSubscribing = true;
                         mp.SelectedProfile = null;
                     }
                     OnUnreadCountChanged();
                     if (Client.State == ClientState.Disconnected
-                        && _Rooms.Any())
+                        && _Channels.Any())
                     {
                         ConnectAsync().GetHashCode();
                     }
@@ -282,10 +282,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal void OnUnreadCountChanged()
         {
-            HasNotificationInMenu = _Rooms?.Where(r => r != _SelectedRoom).Sum(r => r.UnreadCount) > 0;
+            HasNotificationInMenu = _Channels?.Where(r => r != _SelectedChannel).Sum(r => r.UnreadCount) > 0;
         }
 
-        #endregion Rooms
+        #endregion Channels
 
         #region Profiles
 
@@ -407,7 +407,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     if (u.AbsolutePath.StartsWith("/@"))
                     {
-                        var mp = SelectedRoom.MessagesPage;
+                        var mp = SelectedChannel.MessagesPage;
 
                         if (mp != null)
                         {
@@ -429,7 +429,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             if (Client.State == ClientState.Disconnected)
             {
                 await Client.ConnectAsync();
-                await Client.SubscribeAsync(Rooms.Select(r => r.Id));
+                await Client.SubscribeAsync(Channels.Select(r => r.Id));
 
                 OnPropertyChanged(nameof(IsDisconnected));
             }
@@ -441,7 +441,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         public bool IsDisconnected
-            => Rooms.Any(r => !r.IsArchived)
+            => Channels.Any(r => !r.IsArchived)
             && Client.State == ClientState.Disconnected;
 
         private Command _ConnectCommand;
@@ -480,7 +480,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
-            var rvm = _Rooms?.FirstOrDefault(r => r.Id == e.Data.Room.Id);
+            var rvm = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id);
 
             MessagingCenter.Send(this, "MessageCreated", e.Data);
 
@@ -505,7 +505,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
-            var mp = _Rooms?.FirstOrDefault(r => r.Id == e.Data.Room.Id)?.MessagesPage;
+            var mp = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id)?.MessagesPage;
 
             MessagingCenter.Send(this, "MessageUpdated", e.Data);
 
@@ -696,9 +696,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 var nav = App.Current.MainPage.Navigation;
 
-                await nav.PushModalAsync(new UploadToRoomPage()
+                await nav.PushModalAsync(new UploadToChannelPage()
                 {
-                    BindingContext = new UploadToRoomViewModel(this, sc)
+                    BindingContext = new UploadToChannelViewModel(this, sc)
                 });
             }
         }

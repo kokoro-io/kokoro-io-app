@@ -12,28 +12,28 @@ namespace KokoroIO.XamarinForms.ViewModels
 {
     public sealed class MessagesViewModel : BaseViewModel
     {
-        internal MessagesViewModel(RoomViewModel room)
+        internal MessagesViewModel(ChannelViewModel channel)
         {
-            Room = room;
-            Title = room.DisplayName;
-            _IsArchiveBannerShown = room.IsArchived;
-            _HasUnread = Room.UnreadCount > 0;
+            Channel = channel;
+            Title = channel.DisplayName;
+            _IsArchiveBannerShown = channel.IsArchived;
+            _HasUnread = Channel.UnreadCount > 0;
 
             PrependCommand = new Command(BeginPrepend);
             RefreshCommand = new Command(BeginAppend);
 
-            Room.PropertyChanged += Room_PropertyChanged;
+            Channel.PropertyChanged += Channel_PropertyChanged;
         }
 
-        #region Room
+        #region Channel
 
-        public RoomViewModel Room { get; }
+        public ChannelViewModel Channel { get; }
 
-        private void Room_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Channel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
-                case nameof(Room.IsArchived):
+                case nameof(Channel.IsArchived):
                     OnPropertyChanged(nameof(CanPost));
                     break;
             }
@@ -61,7 +61,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             try
             {
-                // TODO: Get room members
+                // TODO: Get channel members
                 var ps = await Application.GetProfilesAsync();
 
                 _AllMembers.AddRange(
@@ -74,13 +74,13 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("LoadingRoomMemberFailed");
+                ex.Trace("LoadingChannelMemberFailed");
             }
         }
 
-        #endregion Room
+        #endregion Channel
 
-        public ApplicationViewModel Application => Room.Application;
+        public ApplicationViewModel Application => Channel.Application;
 
         public Command OpenUrlCommand => Application.OpenUrlCommand;
 
@@ -125,7 +125,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private async Task BeginLoadMessages(bool prepend = false)
         {
-            if (IsBusy || (Room.IsArchived && Room.UnreadCount <= 0 && !prepend && _Messages?.Count > 0))
+            if (IsBusy || (Channel.IsArchived && Channel.UnreadCount <= 0 && !prepend && _Messages?.Count > 0))
             {
                 return;
             }
@@ -158,7 +158,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     aid = _Messages.Last().Id;
                 }
 
-                var messages = await Application.GetMessagesAsync(Room.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
+                var messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
 
                 HasPrevious &= aid != null || messages.Length >= PAGE_SIZE;
 
@@ -166,18 +166,18 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     if (messages.Length >= PAGE_SIZE)
                     {
-                        Room.UnreadCount = Math.Max(0, Room.UnreadCount - messages.Length);
+                        Channel.UnreadCount = Math.Max(0, Channel.UnreadCount - messages.Length);
                     }
                     else
                     {
-                        Room.UnreadCount = 0;
+                        Channel.UnreadCount = 0;
                     }
                 }
                 else if (bid == null && messages.Length < PAGE_SIZE)
                 {
-                    Room.UnreadCount = 0;
+                    Channel.UnreadCount = 0;
                 }
-                HasUnread = Room.UnreadCount > 0;
+                HasUnread = Channel.UnreadCount > 0;
 
                 if (messages.Any())
                 {
@@ -186,17 +186,17 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 try
                 {
-                    var rid = Room.Id;
+                    var rid = Channel.Id;
                     using (var realm = Realm.GetInstance())
                     {
                         using (var trx = realm.BeginWrite())
                         {
-                            var rup = realm.All<RoomUserProperties>().FirstOrDefault(r => r.RoomId == rid);
+                            var rup = realm.All<ChannelUserProperties>().FirstOrDefault(r => r.ChannelId == rid);
                             if (rup == null)
                             {
-                                rup = new RoomUserProperties()
+                                rup = new ChannelUserProperties()
                                 {
-                                    RoomId = rid,
+                                    ChannelId = rid,
                                     UserId = Application.LoginUser.Id,
                                     LastVisited = DateTimeOffset.Now
                                 };
@@ -214,7 +214,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    ex.Trace("SavingRoomUserPropertiesFailed");
+                    ex.Trace("SavingChannelUserPropertiesFailed");
                 }
             }
             catch (Exception ex)
@@ -368,7 +368,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         private void UpdateCandicates()
         {
             ProfileCandicates.UpdateResult();
-            RoomCandicates.UpdateResult();
+            ChannelCandicates.UpdateResult();
         }
 
         #endregion SelectionLength
@@ -390,10 +390,10 @@ namespace KokoroIO.XamarinForms.ViewModels
         public MessagesProfileCandicates ProfileCandicates
             => _ProfileCandicates ?? (_ProfileCandicates = new MessagesProfileCandicates(this));
 
-        private MessagesRoomCandicates _RoomCandicates;
+        private MessagesChannelCandicates _ChannelCandicates;
 
-        public MessagesRoomCandicates RoomCandicates
-            => _RoomCandicates ?? (_RoomCandicates = new MessagesRoomCandicates(this));
+        public MessagesChannelCandicates ChannelCandicates
+            => _ChannelCandicates ?? (_ChannelCandicates = new MessagesChannelCandicates(this));
 
         internal DateTime? CandicateClicked { get; set; }
 
@@ -402,7 +402,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         #region Post Message
 
         public bool CanPost
-            => !Room.IsArchived;
+            => !Channel.IsArchived;
 
         #region PostCommand
 
@@ -424,7 +424,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             try
             {
                 IsBusy = true;
-                await Application.PostMessageAsync(Room.Id, m, _IsNsfw);
+                await Application.PostMessageAsync(Channel.Id, m, _IsNsfw);
                 NewMessage = string.Empty;
                 succeeded = true;
             }
@@ -595,15 +595,15 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void OnMessageCreated(ApplicationViewModel app, Message message)
         {
-            HasUnread = Room.UnreadCount > 0;
-            if (message.Room.Id == Room.Id)
+            HasUnread = Channel.UnreadCount > 0;
+            if (message.Channel.Id == Channel.Id)
             {
                 return;
             }
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
-                var r = app.Rooms.FirstOrDefault(rm => rm.Id == message.Room.Id);
+                var r = app.Channels.FirstOrDefault(rm => rm.Id == message.Channel.Id);
 
                 if (r != null)
                 {
@@ -633,21 +633,21 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             private ApplicationViewModel _Application;
 
-            public Notification(ApplicationViewModel application, RoomViewModel room, Message message)
+            public Notification(ApplicationViewModel application, ChannelViewModel channel, Message message)
             {
                 _Application = application;
-                Room = room;
+                Channel = channel;
                 Profile = application.GetProfile(message);
                 AddedAt = DateTime.Now;
             }
 
             public ProfileViewModel Profile { get; }
-            public RoomViewModel Room { get; }
+            public ChannelViewModel Channel { get; }
 
             public DateTime AddedAt { get; }
 
             public override string ToString()
-                => $"@{Profile.DisplayName} posted messages to {Room.DisplayName}";
+                => $"@{Profile.DisplayName} posted messages to {Channel.DisplayName}";
         }
 
         private ObservableCollection<Notification> _Notifications;

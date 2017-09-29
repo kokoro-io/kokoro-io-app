@@ -3,10 +3,10 @@ using Realms;
 
 namespace KokoroIO.XamarinForms.Models.Data
 {
-    public class RoomUserProperties : RealmObject
+    public class ChannelUserProperties : RealmObject
     {
         [PrimaryKey]
-        public string RoomId { get; set; }
+        public string ChannelId { get; set; }
 
         public string UserId { get; set; }
 

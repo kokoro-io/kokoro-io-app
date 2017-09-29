@@ -76,12 +76,12 @@
                 <Button
                     Style="{StaticResource bannerButtonStyle}"
                     BackgroundColor="#4169E1"
-                    Text="{Binding Room.UnreadCount,StringFormat='{}{0} new messages'}"
+                    Text="{Binding Channel.UnreadCount,StringFormat='{}{0} new messages'}"
                     Command="{Binding ShowUnreadCommand}">
                     <Button.Triggers>
                         <DataTrigger
                             TargetType="Button"
-                            Binding="{Binding Room.UnreadCount}"
+                            Binding="{Binding Channel.UnreadCount}"
                             Value="0">
                             <Setter
                                 Property="IsVisible"
@@ -143,7 +143,7 @@
                                         TextColor="Red"
                                         VerticalOptions="Center"
                                         VerticalTextAlignment="Center"
-                                        Text="{Binding Room.DisplayName, StringFormat='posted to {0}'}" />
+                                        Text="{Binding Channel.DisplayName, StringFormat='posted to {0}'}" />
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>
@@ -175,7 +175,7 @@
                         </DataTrigger>
                         <DataTrigger
                             TargetType="StackLayout"
-                            Binding="{Binding RoomCandicates.HasResult}"
+                            Binding="{Binding ChannelCandicates.HasResult}"
                             Value="True">
                             <Setter
                                 Property="IsVisible"
@@ -219,12 +219,12 @@
                     Entities="{Binding ProfileCandicates.Result}"
                     SelectCommand="{Binding  ProfileCandicates.SelectCommand}" />
 
-                <view:RoomsLabel
+                <view:ChannelsLabel
                     LineBreakMode="NoWrap"
                     VerticalTextAlignment="Center"
-                    IsVisible="{Binding RoomCandicates.HasResult}"
-                    Entities="{Binding RoomCandicates.Result}"
-                    SelectCommand="{Binding  RoomCandicates.SelectCommand}" />
+                    IsVisible="{Binding ChannelCandicates.HasResult}"
+                    Entities="{Binding ChannelCandicates.Result}"
+                    SelectCommand="{Binding  ChannelCandicates.SelectCommand}" />
             </Grid>
 
             <Grid
@@ -241,7 +241,7 @@
                     FontSize="Small"
                     HorizontalOptions="FillAndExpand"
                     Text="{Binding NewMessage}"
-                    Placeholder="{Binding Room.Placeholder}"
+                    Placeholder="{Binding Channel.Placeholder}"
                     SelectionStart="{Binding SelectionStart}"
                     SelectionLength="{Binding SelectionLength}"
                     HasFocus="{Binding NewMessageFocused, Mode=TwoWay}"

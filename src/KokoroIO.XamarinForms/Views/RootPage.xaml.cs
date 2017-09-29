@@ -14,12 +14,12 @@ namespace KokoroIO.XamarinForms.Views
         {
             InitializeComponent();
             BindingContext = viewModel;
-            Master = new RoomsPage()
+            Master = new ChannelsPage()
             {
-                BindingContext = new RoomsViewModel(viewModel)
+                BindingContext = new ChannelsViewModel(viewModel)
             };
 
-            if (viewModel.SelectedRoom == null)
+            if (viewModel.SelectedChannel == null)
             {
                 var np = new NavigationPage(new WelcomePage());
                 SetupNavigationPage(np);
@@ -31,7 +31,7 @@ namespace KokoroIO.XamarinForms.Views
             {
                 var np = new NavigationPage(new MessagesPage()
                 {
-                    BindingContext = viewModel.SelectedRoom.GetOrCreateMessagesPage()
+                    BindingContext = viewModel.SelectedChannel.GetOrCreateMessagesPage()
                 });
                 SetupNavigationPage(np);
                 Detail = np;
@@ -69,17 +69,17 @@ namespace KokoroIO.XamarinForms.Views
 
             if (vm != null)
             {
-                vm.SelectedRoom = null;
+                vm.SelectedChannel = null;
             }
         }
 
         private async void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ApplicationViewModel.SelectedRoom))
+            if (e.PropertyName == nameof(ApplicationViewModel.SelectedChannel))
             {
                 var vm = BindingContext as ApplicationViewModel;
 
-                var mp = vm?.SelectedRoom?.GetOrCreateMessagesPage();
+                var mp = vm?.SelectedChannel?.GetOrCreateMessagesPage();
 
                 if (mp == null)
                 {

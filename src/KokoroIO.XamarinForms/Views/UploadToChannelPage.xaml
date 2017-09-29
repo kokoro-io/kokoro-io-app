@@ -2,7 +2,7 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="KokoroIO.XamarinForms.Views.UploadToRoomPage">
+    x:Class="KokoroIO.XamarinForms.Views.UploadToChannelPage">
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -26,11 +26,11 @@
                 Grid.Column="1"
                 Margin="8"
                 VerticalOptions="Center"
-                Text="Choose room to post an image" />
+                Text="Choose channel to post an image" />
             <ListView
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
-                ItemsSource="{Binding Rooms}"
+                ItemsSource="{Binding Channels}"
                 CachingStrategy="RecycleElement"
                 ItemSelected="ListView_ItemSelected">>
                 <ListView.ItemTemplate>

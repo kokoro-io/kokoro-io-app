@@ -6,11 +6,11 @@ using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
-    public partial class RoomsPage : ContentPage
+    public partial class ChannelsPage : ContentPage
     {
-        // RoomsViewModel viewModel;
+        // ChannelsViewModel viewModel;
 
-        public RoomsPage()
+        public ChannelsPage()
         {
             InitializeComponent();
             LogoImage.IsVisible = XDevice.Idiom != TargetIdiom.Phone;
@@ -20,12 +20,12 @@ namespace KokoroIO.XamarinForms.Views
         {
             var lv = sender as ListView;
 
-            var item = lv?.SelectedItem as RoomViewModel;
+            var item = lv?.SelectedItem as ChannelViewModel;
             if (item == null)
             {
                 return;
             }
-            item.Application.SelectedRoom = item;
+            item.Application.SelectedChannel = item;
 
             lv.SelectedItem = null;
         }

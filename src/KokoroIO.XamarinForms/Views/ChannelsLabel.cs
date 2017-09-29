@@ -2,9 +2,9 @@ using KokoroIO.XamarinForms.ViewModels;
 
 namespace KokoroIO.XamarinForms.Views
 {
-    public sealed class RoomsLabel : EntitiesLabel
+    public sealed class ChannelsLabel : EntitiesLabel
     {
         internal override string GetText(object item)
-            => ((RoomViewModel)item).DisplayName;
+            => ((ChannelViewModel)item).DisplayName;
     }
 }
