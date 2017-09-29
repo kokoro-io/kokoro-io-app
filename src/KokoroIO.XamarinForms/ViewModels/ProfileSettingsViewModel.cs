@@ -1,4 +1,8 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Xamarin.Forms;
+using XLabs.Platform.Services.Media;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -16,6 +20,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal SettingsViewModel Settings { get; }
         public ApplicationViewModel Application => Settings.Application;
 
+        #region ScreenName
+
         private string _ScreenName;
 
         public string ScreenName
@@ -23,6 +29,10 @@ namespace KokoroIO.XamarinForms.ViewModels
             get => _ScreenName;
             set => SetProperty(ref _ScreenName, value);
         }
+
+        #endregion ScreenName
+
+        #region DisplayName
 
         public string _DisplayName;
 
@@ -32,12 +42,16 @@ namespace KokoroIO.XamarinForms.ViewModels
             set => SetProperty(ref _DisplayName, value);
         }
 
+        #endregion DisplayName
+
+        #region SaveCommand
+
         private Command _SaveCommand;
 
         public Command SaveCommand
-            => _SaveCommand ?? (_SaveCommand = new Command(BeginSave));
+            => _SaveCommand ?? (_SaveCommand = new Command(() => SaveAsync().GetHashCode()));
 
-        private async void BeginSave()
+        private async Task SaveAsync(Stream avatar = null)
         {
             var sn = _ScreenName;
             var dn = _DisplayName;
@@ -45,7 +59,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             if (IsBusy
                 || string.IsNullOrEmpty(sn)
                 || string.IsNullOrEmpty(dn)
-                || (sn == Application.LoginUser.ScreenName && dn == Application.LoginUser.DisplayName))
+                || (sn == Application.LoginUser.ScreenName
+                    && dn == Application.LoginUser.DisplayName
+                    && avatar == null))
             {
                 return;
             }
@@ -54,18 +70,99 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             try
             {
-                var p = await Application.PutProfileAsync(sn, dn);
+                var p = await Application.PutProfileAsync(sn, dn, avatar);
 
                 ScreenName = p.ScreenName;
                 DisplayName = p.DisplayName;
             }
-            catch
+            catch (Exception ex)
             {
+                ex.Trace("UpdateProfileFailed");
+
+                MessagingCenter.Send(this, "UpdateProfileFailed");
             }
             finally
             {
                 IsBusy = false;
             }
         }
+
+        #endregion SaveCommand
+
+        #region SelectPhotoCommand
+
+        private Command _SelectPhotoCommand;
+
+        public Command SelectPhotoCommand
+            => _SelectPhotoCommand ?? (_SelectPhotoCommand = new Command(BeginSelectPhoto));
+
+        private async void BeginSelectPhoto()
+        {
+            try
+            {
+                var mp = Application.MediaPicker;
+
+                if (mp == null || !mp.IsPhotosSupported)
+                {
+                    return;
+                }
+
+                var mf = await mp.SelectPhotoAsync(new CameraMediaStorageOptions());
+
+                if (mf != null)
+                {
+                    using (mf.Source)
+                    {
+                        await SaveAsync(mf.Source);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Trace("UpdateProfileFailed");
+
+                MessagingCenter.Send(this, "UpdateProfileFailed");
+            }
+        }
+
+        #endregion SelectPhotoCommand
+
+        #region TakePhotoCommand
+
+        private Command _TakePhotoCommand;
+
+        public Command TakePhotoCommand
+            => _TakePhotoCommand ?? (_TakePhotoCommand = new Command(BeginTakePhoto));
+
+        private async void BeginTakePhoto()
+        {
+            try
+            {
+                var mp = Application.MediaPicker;
+
+                if (mp == null)
+                {
+                    return;
+                }
+
+                var mf = await mp.TakePhotoAsync(new CameraMediaStorageOptions());
+
+                if (mf != null || !mp.IsCameraAvailable)
+                {
+                    using (mf.Source)
+                    {
+                        await SaveAsync(mf.Source);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Trace("UpdateProfileFailed");
+
+                MessagingCenter.Send(this, "UpdateProfileFailed");
+            }
+        }
+
+        #endregion TakePhotoCommand
     }
 }

@@ -109,7 +109,7 @@ namespace KokoroIO.XamarinForms.UWP
                     if (ras != null)
                     {
                         // TODO: add handled to dispose stream
-                        h(Element, new EventArgs<Stream>(ras.AsStreamForRead()));
+                        h(Element, new KokoroIO.EventArgs<Stream>(ras.AsStreamForRead()));
                     }
                 }
             }

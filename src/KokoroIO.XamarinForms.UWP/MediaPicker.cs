@@ -40,7 +40,7 @@ namespace KokoroIO.XamarinForms.UWP
                 var tmp = Path.GetTempFileName();
                 var tf = await StorageFile.GetFileFromPathAsync(tmp);
                 await file.CopyAsync(await tf.GetParentAsync(), Path.GetFileName(tmp), NameCollisionOption.ReplaceExisting);
-                var mf = new MediaFile(file.Path, () => new FileStream(tmp, FileMode.Open));
+                var mf = new MediaFile(file.Path, () => new FileStream(tmp, FileMode.Open, FileAccess.Read, FileShare.Read));
 
                 OnMediaSelected?.Invoke(this, new MediaPickerArgs(mf));
 
@@ -67,7 +67,7 @@ namespace KokoroIO.XamarinForms.UWP
                 var tmp = Path.GetTempFileName();
                 var tf = await StorageFile.GetFileFromPathAsync(tmp);
                 await file.CopyAsync(await tf.GetParentAsync(), Path.GetFileName(tmp), NameCollisionOption.ReplaceExisting);
-                var mf = new MediaFile(file.Path, () => new FileStream(tmp, FileMode.Open));
+                var mf = new MediaFile(file.Path, () => new FileStream(tmp, FileMode.Open, FileAccess.Read, FileShare.Read));
 
                 OnMediaSelected?.Invoke(this, new MediaPickerArgs(mf));
 
