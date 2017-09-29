@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,12 @@ namespace KokoroIO.XamarinForms.Scripts
             Console.WriteLine("Output Directory: {0}", outDir);
 
             Generate(inDir, outDir);
+
+            GenerateIcon(inDir, "ic_camera_alt_black_24px.svg", "camera");
+            GenerateIcon(inDir, "ic_image_black_24px.svg", "image");
+            GenerateIcon(inDir, "ic_send_black_24px.svg", "send");
+            GenerateIcon(inDir, "ic_visibility_black_24px.svg", "visibility");
+            GenerateIcon(inDir, "ic_visibility_off_black_24px.svg", "visibility_off");
         }
 
         private static void Generate(string inDir, string outDir)
@@ -46,7 +53,7 @@ namespace KokoroIO.XamarinForms.Scripts
                             foreach (var l in links)
                             {
                                 var rules = File.ReadAllText(new Uri(bu, l.Attribute("href").Value).LocalPath);
-                                
+
                                 rules = Regex.Replace(rules,
                                     @"url\(([^)]+)\.svg\)",
                                     svgm =>
@@ -135,6 +142,65 @@ namespace KokoroIO.XamarinForms.Scripts
                         }
                     }
                 }
+            }
+        }
+
+        private static void GenerateIcon(string inDir, string src, string dest, int color = 0)
+        {
+            var exed = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Inkscape");
+
+            if (!Directory.Exists(exed))
+            {
+                exed = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Inkscape");
+            }
+
+            var exe = Path.Combine(exed, "inkscape.exe");
+
+            var sf = Path.Combine(inDir, "icons", src);
+
+            if (color != 0)
+            {
+                var xd = XDocument.Load(sf);
+                xd.Root.SetAttributeValue("fill", "#" + (color & 0xffffff).ToString("x6"));
+
+                var tmp = Path.GetTempFileName();
+                sf = Path.ChangeExtension(tmp, ".svg");
+                File.Delete(tmp);
+
+                xd.Save(sf);
+            }
+
+            {
+                var dirs = new[] { "m", "h", "xh", "xxh", "xxxh" };
+                var sizes = new[] { 24, 36, 48, 72, 96 };
+
+                for (var i = 0; i < dirs.Length; i++)
+                {
+                    var size = sizes[i];
+
+                    var psi = new ProcessStartInfo(exe);
+                    psi.CreateNoWindow = true;
+                    var dp = new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.Android/Resources/drawable-{dirs[i]}dpi/{dest}.png");
+                    psi.Arguments = $"-z \"{sf}\" -w {size} -h {size} -e {dp.LocalPath}";
+                    psi.UseShellExecute = false;
+                    psi.RedirectStandardInput = true;
+                    psi.RedirectStandardOutput = true;
+                    psi.RedirectStandardError = true;
+
+                    var p = Process.Start(psi);
+                }
+            }
+            {
+                File.Copy(new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.Android/Resources/drawable-mdpi/{dest}.png").LocalPath
+                        , new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.iOS/Resources/{dest}.png").LocalPath, true);
+                File.Copy(new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.Android/Resources/drawable-xhdpi/{dest}.png").LocalPath
+                        , new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.iOS/Resources/{dest}@2x.png").LocalPath, true);
+                File.Copy(new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.Android/Resources/drawable-xxhdpi/{dest}.png").LocalPath
+                        , new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.iOS/Resources/{dest}@3x.png").LocalPath, true);
+            }
+            {
+                File.Copy(new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.iOS/Resources/{dest}.png").LocalPath
+                        , new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.UWP/{dest}.png").LocalPath, true);
             }
         }
     }
