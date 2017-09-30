@@ -28,31 +28,32 @@
                     Source="kokoroio_white.png" />
             </Grid>
 
-            <xlabs:ImageButton
-                Grid.Row="1"
-                BorderColor="Transparent"
-                BackgroundColor="Transparent"
-                Source="{Binding Application.LoginUser.Avatar}"
-                Orientation="ImageToLeft"
-                HeightRequest="56"
-                Text="{Binding Application.LoginUser.DisplayName}"
-                Command="{Binding Application.SettingsCommand}"
-                CommandParameter="{x:Type vm:ProfileSettingsViewModel}">
-                <xlabs:ImageButton.ImageWidthRequest>
-                    <OnPlatform
-                        x:TypeArguments="sys:Int32"
-                        WinPhone="80"
-                        Android="40"
-                        iOS="40" />
-                </xlabs:ImageButton.ImageWidthRequest>
-                <xlabs:ImageButton.ImageHeightRequest>
-                    <OnPlatform
-                        x:TypeArguments="sys:Int32"
-                        WinPhone="80"
-                        Android="40"
-                        iOS="40" />
-                </xlabs:ImageButton.ImageHeightRequest>
-            </xlabs:ImageButton>
+            <Grid
+                Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding Application.SettingsCommand}"
+                        CommandParameter="{x:Type vm:ProfileSettingsViewModel}" />
+                </Grid.GestureRecognizers>
+
+                <Image
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Margin="8"
+                    Source="{Binding Application.LoginUser.Avatar}" />
+
+                <Label
+                    Grid.Column="1"
+                    Margin="8"
+                    VerticalOptions="Center"
+                    Text="{Binding Application.LoginUser.DisplayName}" />
+
+            </Grid>
 
             <ListView
                 Grid.Row="2"
