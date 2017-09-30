@@ -25,6 +25,8 @@ namespace KokoroIO.XamarinForms.Scripts
 
             Generate(inDir, outDir);
 
+            GenerateIcon(inDir, "kokoroio_icon_white.svg", "kokoro_white", baseSize: 48);
+
             GenerateIcon(inDir, "ic_camera_alt_black_24px.svg", "camera");
             GenerateIcon(inDir, "ic_image_black_24px.svg", "image");
             GenerateIcon(inDir, "ic_send_black_24px.svg", "send");
@@ -154,7 +156,7 @@ namespace KokoroIO.XamarinForms.Scripts
             }
         }
 
-        private static void GenerateIcon(string inDir, string src, string dest, int color = 0)
+        private static void GenerateIcon(string inDir, string src, string dest, int color = 0, int baseSize = 24)
         {
             var exed = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Inkscape");
 
@@ -181,7 +183,7 @@ namespace KokoroIO.XamarinForms.Scripts
 
             {
                 var dirs = new[] { "m", "h", "xh", "xxh", "xxxh" };
-                var sizes = new[] { 24, 36, 48, 72, 96 };
+                var sizes = new[] { baseSize, baseSize * 1.5, baseSize * 2, baseSize * 3, baseSize * 4 };
 
                 var procs = new List<Process>();
 
@@ -192,7 +194,7 @@ namespace KokoroIO.XamarinForms.Scripts
                     var psi = new ProcessStartInfo(exe);
                     psi.CreateNoWindow = true;
                     var dp = new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.Android/Resources/drawable-{dirs[i]}dpi/{dest}.png");
-                    psi.Arguments = $"-z \"{sf}\" -w {size} -h {size} -e {dp.LocalPath}";
+                    psi.Arguments = $"-z \"{sf}\" -w {size:0} -h {size:0} -e {dp.LocalPath}";
                     psi.UseShellExecute = false;
                     psi.RedirectStandardInput = true;
                     psi.RedirectStandardOutput = true;

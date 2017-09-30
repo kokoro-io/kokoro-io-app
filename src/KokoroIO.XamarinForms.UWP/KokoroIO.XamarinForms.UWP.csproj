@@ -129,6 +129,7 @@
     <Content Include="image_white.png" />
     <Content Include="info.png" />
     <Content Include="info_white.png" />
+    <Content Include="kokoro_white.png" />
     <Content Include="notifications.png" />
     <Content Include="notifications_white.png" />
     <Content Include="send.png" />

@@ -78,7 +78,7 @@ namespace KokoroIO.XamarinForms.Droid
             var pendingIntent = PendingIntent.GetActivity(this, 0, intent, PendingIntentFlags.OneShot);
 
             var notificationBuilder = new Notification.Builder(this)
-                .SetSmallIcon(Resource.Drawable.kokoro)
+                .SetSmallIcon(Resource.Drawable.kokoro_white)
                 .SetContentTitle(title)
                 .SetContentText(desc)
                 .SetAutoCancel(true)
