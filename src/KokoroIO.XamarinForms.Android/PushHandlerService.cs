@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Util;
@@ -12,6 +13,11 @@ namespace KokoroIO.XamarinForms.Droid
     [Service]
     public class PushHandlerService : GcmServiceBase
     {
+        private static TaskCompletionSource<string> _RegistrationTaskSource
+            = new TaskCompletionSource<string>();
+
+        internal static Task<string> RegistrationTask => _RegistrationTaskSource.Task;
+
         public static string RegistrationID { get; private set; }
         private NotificationHub Hub { get; set; }
 
@@ -24,28 +30,7 @@ namespace KokoroIO.XamarinForms.Droid
         {
             Log.Verbose(GcmBroadcastReceiver.TAG, "GCM Registered: " + registrationId);
             RegistrationID = registrationId;
-
-            Hub = new NotificationHub(Secrets.NotificationHubName, Secrets.ListenConnectionString,
-                                        context);
-            try
-            {
-                Hub.UnregisterAll(registrationId);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(GcmBroadcastReceiver.TAG, ex.Message);
-            }
-
-            var tags = new List<string>() { };
-
-            try
-            {
-                var hubRegistration = Hub.Register(registrationId, tags.ToArray());
-            }
-            catch (Exception ex)
-            {
-                Log.Error(GcmBroadcastReceiver.TAG, ex.Message);
-            }
+            _RegistrationTaskSource.TrySetResult(registrationId);
         }
 
         protected override void OnMessage(Context context, Intent intent)
@@ -93,11 +78,19 @@ namespace KokoroIO.XamarinForms.Droid
         {
             Log.Verbose(GcmBroadcastReceiver.TAG, "GCM Unregistered: " + registrationId);
 
-            CreateNotification("GCM Unregistered...", "The device has been unregistered!");
+            if (_RegistrationTaskSource.Task.IsCompleted)
+            {
+                _RegistrationTaskSource = new TaskCompletionSource<string>();
+            }
         }
 
         protected override bool OnRecoverableError(Context context, string errorId)
         {
+            if (RegistrationID == null)
+            {
+                _RegistrationTaskSource.TrySetException(new Exception(errorId));
+            }
+
             Log.Warn(GcmBroadcastReceiver.TAG, "Recoverable Error: " + errorId);
 
             return base.OnRecoverableError(context, errorId);
@@ -105,7 +98,70 @@ namespace KokoroIO.XamarinForms.Droid
 
         protected override void OnError(Context context, string errorId)
         {
+            if (RegistrationID == null)
+            {
+                _RegistrationTaskSource.TrySetException(new Exception(errorId));
+            }
+
             Log.Error(GcmBroadcastReceiver.TAG, "GCM Error: " + errorId);
+        }
+
+        internal static Task<string> RegisterAsync()
+        {
+            if (RegistrationID == null)
+            {
+                var ma = MainActivity.GetCurrentActivity();
+
+                if (ma != null)
+                {
+                    try
+                    {
+                        // Check to ensure everything's set up right
+                        GcmClient.CheckDevice(ma);
+                        GcmClient.CheckManifest(ma);
+
+                        // Register for push notifications
+                        System.Diagnostics.Debug.WriteLine("Registering...");
+                        GcmClient.Register(ma, Secrets.SenderID);
+
+                        return RegistrationTask;
+                    }
+                    catch (Java.Net.MalformedURLException)
+                    {
+                        ma.CreateAndShowDialog("There was an error creating the client. Verify the URL.", "Error");
+                    }
+                    catch (Exception e)
+                    {
+                        ma.CreateAndShowDialog(e.Message, "Error");
+                    }
+                }
+
+                return Task.FromResult<string>(null);
+            }
+
+            return RegistrationTask;
+        }
+
+        public static void Unregister()
+        {
+            if (RegistrationID != null)
+            {
+                var ma = MainActivity.GetCurrentActivity();
+
+                try
+                {
+                    RegistrationID = null;
+                    if (_RegistrationTaskSource.Task.IsCompleted)
+                    {
+                        _RegistrationTaskSource = new TaskCompletionSource<string>();
+                    }
+                    GcmClient.UnRegister(ma);
+                }
+                catch (Exception e)
+                {
+                    ma.CreateAndShowDialog(e.Message, "Error");
+                }
+            }
         }
     }
 }

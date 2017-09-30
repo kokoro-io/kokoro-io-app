@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using KokoroIO.XamarinForms.UWP;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
@@ -27,5 +28,10 @@ namespace KokoroIO.XamarinForms.UWP
 
             return buf;
         }
+
+        public Task<string> GetPlatformNotificationServiceHandleAsync()
+            => Task.FromResult<string>(null);
+
+        public void UnregisterPlatformNotificationService() { }
     }
 }

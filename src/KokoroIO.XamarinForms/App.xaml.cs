@@ -1,4 +1,6 @@
-﻿using KokoroIO.XamarinForms.Models;
+﻿using System;
+using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.ViewModels;
 using KokoroIO.XamarinForms.Views;
 using Microsoft.Azure.Mobile;
@@ -34,11 +36,28 @@ namespace KokoroIO.XamarinForms
                             AccessToken = at
                         };
 
+                        var ds = DependencyService.Get<IDeviceService>();
+                        var pnsTask = ds.GetPlatformNotificationServiceHandleAsync();
+
+                        var pnsTaskTimeout = Task.WhenAny(pnsTask, Task.Delay(15000));
+
                         c.EndPoint = !string.IsNullOrWhiteSpace(ep) ? ep : c.EndPoint;
 
                         var me = await c.GetProfileAsync().ConfigureAwait(false);
 
                         preserve = true;
+
+                        await pnsTaskTimeout;
+
+                        var pns = pnsTask.Status == TaskStatus.RanToCompletion ? pnsTask.Result : UserSettings.PnsHandle;
+
+                        if (pns != UserSettings.PnsHandle)
+                        {
+                            await c.PostDeviceAsync(ds.MachineName, ds.Kind, Convert.ToBase64String(ds.GetIdentifier()), pns, pns != null);
+
+                            UserSettings.PnsHandle = pns;
+                            await App.Current.SavePropertiesAsync();
+                        }
 
                         return new ApplicationViewModel(c, me);
                     }

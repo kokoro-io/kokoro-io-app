@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
@@ -77,13 +78,19 @@ namespace KokoroIO.XamarinForms.ViewModels
                     const string TokenName = nameof(KokoroIO) + "." + nameof(XamarinForms);
                     var ds = DependencyService.Get<IDeviceService>();
 
+                    var pnsTask = ds.GetPlatformNotificationServiceHandleAsync();
+
+                    await Task.WhenAny(pnsTask, Task.Delay(15000));
+
                     var hash = TokenName.Select(ch => (byte)ch).Concat(ds.GetIdentifier()).ToArray();
 
                     hash = SHA256.Create().ComputeHash(hash);
 
                     var di = Convert.ToBase64String(hash);
 
-                    var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, di);
+                    var pns = pnsTask.Status == TaskStatus.RanToCompletion ? pnsTask.Result : null;
+
+                    var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, di, pns, pns != null);
                     c.AccessToken = device.AccessToken.Token;
 
                     var me = await c.GetProfileAsync();
@@ -92,6 +99,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                     UserSettings.Password = pw;
                     UserSettings.EndPoint = hasEndPoint ? ep : null;
                     UserSettings.AccessToken = c.AccessToken;
+                    UserSettings.PnsHandle = pns;
+
                     await App.Current.SavePropertiesAsync();
 
                     preserve = true;

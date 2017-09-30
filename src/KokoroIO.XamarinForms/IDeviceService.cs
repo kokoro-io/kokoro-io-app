@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace KokoroIO.XamarinForms
 {
     public interface IDeviceService
@@ -7,5 +9,9 @@ namespace KokoroIO.XamarinForms
         DeviceKind Kind { get; }
 
         byte[] GetIdentifier();
+
+        Task<string> GetPlatformNotificationServiceHandleAsync();
+
+        void UnregisterPlatformNotificationService();
     }
 }

@@ -356,9 +356,24 @@ namespace KokoroIO.XamarinForms.ViewModels
                 catch { }
             }
 
+            var pns = UserSettings.PnsHandle;
+
             UserSettings.Password = null;
             UserSettings.AccessToken = null;
+            UserSettings.PnsHandle = null;
             await App.Current.SavePropertiesAsync();
+
+            try
+            {
+                var ds = DependencyService.Get<IDeviceService>();
+                ds.UnregisterPlatformNotificationService();
+
+                if (pns != null && avm != null)
+                {
+                    await avm.Client.PostDeviceAsync(ds.MachineName, ds.Kind, Convert.ToBase64String(ds.GetIdentifier()), null, false);
+                }
+            }
+            catch { }
 
             App.Current.MainPage = new LoginPage();
         }

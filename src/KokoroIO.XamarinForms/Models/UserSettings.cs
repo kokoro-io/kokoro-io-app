@@ -9,17 +9,26 @@ namespace KokoroIO.XamarinForms.Models
             get => GetString();
             set => SetValue(value);
         }
+
         public static string Password
         {
             get => GetString();
             set => SetValue(value);
         }
+
         public static string EndPoint
         {
             get => GetString();
             set => SetValue(value);
         }
+
         public static string AccessToken
+        {
+            get => GetString();
+            set => SetValue(value);
+        }
+
+        public static string PnsHandle
         {
             get => GetString();
             set => SetValue(value);

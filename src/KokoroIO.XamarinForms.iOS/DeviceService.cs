@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using KokoroIO.XamarinForms.iOS;
 using Xamarin.Forms;
 
@@ -14,5 +15,10 @@ namespace KokoroIO.XamarinForms.iOS
 
         public byte[] GetIdentifier()
             => UIKit.UIDevice.CurrentDevice.IdentifierForVendor.GetBytes();
+
+        public Task<string> GetPlatformNotificationServiceHandleAsync()
+            => Task.FromResult<string>(null);
+
+        public void UnregisterPlatformNotificationService() { }
     }
 }

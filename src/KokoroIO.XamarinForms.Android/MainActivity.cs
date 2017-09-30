@@ -5,9 +5,7 @@ using Android.Net;
 using Android.OS;
 using KokoroIO.XamarinForms.ViewModels;
 using XLabs.Ioc;
-using Gcm.Client;
 using XLabs.Platform.Device;
-using Exception = System.Exception;
 
 namespace KokoroIO.XamarinForms.Droid
 {
@@ -31,25 +29,6 @@ namespace KokoroIO.XamarinForms.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             LoadApplication(new App());
-
-            try
-            {
-                // Check to ensure everything's set up right
-                GcmClient.CheckDevice(this);
-                GcmClient.CheckManifest(this);
-
-                // Register for push notifications
-                System.Diagnostics.Debug.WriteLine("Registering...");
-                GcmClient.Register(this, Secrets.SenderID);
-            }
-            catch (Java.Net.MalformedURLException)
-            {
-                CreateAndShowDialog("There was an error creating the client. Verify the URL.", "Error");
-            }
-            catch (Exception e)
-            {
-                CreateAndShowDialog(e.Message, "Error");
-            }
 
             if (Intent.Action == Intent.ActionSend)
             {
@@ -77,6 +56,7 @@ namespace KokoroIO.XamarinForms.Droid
             }
             return null;
         }
+
         internal static Context GetCurrentContext()
         {
             if (_Current != null && _Current.TryGetTarget(out var c))
@@ -85,7 +65,8 @@ namespace KokoroIO.XamarinForms.Droid
             }
             return null;
         }
-        private void CreateAndShowDialog(string message, string title)
+
+        internal void CreateAndShowDialog(string message, string title)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
