@@ -29,7 +29,8 @@
             </Grid>
 
             <Grid
-                Grid.Row="1">
+                Grid.Row="1"
+                BackgroundColor="Transparent">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition
                         Width="Auto" />
