@@ -18,36 +18,26 @@
             <Entry
                 FontSize="Medium"
                 Keyboard="Email"
-                Text="{Binding MailAddress}">
-                <Entry.Triggers>
-                    <DataTrigger
-                        TargetType="Entry"
-                        Binding="{Binding IsBusy}"
-                        Value="True">
-                        <Setter
-                            Property="IsEnabled"
-                            Value="False" />
-                    </DataTrigger>
-                </Entry.Triggers>
-            </Entry>
+                Text="{Binding MailAddress}"
+                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}" />
             <Label
                 Text="Password"
                 FontSize="Medium" />
             <Entry
                 FontSize="Medium"
                 IsPassword="True"
-                Text="{Binding Password}">
-                <Entry.Triggers>
-                    <DataTrigger
-                        TargetType="Entry"
-                        Binding="{Binding IsBusy}"
-                        Value="True">
-                        <Setter
-                            Property="IsEnabled"
-                            Value="False" />
-                    </DataTrigger>
-                </Entry.Triggers>
-            </Entry>
+                Text="{Binding Password}"
+                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}" />
+
+            <Label
+                Text="Server"
+                FontSize="Medium" />
+            <Entry
+                FontSize="Medium"
+                Keyboard="Url"
+                Text="{Binding EndPoint}"
+                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}" />
+
             <Button
                 FontSize="Medium"
                 Command="{Binding LoginCommand}">

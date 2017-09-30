@@ -353,8 +353,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 catch { }
             }
 
-            App.Current.Properties.Remove(nameof(LoginViewModel.Password));
-            App.Current.Properties.Remove(nameof(AccessToken));
+            UserSettings.Password = null;
+            UserSettings.AccessToken = null;
             await App.Current.SavePropertiesAsync();
 
             App.Current.MainPage = new LoginPage();
@@ -377,7 +377,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion SettingCommand
 
-        #region SettingCommand
+        #region PopToRootCommand
 
         private static Command _PopToRootCommand;
 
@@ -386,13 +386,17 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 var nav = App.Current.MainPage.Navigation;
 
-                while (nav.ModalStack.Any())
+                try
                 {
-                    await nav.PopModalAsync();
+                    while (nav.ModalStack.Any())
+                    {
+                        await nav.PopModalAsync();
+                    }
                 }
+                catch { }
             }));
 
-        #endregion SettingCommand
+        #endregion PopToRootCommand
 
         public Command OpenUrlCommand { get; }
 

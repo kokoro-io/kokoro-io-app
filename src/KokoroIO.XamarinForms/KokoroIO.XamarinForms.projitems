@@ -51,6 +51,7 @@
       <DependentUpon>AboutPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\BooleanNegationConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\EntitiesLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExpandableEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MembersLabel.cs" />

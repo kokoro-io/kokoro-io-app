@@ -1,4 +1,5 @@
-﻿using KokoroIO.XamarinForms.ViewModels;
+﻿using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.ViewModels;
 using KokoroIO.XamarinForms.Views;
 using Microsoft.Azure.Mobile;
 using Microsoft.Azure.Mobile.Analytics;
@@ -17,8 +18,10 @@ namespace KokoroIO.XamarinForms
         {
             InitializeComponent();
 
-            if (App.Current.Properties.TryGetValue(nameof(AccessToken), out var at)
-                && at is string ats)
+            var at = UserSettings.AccessToken;
+            var ep = UserSettings.EndPoint;
+
+            if (!string.IsNullOrEmpty(at))
             {
                 var svm = new SplashViewModel(async () =>
                 {
@@ -28,8 +31,11 @@ namespace KokoroIO.XamarinForms
                     {
                         c = new Client()
                         {
-                            AccessToken = ats
+                            AccessToken = at
                         };
+
+                        c.EndPoint = !string.IsNullOrWhiteSpace(ep) ? ep : c.EndPoint;
+
                         var me = await c.GetProfileAsync().ConfigureAwait(false);
 
                         preserve = true;

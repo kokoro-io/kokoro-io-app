@@ -1,8 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 
@@ -13,14 +12,10 @@ namespace KokoroIO.XamarinForms.ViewModels
         public LoginViewModel()
         {
             Title = "Login";
-            if (App.Current.Properties.TryGetValue(nameof(MailAddress), out var obj))
-            {
-                _MailAddress = obj as string;
-            }
-            if (App.Current.Properties.TryGetValue(nameof(Password), out obj))
-            {
-                _Password = obj as string;
-            }
+
+            _MailAddress = UserSettings.MailAddress;
+            _Password = UserSettings.Password;
+            _EndPoint = UserSettings.EndPoint ?? new Client().EndPoint;
             LoginCommand = new Command(BeginLogin);
         }
 
@@ -48,18 +43,37 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Password
 
+        #region EndPoint
+
+        private string _EndPoint;
+
+        public string EndPoint
+        {
+            get => _EndPoint;
+            set => SetProperty(ref _EndPoint, value);
+        }
+
+        #endregion EndPoint
+
         public Command LoginCommand { get; }
 
         private async void BeginLogin()
         {
             var em = _MailAddress;
             var pw = _Password;
+            var ep = _EndPoint;
             var svm = new SplashViewModel(async () =>
             {
                 var preserve = false;
                 var c = new Client();
                 try
                 {
+                    var hasEndPoint = !string.IsNullOrWhiteSpace(ep) && c.EndPoint != ep;
+                    if (hasEndPoint)
+                    {
+                        c.EndPoint = ep;
+                    }
+
                     const string TokenName = nameof(KokoroIO) + "." + nameof(XamarinForms);
                     var ds = DependencyService.Get<IDeviceService>();
 
@@ -74,9 +88,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     var me = await c.GetProfileAsync();
 
-                    App.Current.Properties[nameof(MailAddress)] = em;
-                    App.Current.Properties[nameof(Password)] = pw;
-                    App.Current.Properties[nameof(AccessToken)] = c.AccessToken;
+                    UserSettings.MailAddress = em;
+                    UserSettings.Password = pw;
+                    UserSettings.EndPoint = hasEndPoint ? ep : null;
+                    UserSettings.AccessToken = c.AccessToken;
                     await App.Current.SavePropertiesAsync();
 
                     preserve = true;
