@@ -61,14 +61,13 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             try
             {
-                // TODO: Get channel members
-                var ps = await Application.GetProfilesAsync();
+                var ps = await Application.GetChannelMembershipsAsync(Channel.Id);
 
                 _AllMembers.AddRange(
-                        ps.Select(p => Application.GetProfile(p))
-                                            .Concat(new[] { Application.LoginUser })
-                                            .OrderBy(p => p.ScreenName, StringComparer.OrdinalIgnoreCase)
-                                            .ThenBy(p => p.Id));
+                        ps.Memberships
+                                .Select(p => Application.GetProfile(p.Profile))
+                                .OrderBy(p => p.ScreenName, StringComparer.OrdinalIgnoreCase)
+                                .ThenBy(p => p.Id));
 
                 ProfileCandicates.UpdateResult();
             }

@@ -110,6 +110,9 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Task<Membership[]> GetMembershipsAsync(bool? archived = null, Authority? authority = null)
             => EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority));
 
+        public Task<Channel> GetChannelMembershipsAsync(string channelId)
+            => EnqueueClientTask(() => Client.GetChannelMembershipsAsync(channelId));
+
         public Task<Channel[]> GetChannelsAsync(bool? archived = null)
             => EnqueueClientTask(() => Client.GetChannelsAsync(archived: archived));
 
