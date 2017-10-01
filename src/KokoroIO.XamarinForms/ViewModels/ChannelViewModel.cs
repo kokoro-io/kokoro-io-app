@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -92,5 +94,54 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion IsSelected
+
+        #region Members
+
+        private WeakReference<ObservableRangeCollection<ProfileViewModel>> _Members;
+
+        public ObservableRangeCollection<ProfileViewModel> Members
+        {
+            get
+            {
+                if (_Members != null
+                    && _Members.TryGetTarget(out var c))
+                {
+                    return c;
+                }
+                c = new ObservableRangeCollection<ProfileViewModel>();
+                _Members = new WeakReference<ObservableRangeCollection<ProfileViewModel>>(c);
+
+                LoadMembersTask = BeginLoadMembers();
+
+                return c;
+            }
+        }
+
+        internal Task LoadMembersTask { get; private set; }
+
+        private async Task BeginLoadMembers()
+        {
+            if (_Members != null
+                && _Members.TryGetTarget(out var c))
+            {
+                try
+                {
+                    var channel = await Application.GetChannelMembershipsAsync(Id);
+
+                    c.ReplaceRange(
+                        channel.Memberships
+                                .Where(m => m.Authority != Authority.Invited)
+                                .Select(m => Application.GetProfileViewModel(m.Profile))
+                                .OrderBy(m => m.ScreenName, StringComparer.OrdinalIgnoreCase)
+                                .ThenBy(m => m.Id));
+                }
+                catch (Exception ex)
+                {
+                    ex.Trace("LoadingChannelMemberFailed");
+                }
+            }
+        }
+
+        #endregion Members
     }
 }

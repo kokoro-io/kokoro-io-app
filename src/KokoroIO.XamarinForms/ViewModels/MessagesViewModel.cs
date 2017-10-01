@@ -39,41 +39,18 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        private ObservableRangeCollection<ProfileViewModel> _AllMembers;
+        private ObservableRangeCollection<ProfileViewModel> _Members;
 
-        public ObservableRangeCollection<ProfileViewModel> AllMembers
+        public ObservableRangeCollection<ProfileViewModel> Members
         {
             get
             {
-                if (_AllMembers == null)
+                if (_Members == null)
                 {
-                    _AllMembers = new ObservableRangeCollection<ProfileViewModel>();
-
-                    _LoadAllMembersTask = BeginLoadMembers();
+                    _Members = Channel.Members;
+                    _Members.CollectionChanged += (_, __) => ProfileCandicates.UpdateResult();
                 }
-                return _AllMembers;
-            }
-        }
-
-        private Task _LoadAllMembersTask;
-
-        private async Task BeginLoadMembers()
-        {
-            try
-            {
-                var ps = await Application.GetChannelMembershipsAsync(Channel.Id);
-
-                _AllMembers.AddRange(
-                        ps.Memberships
-                                .Select(p => Application.GetProfileViewModel(p.Profile))
-                                .OrderBy(p => p.ScreenName, StringComparer.OrdinalIgnoreCase)
-                                .ThenBy(p => p.Id));
-
-                ProfileCandicates.UpdateResult();
-            }
-            catch (Exception ex)
-            {
-                ex.Trace("LoadingChannelMemberFailed");
+                return _Members;
             }
         }
 
@@ -311,10 +288,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal async void SelectProfile(string screenName)
         {
-            AllMembers.GetHashCode();
-            await _LoadAllMembersTask;
+            Members.GetHashCode();
+            await Channel.LoadMembersTask;
 
-            SelectedProfile = AllMembers.FirstOrDefault(p => p.ScreenName.Equals(screenName, StringComparison.OrdinalIgnoreCase));
+            SelectedProfile = Members.FirstOrDefault(p => p.ScreenName.Equals(screenName, StringComparison.OrdinalIgnoreCase));
         }
 
         private Command _ClearProfileCommand;

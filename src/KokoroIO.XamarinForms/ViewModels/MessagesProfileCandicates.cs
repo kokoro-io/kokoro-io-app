@@ -12,7 +12,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         internal override ObservableRangeCollection<ProfileViewModel> Source
-            => Page.AllMembers;
+            => Page.Members;
 
         internal override char PrefixChar => '@';
 
