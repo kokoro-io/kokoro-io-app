@@ -58,7 +58,8 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem
             Order="Secondary"
-            Text="Members [WIP]" />
+            Text="Members"
+            Command="{Binding Channel.ShowDetailCommand}" />
         <ToolbarItem
             Order="Secondary"
             Text="Invite member [WIP]" />

@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Views;
+using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -11,6 +13,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Application = application;
             Id = model.Id;
             ChannelName = model.ChannelName;
+            Description = model.Description;
             Kind = model.Kind;
             IsArchived = model.IsArchived;
             NotificationDisabled = model.Membership?.DisableNotification ?? false;
@@ -20,6 +23,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public string Id { get; }
         public string ChannelName { get; }
+        public string Description { get; }
 
         public string DisplayName
             => (Kind == ChannelKind.DirectMessage ? '@' : '#') + ChannelName;
@@ -143,5 +147,44 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Members
+
+        #region ChannelDetail
+
+        private WeakReference<ChannelDetailViewModel> _ChannelDetail;
+
+        internal ChannelDetailViewModel GetOrCreateChannelDetail()
+        {
+            if (_ChannelDetail == null
+                || !_ChannelDetail.TryGetTarget(out var d))
+            {
+                d = new ChannelDetailViewModel(this);
+                _ChannelDetail = new WeakReference<ChannelDetailViewModel>(d);
+            }
+
+            return d;
+        }
+
+        #endregion ChannelDetail
+
+        #region ShowDetailCommand
+
+        private Command _ShowDetailCommand;
+
+        public Command ShowDetailCommand
+            => _ShowDetailCommand ?? (_ShowDetailCommand = new Command(async () =>
+            {
+                var nav = App.Current?.MainPage?.Navigation;
+
+                try
+                {
+                    await nav.PushModalAsync(new ChannelDetailPage()
+                    {
+                        BindingContext = GetOrCreateChannelDetail()
+                    });
+                }
+                catch { }
+            }));
+
+        #endregion ShowDetailCommand
     }
 }

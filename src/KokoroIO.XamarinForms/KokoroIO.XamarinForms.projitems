@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)TH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ChannelDetailViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\EntityCandicates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\IUploaderInfoHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
@@ -52,6 +53,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\BooleanNegationConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ChannelDetailPage.xaml.cs">
+      <DependentUpon>ChannelDetailPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\EntitiesLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExpandableEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MembersLabel.cs" />
@@ -193,6 +198,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\NotificationSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\ChannelDetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
