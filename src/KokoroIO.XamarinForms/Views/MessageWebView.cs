@@ -300,7 +300,7 @@ namespace KokoroIO.XamarinForms.Views
                 Avatar = m.Profile.Avatar;
                 ScreenName = m.Profile.ScreenName;
                 DisplayName = m.Profile.DisplayName;
-                IsBot = m.Profile.IsBot;
+                IsBot = m.Profile.Type == ProfileType.Bot;
                 PublishedAt = m.PublishedAt;
                 IsNsfw = m.IsNsfw;
                 Content = m.Content;

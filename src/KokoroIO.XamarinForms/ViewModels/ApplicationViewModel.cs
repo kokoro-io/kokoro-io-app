@@ -22,7 +22,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Client = client;
             OpenUrlCommand = new Command(OpenUrl);
 
-            _LoginUser = GetProfile(loginUser);
+            _LoginUser = GetProfileViewModel(loginUser);
 
             client.ProfileUpdated += Client_ProfileUpdated;
             client.MessageCreated += Client_MessageCreated;
@@ -93,34 +93,61 @@ namespace KokoroIO.XamarinForms.ViewModels
             return tcs.Task;
         }
 
-        public Task<Profile[]> GetProfilesAsync()
-            => EnqueueClientTask(() => Client.GetProfilesAsync());
-
         public async Task<ProfileViewModel> PutProfileAsync(string screenName = null, string displayName = null, Stream avatar = null)
         {
             var p = await EnqueueClientTask(() => Client.PutProfileAsync(screenName: screenName, displayName: displayName, avatar: avatar));
 
-            var pvm = GetProfile(p);
+            var pvm = GetProfileViewModel(p);
 
             LoginUser = pvm;
 
             return pvm;
         }
 
-        public Task<Membership[]> GetMembershipsAsync(bool? archived = null, Authority? authority = null)
-            => EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority));
+        public async Task<Membership[]> GetMembershipsAsync(bool? archived = null, Authority? authority = null)
+        {
+            var r = await EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority)).ConfigureAwait(false);
 
-        public Task<Channel> GetChannelMembershipsAsync(string channelId)
-            => EnqueueClientTask(() => Client.GetChannelMembershipsAsync(channelId));
+            foreach (var ms in r)
+            {
+                GetProfileViewModel(ms.Profile);
+            }
 
-        public Task<Channel[]> GetChannelsAsync(bool? archived = null)
-            => EnqueueClientTask(() => Client.GetChannelsAsync(archived: archived));
+            return r;
+        }
 
-        public Task<Message[]> GetMessagesAsync(string channelId, int? limit = null, int? beforeId = null, int? afterId = null)
-            => EnqueueClientTask(() => Client.GetMessagesAsync(channelId, limit: limit, beforeId: beforeId, afterId: afterId));
+        public async Task<Channel> GetChannelMembershipsAsync(string channelId)
+        {
+            var r = await EnqueueClientTask(() => Client.GetChannelMembershipsAsync(channelId)).ConfigureAwait(false);
 
-        public Task<Message> PostMessageAsync(string channelId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
-            => EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey));
+            foreach (var ms in r.Memberships)
+            {
+                GetProfileViewModel(ms.Profile);
+            }
+
+            return r;
+        }
+
+        public async Task<Message[]> GetMessagesAsync(string channelId, int? limit = null, int? beforeId = null, int? afterId = null)
+        {
+            var r = await EnqueueClientTask(() => Client.GetMessagesAsync(channelId, limit: limit, beforeId: beforeId, afterId: afterId)).ConfigureAwait(false);
+
+            foreach (var ms in r)
+            {
+                GetProfileViewModel(ms.Profile);
+            }
+
+            return r;
+        }
+
+        public async Task<Message> PostMessageAsync(string channelId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
+        {
+            var r = await EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey)).ConfigureAwait(false);
+
+            GetProfileViewModel(r.Profile);
+
+            return r;
+        }
 
         public async Task<ChannelViewModel> PostDirectMessageChannelAsync(string targetUserProfileId)
         {
@@ -300,37 +327,40 @@ namespace KokoroIO.XamarinForms.ViewModels
             private set => SetProperty(ref _LoginUser, value);
         }
 
+        private readonly Dictionary<string, Profile> _ProfileModels = new Dictionary<string, Profile>();
         private readonly Dictionary<string, ProfileViewModel> _Profiles = new Dictionary<string, ProfileViewModel>();
 
-        internal ProfileViewModel GetProfile(Message model)
+        internal Profile GetProfile(Message model)
         {
             var key = model.Profile.Id + '\0' + model.Profile.ScreenName + '\0' + model.Avatar + '\0' + model.DisplayName;
 
-            if (!_Profiles.TryGetValue(key, out var p))
+            if (!_ProfileModels.TryGetValue(key, out var p))
             {
-                p = new ProfileViewModel
-                    (
-                        this,
-                        model.Profile.Id,
-                        model.Avatar,
-                        model.DisplayName,
-                        model.Profile.ScreenName,
-                        model.Profile.Type == ProfileType.Bot
-                    );
+                p = new Profile()
+                {
+                    Avatar = model.Avatar,
+                    DisplayName = model.DisplayName,
 
-                _Profiles[key] = p;
+                    Id = model.Profile.Id,
+                    ScreenName = model.Profile.ScreenName,
+                    IsArchived = model.Profile.IsArchived,
+                    Type = model.Profile.Type
+                };
+                _ProfileModels[key] = p;
             }
             return p;
         }
 
-        internal ProfileViewModel GetProfile(Profile model)
+        internal ProfileViewModel GetProfileViewModel(Profile model)
         {
-            var key = model.Id + '\0' + model.ScreenName + '\0' + model.Avatar + '\0' + model.DisplayName;
-
-            if (!_Profiles.TryGetValue(key, out var p))
+            if (_Profiles.TryGetValue(model.Id, out var p))
+            {
+                p.Update(model);
+            }
+            else
             {
                 p = new ProfileViewModel(this, model);
-                _Profiles[key] = p;
+                _Profiles[model.Id] = p;
             }
             return p;
         }
@@ -490,10 +520,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_ProfileUpdated(object sender, EventArgs<Profile> e)
         {
-            if (e.Data?.Id == _LoginUser.Id)
-            {
-                LoginUser = GetProfile(e.Data);
-            }
+            GetProfileViewModel(e.Data);
         }
 
         private void Client_MessageCreated(object sender, EventArgs<Message> e)
@@ -502,6 +529,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+
+            GetProfileViewModel(e.Data.Profile);
+
             var rvm = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id);
 
             MessagingCenter.Send(this, "MessageCreated", e.Data);
@@ -527,6 +557,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+
+            GetProfileViewModel(e.Data.Profile);
+
             var mp = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id)?.MessagesPage;
 
             MessagingCenter.Send(this, "MessageUpdated", e.Data);

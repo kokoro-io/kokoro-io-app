@@ -28,7 +28,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public int Id { get; }
 
-        public ProfileViewModel Profile { get; }
+        public Profile Profile { get; }
 
         public DateTime PublishedAt { get; }
 

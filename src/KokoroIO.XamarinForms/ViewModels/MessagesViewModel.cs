@@ -65,7 +65,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 _AllMembers.AddRange(
                         ps.Memberships
-                                .Select(p => Application.GetProfile(p.Profile))
+                                .Select(p => Application.GetProfileViewModel(p.Profile))
                                 .OrderBy(p => p.ScreenName, StringComparer.OrdinalIgnoreCase)
                                 .ThenBy(p => p.Id));
 
@@ -640,7 +640,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 AddedAt = DateTime.Now;
             }
 
-            public ProfileViewModel Profile { get; }
+            public Profile Profile { get; }
+
             public ChannelViewModel Channel { get; }
 
             public DateTime AddedAt { get; }
