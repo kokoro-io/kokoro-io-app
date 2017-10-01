@@ -55,6 +55,20 @@
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Order="Secondary"
+            Text="Members [WIP]" />
+        <ToolbarItem
+            Order="Secondary"
+            Text="Invite member [WIP]" />
+        <ToolbarItem
+            Order="Secondary"
+            Text="Search message [WIP]" />
+        <ToolbarItem
+            Order="Secondary"
+            Text="Leave channel [WIP]" />
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -305,7 +319,7 @@
                             HorizontalOptions="End"
                             IsVisible="{Binding IsOtherUser}"
                             Text="Send Direct Message"
-                            Command="{Binding BeginDirectMessageCommand}"/>
+                            Command="{Binding BeginDirectMessageCommand}" />
                     </Grid>
                 </xlabs:PopupLayout.Content>
             </xlabs:PopupLayout>
