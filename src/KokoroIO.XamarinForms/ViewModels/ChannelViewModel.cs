@@ -116,7 +116,19 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region Membership
 
-        internal string MembershipId { get; set; }
+        #region MembershipId
+
+        private string _MembershipId;
+
+        public string MembershipId
+        {
+            get => _MembershipId;
+            private set => SetProperty(ref _MembershipId, value);
+        }
+
+        #endregion MembershipId
+
+        #region NotificationDisabled
 
         private bool _NotificationDisabled;
 
@@ -125,6 +137,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             get => _NotificationDisabled;
             private set => SetProperty(ref _NotificationDisabled, value);
         }
+
+        #endregion NotificationDisabled
 
         internal void Update(Membership model)
         {
@@ -140,6 +154,20 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             MembershipId = model.Id;
             NotificationDisabled = model.DisableNotification;
+        }
+
+        internal void ClearMembership()
+        {
+            MembershipId = null;
+            NotificationDisabled = false;
+            Application.Channels.Remove(this);
+
+            PeekMembers()?.Remove(Application.LoginUser);
+
+            if (Application.SelectedChannel == this)
+            {
+                Application.SelectedChannel = null;
+            }
         }
 
         #endregion Membership

@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.ChannelDetailPage"
-    Title="{Binding Channel.DisplayName}">
+    Title="{Binding Channel.DisplayName}"
+    IsBusy="{Binding IsBusy}">
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -49,13 +50,34 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Grid
-                Grid.Row="3">
+            <StackLayout
+                Grid.Row="3"
+                HorizontalOptions="End"
+                Orientation="Horizontal">
+
+                <!--<Button
+                    Text="Join"
+                    Command="{Binding JoinCommand}" />-->
+
                 <Button
-                    HorizontalOptions="End"
+                    Text="Leave"
+                    Command="{Binding LeaveCommand}">
+                    <Button.Triggers>
+                        <DataTrigger
+                            TargetType="Button"
+                            Binding="{Binding Channel.MembershipId}"
+                            Value="{x:Null}">
+                            <Setter
+                                Property="IsVisible"
+                                Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button
                     Text="Back"
                     Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
-            </Grid>
+            </StackLayout>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -75,6 +75,29 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
+        private Task EnqueueClientTask(Func<Task> task)
+        {
+            var tcs = new TaskCompletionSource<object>();
+
+            EnqueueClientTaskCore(() => task().ContinueWith(t =>
+            {
+                if (t.Status == TaskStatus.RanToCompletion)
+                {
+                    tcs.SetResult(null);
+                }
+                else if (t.IsFaulted)
+                {
+                    tcs.SetException(t.Exception);
+                }
+                else
+                {
+                    tcs.SetCanceled();
+                }
+            }));
+
+            return tcs.Task;
+        }
+
         private Task<T> EnqueueClientTask<T>(Func<Task<T>> task)
         {
             var tcs = new TaskCompletionSource<T>();
@@ -121,6 +144,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             return r;
         }
+
+        public Task DeleteMembershipAsync(string membershipId)
+            => EnqueueClientTask(() => Client.DeleteMembershipAsync(membershipId));
 
         public async Task<Channel> GetChannelMembershipsAsync(string channelId)
         {
