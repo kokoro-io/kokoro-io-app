@@ -387,8 +387,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                 catch { }
             }
 
-            var pns = UserSettings.PnsHandle;
-
             UserSettings.Password = null;
             UserSettings.AccessToken = null;
             UserSettings.PnsHandle = null;
@@ -399,12 +397,15 @@ namespace KokoroIO.XamarinForms.ViewModels
                 var ds = DependencyService.Get<IDeviceService>();
                 ds.UnregisterPlatformNotificationService();
 
-                if (pns != null && avm != null)
+                if (avm != null)
                 {
-                    await avm.Client.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), null, false);
+                    await avm.Client.DeleteDeviceAsync(ds.GetDeviceIdentifierString());
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                ex.Trace("DeleteDeviceFailed");
+            }
 
             App.Current.MainPage = new LoginPage();
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace KokoroIO.XamarinForms
 {
@@ -16,7 +17,26 @@ namespace KokoroIO.XamarinForms
 
             hash = SHA256.Create().ComputeHash(hash);
 
-            return Convert.ToBase64String(hash);
+            var sb = new StringBuilder(Convert.ToBase64String(hash));
+
+            for (int i = 0; i < sb.Length; i++)
+            {
+                var c = sb[i];
+                if (c == '/')
+                {
+                    sb[i] = '-';
+                }
+                else if (c == '+')
+                {
+                    sb[i] = '_';
+                }
+                else if (c == '=')
+                {
+                    sb[i] = '@';
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
