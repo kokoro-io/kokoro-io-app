@@ -12,18 +12,30 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             Application = application;
             Id = model.Id;
-            ChannelName = model.ChannelName;
-            Description = model.Description;
             Kind = model.Kind;
-            IsArchived = model.IsArchived;
-            NotificationDisabled = model.Membership?.DisableNotification ?? false;
+
+            Update(model);
         }
 
         internal ApplicationViewModel Application { get; }
 
+        #region Channel
+
         public string Id { get; }
-        public string ChannelName { get; }
-        public string Description { get; }
+
+        #region ChannelName
+
+        private string _ChannelName;
+
+        public string ChannelName
+        {
+            get => _ChannelName;
+            private set => SetProperty(ref _ChannelName, value, onChanged: () =>
+            {
+                OnPropertyChanged(nameof(DisplayName));
+                OnPropertyChanged(nameof(Placeholder));
+            });
+        }
 
         public string DisplayName
             => (Kind == ChannelKind.DirectMessage ? '@' : '#') + ChannelName;
@@ -31,9 +43,23 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string Placeholder
             => "Let's talk" + (Kind == ChannelKind.DirectMessage ? " to " : " at ") + ChannelName;
 
+        #endregion ChannelName
+
+        #region Description
+
+        private string _Description;
+
+        public string Description
+        {
+            get => _Description;
+            private set => SetProperty(ref _Description, value);
+        }
+
+        #endregion Description
+
+        #region Kind
+
         public ChannelKind Kind { get; }
-        public bool IsArchived { get; }
-        public bool NotificationDisabled { get; }
 
         public string KindName
         {
@@ -54,6 +80,69 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return Kind.ToString();
             }
         }
+
+        #endregion Kind
+
+        #region IsArchived
+
+        private bool _IsArchived;
+
+        public bool IsArchived
+        {
+            get => _IsArchived;
+            private set => SetProperty(ref _IsArchived, value);
+        }
+
+        #endregion IsArchived
+
+        internal void Update(Channel model)
+        {
+            UpdateCore(model);
+
+            if (model.Membership != null)
+            {
+                UpdateCore(model.Membership);
+            }
+        }
+
+        private void UpdateCore(Channel model)
+        {
+            ChannelName = model.ChannelName;
+            Description = model.Description;
+            IsArchived = model.IsArchived;
+        }
+
+        #endregion Channel
+
+        #region Membership
+
+        internal string MembershipId { get; set; }
+
+        private bool _NotificationDisabled;
+
+        public bool NotificationDisabled
+        {
+            get => _NotificationDisabled;
+            private set => SetProperty(ref _NotificationDisabled, value);
+        }
+
+        internal void Update(Membership model)
+        {
+            UpdateCore(model);
+
+            if (model.Channel != null)
+            {
+                UpdateCore(model.Channel);
+            }
+        }
+
+        private void UpdateCore(Membership model)
+        {
+            MembershipId = model.Id;
+            NotificationDisabled = model.DisableNotification;
+        }
+
+        #endregion Membership
 
         #region MessagesPage
 

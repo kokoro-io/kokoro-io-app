@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
@@ -112,6 +111,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             foreach (var ms in r)
             {
                 GetProfileViewModel(ms.Profile);
+                GetChannelViewModel(ms);
             }
 
             return r;
@@ -154,28 +154,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var channel = await EnqueueClientTask(() => Client.PostDirectMessageChannelAsync(targetUserProfileId));
 
-            var rvm = Channels.FirstOrDefault(r => r.Id == channel.Id);
-
-            if (rvm == null)
-            {
-                rvm = new ChannelViewModel(this, channel);
-
-                for (var i = 0; i < Channels.Count; i++)
-                {
-                    var aft = Channels[i];
-
-                    if ((aft.Kind == ChannelKind.DirectMessage && aft.ChannelName.CompareTo(rvm.ChannelName) > 0)
-                        || aft.IsArchived)
-                    {
-                        Channels.Insert(i, rvm);
-                        return rvm;
-                    }
-                }
-
-                Channels.Add(rvm);
-            }
-
-            return rvm;
+            return GetChannelViewModel(channel);
         }
 
         #endregion kokoro.io API Client
@@ -211,16 +190,10 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
 
             var memberships = await GetMembershipsAsync().ConfigureAwait(false);
-            var channels = memberships.Select(m => m.Channel);
 
-            foreach (var r in channels.OrderBy(e => e.IsArchived ? 1 : 0)
-                                    .ThenBy(e => (int)e.Kind)
-                                    .ThenBy(e => e.ChannelName, StringComparer.Ordinal)
-                                    .ThenBy(e => e.Id))
+            foreach (var ms in memberships)
             {
-                var rvm = new ChannelViewModel(this, r);
-
-                _Channels.Add(rvm);
+                GetChannelViewModel(ms);
             }
 
             try
@@ -314,6 +287,45 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal void OnUnreadCountChanged()
         {
             HasNotificationInMenu = _Channels?.Where(r => r != _SelectedChannel).Sum(r => r.UnreadCount) > 0;
+        }
+
+        internal ChannelViewModel GetChannelViewModel(Channel channel)
+        {
+            var cvm = Channels.FirstOrDefault(c => c.Id == channel.Id);
+
+            if (cvm == null)
+            {
+                cvm = new ChannelViewModel(this, channel);
+
+                for (var i = 0; i < Channels.Count; i++)
+                {
+                    var aft = Channels[i];
+
+                    if (!cvm.IsArchived && aft.IsArchived
+                        || cvm.Kind < aft.Kind
+                        || aft.ChannelName.CompareTo(cvm.ChannelName) > 0)
+                    {
+                        Channels.Insert(i, cvm);
+                        return cvm;
+                    }
+                }
+
+                Channels.Add(cvm);
+            }
+            else
+            {
+                cvm.Update(channel);
+            }
+
+            return cvm;
+        }
+
+        internal ChannelViewModel GetChannelViewModel(Membership membership)
+        {
+            var cvm = GetChannelViewModel(membership.Channel);
+            cvm.Update(membership);
+
+            return cvm;
         }
 
         #endregion Channels
