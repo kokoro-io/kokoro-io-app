@@ -14,4 +14,5 @@ namespace KokoroIO.XamarinForms
 
         void UnregisterPlatformNotificationService();
     }
+
 }

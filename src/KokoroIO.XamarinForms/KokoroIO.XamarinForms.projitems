@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)DeviceServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAudioService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IDeviceService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Data\ChannelUserProperties.cs" />

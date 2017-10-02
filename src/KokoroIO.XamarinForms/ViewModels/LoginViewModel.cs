@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Views;
@@ -75,22 +72,15 @@ namespace KokoroIO.XamarinForms.ViewModels
                         c.EndPoint = ep;
                     }
 
-                    const string TokenName = nameof(KokoroIO) + "." + nameof(XamarinForms);
                     var ds = DependencyService.Get<IDeviceService>();
 
                     var pnsTask = ds.GetPlatformNotificationServiceHandleAsync();
 
                     await Task.WhenAny(pnsTask, Task.Delay(15000));
 
-                    var hash = TokenName.Select(ch => (byte)ch).Concat(ds.GetIdentifier()).ToArray();
-
-                    hash = SHA256.Create().ComputeHash(hash);
-
-                    var di = Convert.ToBase64String(hash);
-
                     var pns = pnsTask.Status == TaskStatus.RanToCompletion ? pnsTask.Result : null;
 
-                    var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, di, pns, pns != null);
+                    var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
                     c.AccessToken = device.AccessToken.Token;
 
                     var me = await c.GetProfileAsync();

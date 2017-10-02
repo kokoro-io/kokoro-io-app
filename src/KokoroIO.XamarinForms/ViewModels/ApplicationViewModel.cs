@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
@@ -400,7 +401,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 if (pns != null && avm != null)
                 {
-                    await avm.Client.PostDeviceAsync(ds.MachineName, ds.Kind, Convert.ToBase64String(ds.GetIdentifier()), null, false);
+                    await avm.Client.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), null, false);
                 }
             }
             catch { }

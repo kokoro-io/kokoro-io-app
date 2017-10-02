@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.ViewModels;
@@ -53,7 +55,7 @@ namespace KokoroIO.XamarinForms
 
                         if (pns != UserSettings.PnsHandle)
                         {
-                            await c.PostDeviceAsync(ds.MachineName, ds.Kind, Convert.ToBase64String(ds.GetIdentifier()), pns, pns != null);
+                            await c.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
 
                             UserSettings.PnsHandle = pns;
                             await App.Current.SavePropertiesAsync();
