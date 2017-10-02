@@ -39,7 +39,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string DisplayName
         {
             get => _DisplayName;
-            internal set => SetProperty(ref _DisplayName, value);
+            private set => SetProperty(ref _DisplayName, value, onChanged: () => OnPropertyChanged(nameof(FullDisplayName)));
         }
 
         #endregion DisplayName
@@ -51,10 +51,13 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string ScreenName
         {
             get => _ScreenName;
-            private set => SetProperty(ref _ScreenName, value);
+            private set => SetProperty(ref _ScreenName, value, onChanged: () => OnPropertyChanged(nameof(FullDisplayName)));
         }
 
         #endregion ScreenName
+
+        public string FullDisplayName
+            => $"{DisplayName} (@{ScreenName})";
 
         #region InvitedChannelCount
 

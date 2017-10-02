@@ -35,15 +35,19 @@ namespace KokoroIO.XamarinForms.Droid
 
         protected override void OnMessage(Context context, Intent intent)
         {
-            Log.Info(GcmBroadcastReceiver.TAG, "GCM Message Received!");
-
             var msg = new StringBuilder();
 
             if (intent != null && intent.Extras != null)
             {
                 foreach (var key in intent.Extras.KeySet())
+                {
                     msg.AppendLine(key + "=" + intent.Extras.Get(key).ToString());
+                }
             }
+
+            Log.Info(GcmBroadcastReceiver.TAG, "GCM Message Received!: " + msg);
+
+
 
             string messageText = intent.Extras.GetString("message");
             if (!string.IsNullOrEmpty(messageText))

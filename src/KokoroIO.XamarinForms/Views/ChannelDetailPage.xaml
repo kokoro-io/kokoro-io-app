@@ -43,7 +43,7 @@
                                 <Label
                                     Grid.Column="1"
                                     VerticalOptions="Center"
-                                    Text="{Binding DisplayName}" />
+                                    Text="{Binding FullDisplayName}" />
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
