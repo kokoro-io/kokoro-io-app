@@ -235,6 +235,16 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
+        internal ObservableRangeCollection<ProfileViewModel> PeekMembers()
+        {
+            if (_Members != null
+                && _Members.TryGetTarget(out var c))
+            {
+                return c;
+            }
+            return null;
+        }
+
         #endregion Members
 
         #region ChannelDetail
@@ -275,5 +285,35 @@ namespace KokoroIO.XamarinForms.ViewModels
             }));
 
         #endregion ShowDetailCommand
+
+        #region Member events
+
+        internal void Join(Membership membership)
+        {
+            var members = PeekMembers();
+
+            if (members != null && membership.Authority != Authority.Invited)
+            {
+                var p = Application.GetProfileViewModel(membership.Profile);
+
+                if (!members.Contains(p))
+                {
+                    members.Add(p);
+                }
+            }
+        }
+
+        internal void Leave(Membership membership)
+        {
+            var members = PeekMembers();
+            var p = members?.FirstOrDefault(m => m.Id == membership.Profile.Id);
+
+            if (p != null)
+            {
+                members.Remove(p);
+            }
+        }
+
+        #endregion Member events
     }
 }

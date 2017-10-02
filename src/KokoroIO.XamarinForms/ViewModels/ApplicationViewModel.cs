@@ -27,6 +27,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             client.ProfileUpdated += Client_ProfileUpdated;
             client.MessageCreated += Client_MessageCreated;
             client.MessageUpdated += Client_MessageUpdated;
+            client.ChannelsUpdated += Client_ChannelsUpdated;
+
+            client.MemberJoined += Client_MemberJoined;
+            client.MemberLeaved += Client_MemberLeaved;
+
             client.Disconnected += Client_Disconnected;
         }
 
@@ -534,7 +539,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_ProfileUpdated(object sender, EventArgs<Profile> e)
         {
-            GetProfileViewModel(e.Data);
+            XDevice.BeginInvokeOnMainThread(() =>
+            {
+                GetProfileViewModel(e.Data);
+            });
         }
 
         private void Client_MessageCreated(object sender, EventArgs<Message> e)
@@ -544,25 +552,28 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return;
             }
 
-            GetProfileViewModel(e.Data.Profile);
-
-            var rvm = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id);
-
-            MessagingCenter.Send(this, "MessageCreated", e.Data);
-
-            if (rvm != null)
+            XDevice.BeginInvokeOnMainThread(() =>
             {
-                rvm.UnreadCount++;
-                if (!rvm.NotificationDisabled
-                    && UserSettings.PlayRingtone)
+                GetProfileViewModel(e.Data.Profile);
+
+                var rvm = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id);
+
+                MessagingCenter.Send(this, "MessageCreated", e.Data);
+
+                if (rvm != null)
                 {
-                    try
+                    rvm.UnreadCount++;
+                    if (!rvm.NotificationDisabled
+                        && UserSettings.PlayRingtone)
                     {
-                        DependencyService.Get<IAudioService>()?.PlayNotification();
+                        try
+                        {
+                            DependencyService.Get<IAudioService>()?.PlayNotification();
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
-            }
+            });
         }
 
         private void Client_MessageUpdated(object sender, EventArgs<Message> e)
@@ -572,16 +583,54 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return;
             }
 
-            GetProfileViewModel(e.Data.Profile);
-
-            var mp = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id)?.MessagesPage;
-
-            MessagingCenter.Send(this, "MessageUpdated", e.Data);
-
-            if (mp != null)
+            XDevice.BeginInvokeOnMainThread(() =>
             {
-                mp.UpdateMessage(e.Data);
-            }
+                GetProfileViewModel(e.Data.Profile);
+
+                var mp = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id)?.MessagesPage;
+
+                MessagingCenter.Send(this, "MessageUpdated", e.Data);
+
+                if (mp != null)
+                {
+                    mp.UpdateMessage(e.Data);
+                }
+            });
+        }
+
+        private void Client_ChannelsUpdated(object sender, EventArgs<Channel[]> e)
+        {
+            XDevice.BeginInvokeOnMainThread(() =>
+            {
+                foreach (var c in e.Data)
+                {
+                    GetChannelViewModel(c);
+                }
+
+                Channels.RemoveRange(Channels.Where(c => !e.Data.Any(d => d.Id == c.Id)).ToArray());
+
+                // TODO: subscribe channels
+            });
+        }
+
+        private void Client_MemberJoined(object sender, EventArgs<Membership> e)
+        {
+            XDevice.BeginInvokeOnMainThread(() =>
+            {
+                GetProfileViewModel(e.Data.Profile);
+
+                Channels.FirstOrDefault(c => c.Id == e.Data.Id)?.Join(e.Data);
+            });
+        }
+
+        private void Client_MemberLeaved(object sender, EventArgs<Membership> e)
+        {
+            XDevice.BeginInvokeOnMainThread(() =>
+            {
+                GetProfileViewModel(e.Data.Profile);
+
+                Channels.FirstOrDefault(c => c.Id == e.Data.Id)?.Leave(e.Data);
+            });
         }
 
         private void Client_Disconnected(object sender, EventArgs e)
