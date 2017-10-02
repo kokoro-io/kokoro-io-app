@@ -35,6 +35,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             client.Disconnected += Client_Disconnected;
         }
 
+        private float _DisplayScale;
+
+        public float DisplayScale
+            => _DisplayScale <= 0 ? _DisplayScale = DependencyService.Get<IDeviceService>().GetDisplayScale() : _DisplayScale;
+
         #region kokoro.io API Client
 
         private readonly Client Client;
@@ -333,8 +338,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                     var aft = Channels[i];
 
                     if (!cvm.IsArchived && aft.IsArchived
-                        || cvm.Kind < aft.Kind
-                        || aft.ChannelName.CompareTo(cvm.ChannelName) > 0)
+                        || (cvm.IsArchived == aft.IsArchived
+                            && (cvm.Kind < aft.Kind
+                            || (cvm.Kind == aft.Kind && aft.ChannelName.CompareTo(cvm.ChannelName) > 0))))
                     {
                         Channels.Insert(i, cvm);
                         return cvm;
@@ -383,6 +389,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 p = new Profile()
                 {
                     Avatar = model.Avatar,
+                    Avatars = model.Avatars,
                     DisplayName = model.DisplayName,
 
                     Id = model.Profile.Id,

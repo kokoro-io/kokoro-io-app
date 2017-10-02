@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -29,6 +30,22 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int Id { get; }
 
         public Profile Profile { get; }
+
+        public string DisplayAvatar
+        {
+            get
+            {
+                if (Profile.Avatars != null)
+                {
+                    var s = Page.Application.DisplayScale * 40;
+                    return Profile.Avatars.OrderBy(a => a.Size).Where(a => a.Size >= s).FirstOrDefault()?.Url
+                            ?? Profile.Avatars.OrderByDescending(a => a.Size).FirstOrDefault()?.Url
+                            ?? Profile.Avatar;
+                }
+
+                return Profile.Avatar;
+            }
+        }
 
         public DateTime PublishedAt { get; }
 

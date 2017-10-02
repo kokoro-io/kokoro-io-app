@@ -307,7 +307,7 @@
                                 WidthRequest="40"
                                 HeightRequest="40"
                                 Margin="8"
-                                Source="{Binding Avatar}" />
+                                Source="{Binding DisplayAvatar}" />
                             <Label
                                 Grid.Column="1"
                                 VerticalOptions="Center"

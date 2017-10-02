@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.UWP;
+using Windows.Graphics.Display;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Xamarin.Forms;
@@ -28,6 +29,9 @@ namespace KokoroIO.XamarinForms.UWP
 
             return buf;
         }
+
+        public float GetDisplayScale()
+            => (float)DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
 
         public Task<string> GetPlatformNotificationServiceHandleAsync()
             => Task.FromResult<string>(null);

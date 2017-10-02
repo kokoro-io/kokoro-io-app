@@ -10,6 +10,8 @@ namespace KokoroIO.XamarinForms
 
         byte[] GetIdentifier();
 
+        float GetDisplayScale();
+
         Task<string> GetPlatformNotificationServiceHandleAsync();
 
         void UnregisterPlatformNotificationService();

@@ -297,7 +297,7 @@ namespace KokoroIO.XamarinForms.Views
             public JsonMessage(MessageInfo m)
             {
                 Id = m.Id;
-                Avatar = m.Profile.Avatar;
+                Avatar = m.DisplayAvatar;
                 ScreenName = m.Profile.ScreenName;
                 DisplayName = m.Profile.DisplayName;
                 IsBot = m.Profile.Type == ProfileType.Bot;

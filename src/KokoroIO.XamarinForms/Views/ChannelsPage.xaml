@@ -46,7 +46,7 @@
                     WidthRequest="40"
                     HeightRequest="40"
                     Margin="8"
-                    Source="{Binding Application.LoginUser.Avatar}" />
+                    Source="{Binding Application.LoginUser.DisplayAvatar}" />
 
                 <Label
                     Grid.Column="1"

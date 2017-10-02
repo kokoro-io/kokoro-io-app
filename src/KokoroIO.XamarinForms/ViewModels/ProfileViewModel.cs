@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
@@ -10,6 +11,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Application = application;
             Id = model.Id;
             _Avatar = model.Avatar;
+            Avatars = model.Avatars;
             _DisplayName = model.DisplayName;
             _ScreenName = model.ScreenName;
             _InvitedChannelCount = model.InvitedChannelCount;
@@ -27,7 +29,25 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string Avatar
         {
             get => _Avatar;
-            internal set => SetProperty(ref _Avatar, value);
+            internal set => SetProperty(ref _Avatar, value, onChanged: () => OnPropertyChanged(nameof(DisplayAvatar)));
+        }
+
+        internal Avatar[] Avatars { get; set; }
+
+        public string DisplayAvatar
+        {
+            get
+            {
+                if (Avatars != null)
+                {
+                    var s = Application.DisplayScale * 40;
+                    return Avatars.OrderBy(a => a.Size).Where(a => a.Size >= s).FirstOrDefault()?.Url
+                            ?? Avatars.OrderByDescending(a => a.Size).FirstOrDefault()?.Url
+                            ?? _Avatar;
+                }
+
+                return _Avatar;
+            }
         }
 
         #endregion Avatar
@@ -73,6 +93,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal void Update(Profile model)
         {
+            Avatars = model.Avatars ?? Avatars;
             Avatar = model.Avatar ?? _Avatar;
             DisplayName = model.DisplayName ?? _DisplayName;
             ScreenName = model.ScreenName;
