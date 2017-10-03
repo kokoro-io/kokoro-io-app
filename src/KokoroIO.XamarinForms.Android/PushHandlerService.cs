@@ -35,48 +35,33 @@ namespace KokoroIO.XamarinForms.Droid
 
         protected override void OnMessage(Context context, Intent intent)
         {
-            var msg = new StringBuilder();
+            Log.Info(GcmBroadcastReceiver.TAG, "GCM Message Received!: ");
 
-            if (intent != null && intent.Extras != null)
+            var channelName = intent.Extras.GetString("title");
+            var message = intent.Extras.GetString("alert");
+
+
+            if (!string.IsNullOrEmpty(message))
             {
-                foreach (var key in intent.Extras.KeySet())
-                {
-                    msg.AppendLine(key + "=" + intent.Extras.Get(key).ToString());
-                }
-            }
+                var showIntent = new Intent(this, typeof(MainActivity));
+                showIntent.AddFlags(ActivityFlags.ClearTop);
+                var pendingIntent = PendingIntent.GetActivity(this, 0, showIntent, PendingIntentFlags.OneShot);
 
-            Log.Info(GcmBroadcastReceiver.TAG, "GCM Message Received!: " + msg);
+                var notificationBuilder = new Notification.Builder(this)
+                    .SetSmallIcon(Resource.Drawable.kokoro_white)
+                    .SetContentTitle(!string.IsNullOrEmpty(channelName) ? "#" + channelName : "kokoro.io")
+                    .SetContentText(message)
+                    .SetAutoCancel(true)
+                    .SetContentIntent(pendingIntent)
+                    .SetStyle(new Notification.BigTextStyle().BigText(message))
+                    .SetVibrate(new long[] { 100, 0, 100, 0, 100, 0 })
+                    .SetPriority((int)NotificationPriority.Max);
 
-
-
-            string messageText = intent.Extras.GetString("message");
-            if (!string.IsNullOrEmpty(messageText))
-            {
-                CreateNotification("New hub message!", messageText);
-            }
-            else
-            {
-                CreateNotification("Unknown message details", msg.ToString());
+                var notificationManager = (NotificationManager)GetSystemService(Context.NotificationService);
+                notificationManager.Notify(0, notificationBuilder.Build());
             }
         }
 
-        private void CreateNotification(string title, string desc)
-        {
-            var intent = new Intent(this, typeof(MainActivity));
-            intent.AddFlags(ActivityFlags.ClearTop);
-            var pendingIntent = PendingIntent.GetActivity(this, 0, intent, PendingIntentFlags.OneShot);
-
-            var notificationBuilder = new Notification.Builder(this)
-                .SetSmallIcon(Resource.Drawable.kokoro_white)
-                .SetContentTitle(title)
-                .SetContentText(desc)
-                .SetAutoCancel(true)
-                .SetContentIntent(pendingIntent)
-                .SetPriority((int)NotificationPriority.High);
-
-            var notificationManager = (NotificationManager)GetSystemService(Context.NotificationService);
-            notificationManager.Notify(0, notificationBuilder.Build());
-        }
 
         protected override void OnUnRegistered(Context context, string registrationId)
         {
