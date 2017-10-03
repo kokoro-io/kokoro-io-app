@@ -122,7 +122,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     if (!HasPrevious)
                     {
-                        IsBusy = false;
                         return;
                     }
                     bid = _Messages.Min(m => m.Id);

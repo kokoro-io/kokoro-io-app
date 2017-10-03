@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -623,6 +624,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_ProfileUpdated(object sender, EventArgs<Profile> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Profile updated: {0}", e.Data.Id);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data);
@@ -635,6 +642,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+            Debug.WriteLine("Message created: {0}", e.Data.Id);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
@@ -667,6 +675,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return;
             }
 
+            Debug.WriteLine("Message updated: {0}", e.Data.Id);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data.Profile);
@@ -684,6 +694,13 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_ChannelsUpdated(object sender, EventArgs<Channel[]> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+
+            Debug.WriteLine("Channels updated: {0} channels", e.Data.Length);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 foreach (var c in e.Data)
@@ -699,6 +716,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MemberJoined(object sender, EventArgs<Membership> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Member joined: @{1} joined to {0} as {2}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName, e.Data.Authority);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data.Profile);
@@ -709,6 +732,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MemberLeaved(object sender, EventArgs<Membership> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Member leaved: @{1} leaved from {0}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName );
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data.Profile);
