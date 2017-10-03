@@ -534,7 +534,7 @@ interface Window {
 
     function _afterTalkInserted(talk: HTMLDivElement, previousHeight?: number) {
         if (talk.offsetTop < document.body.scrollTop) {
-            var delta = talk.clientHeight - (previousHeight || 0);
+            let delta = talk.clientHeight - (previousHeight || 0);
             if (delta != 0) {
                 document.body.scrollTop += delta;
                 console.log("scolled " + delta);
@@ -543,22 +543,27 @@ interface Window {
 
         talk.setAttribute("data-height", talk.clientHeight.toString());
 
-        var imgs = talk.getElementsByTagName("img");
+        let anchors = talk.getElementsByTagName("a");
+        for (let i = 0; i < anchors.length; i++) {
+            anchors[i].removeAttribute("target");
+        }
+
+        let imgs = talk.getElementsByTagName("img");
         talk.setAttribute("data-loading-images", imgs.length.toString());
 
-        var handler;
+        let handler;
         handler = function (e: Event) {
-            var img = e.target;
+            let img = e.target;
 
-            var talk = (<HTMLElement>img).parentElement;
+            let talk = (<HTMLElement>img).parentElement;
 
             while (talk) {
                 if (talk.classList.contains("talk")) {
                     talk.setAttribute("data-loading-images", (Math.max(0, (parseInt(talk.getAttribute("data-loading-images"), 10) - 1) || 0)).toString());
 
-                    var ph = parseInt(talk.getAttribute("data-height"), 10);
-                    var delta = talk.clientHeight - ph;
-                    var b = document.body;
+                    let ph = parseInt(talk.getAttribute("data-height"), 10);
+                    let delta = talk.clientHeight - ph;
+                    let b = document.body;
                     if (b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight - delta) {
                         // previous viewport was bottom.
                         b.scrollTop = b.scrollHeight - b.clientHeight;
@@ -569,7 +574,7 @@ interface Window {
 
                     break;
                 } else if (/^error$/i.test(e.type) && talk.classList.contains("embed_media")) {
-                    var tp = talk.parentElement;
+                    let tp = talk.parentElement;
 
                     talk.remove();
 
@@ -588,7 +593,7 @@ interface Window {
             img.removeEventListener("error", handler);
         }
 
-        for (var i = 0; i < imgs.length; i++) {
+        for (let i = 0; i < imgs.length; i++) {
             imgs[i].addEventListener("load", handler);
             imgs[i].addEventListener("error", handler);
         }

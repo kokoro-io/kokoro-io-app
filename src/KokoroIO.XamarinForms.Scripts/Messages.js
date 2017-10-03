@@ -416,6 +416,10 @@
             }
         }
         talk.setAttribute("data-height", talk.clientHeight.toString());
+        var anchors = talk.getElementsByTagName("a");
+        for (var i = 0; i < anchors.length; i++) {
+            anchors[i].removeAttribute("target");
+        }
         var imgs = talk.getElementsByTagName("img");
         talk.setAttribute("data-loading-images", imgs.length.toString());
         var handler;

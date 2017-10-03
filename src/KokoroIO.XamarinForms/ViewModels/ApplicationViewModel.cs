@@ -520,6 +520,21 @@ namespace KokoroIO.XamarinForms.ViewModels
                             return;
                         }
                     }
+                    else if (u.AbsolutePath.StartsWith("/channels/"))
+                    {
+                        var id = u.AbsolutePath.Substring("/channels/".Length);
+
+                        var ch = _Channels.FirstOrDefault(c => c.Id == id);
+
+                        if (ch != null)
+                        {
+                            ch.ShowDetailCommand.Execute(null);
+
+                            return;
+                        }
+
+                        // TODO: search not joined channel
+                    }
                 }
 
                 XDevice.OpenUri(u);
