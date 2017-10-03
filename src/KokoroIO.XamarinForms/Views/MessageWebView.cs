@@ -247,6 +247,9 @@ namespace KokoroIO.XamarinForms.Views
         {
             switch (e.PropertyName)
             {
+                case nameof(MessageInfo.Id):
+                case nameof(MessageInfo.Profile):
+                case nameof(MessageInfo.PublishedAt):
                 case nameof(MessageInfo.Content):
                 case nameof(MessageInfo.EmbedContents):
                     if (_InitialMessagesLoaded == true)

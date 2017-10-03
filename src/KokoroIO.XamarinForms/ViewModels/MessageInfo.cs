@@ -142,8 +142,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal void SetIsMerged(MessageInfo prev)
         {
-            IsMerged = prev?.Profile == Profile
-                        && PublishedAt < prev.PublishedAt?.AddMinutes(3);
+            IsMerged = (prev?.Profile == Profile
+                            || (prev?.Profile.Id == Profile.Id
+                                && prev?.Profile.ScreenName == Profile.ScreenName
+                                && prev?.Profile.DisplayName == Profile.DisplayName
+                                && prev?.Profile.Avatar == Profile.Avatar))
+                        && (PublishedAt ?? DateTime.UtcNow) < prev.PublishedAt?.AddMinutes(3);
         }
 
         #endregion IsMerged

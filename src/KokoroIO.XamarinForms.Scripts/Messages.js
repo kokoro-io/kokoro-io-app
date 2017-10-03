@@ -69,9 +69,9 @@
                 var m = messages[i];
                 var id = m.Id;
                 if (!id) {
-                    var talk_2 = createTaklElement(m);
-                    document.body.appendChild(talk_2);
-                    _afterTalkInserted(talk_2);
+                    var talk = createTaklElement(m);
+                    document.body.appendChild(talk);
+                    _afterTalkInserted(talk);
                     continue;
                 }
                 else {
@@ -80,6 +80,7 @@
                     if (cur) {
                         var shoudScroll = scroll && cur.offsetTop + cur.clientHeight - IS_TOP_MARGIN < b.scrollTop;
                         var st = b.scrollTop - cur.clientHeight;
+                        var talk = createTaklElement(m);
                         document.body.insertBefore(talk, cur);
                         _afterTalkInserted(talk, cur.clientHeight);
                         cur.remove();

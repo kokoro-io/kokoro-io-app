@@ -125,13 +125,13 @@ namespace KokoroIO.XamarinForms.ViewModels
                         IsBusy = false;
                         return;
                     }
-                    bid = _Messages.First().Id;
+                    bid = _Messages.Max(m => m.Id);
                     aid = null;
                 }
                 else
                 {
                     bid = null;
-                    aid = _Messages.Last().Id;
+                    aid = _Messages.Min(m => m.Id);
                 }
 
                 var messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
@@ -226,18 +226,20 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 foreach (var m in messages.OrderBy(e => e.Id))
                 {
-                    var vm = new MessageInfo(this, m);
-
-                    if (vm.IdempotentKey != null && vm.Id != null)
+                    if (m.IdempotentKey != null)
                     {
-                        var cur = Messages.FirstOrDefault(cm => cm.IdempotentKey == vm.IdempotentKey);
+                        var cur = Messages.FirstOrDefault(cm => cm.IdempotentKey == m.IdempotentKey);
 
-                        if (cur != null && (cur.Id == null || cur.Id == vm.Id))
+                        if (cur != null && (cur.Id == null || cur.Id == m.Id))
                         {
-                            _Messages[_Messages.IndexOf(cur)] = vm;
+                            cur.Update(m);
+                            var p = Messages.IndexOf(cur);
+                            cur.SetIsMerged(Messages.ElementAtOrDefault(p - 1));
+
                             continue;
                         }
                     }
+                    var vm = new MessageInfo(this, m);
 
                     for (; ; i++)
                     {
@@ -416,6 +418,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 IsBusy = true;
                 tempMessage = new MessageInfo(this, m);
                 NewMessage = string.Empty;
+                var prev = Messages.LastOrDefault();
+                tempMessage.SetIsMerged(prev);
                 Messages.Add(tempMessage);
                 await Application.PostMessageAsync(Channel.Id, m, _IsNsfw, idempotentKey: tempMessage.IdempotentKey.Value);
                 succeeded = true;

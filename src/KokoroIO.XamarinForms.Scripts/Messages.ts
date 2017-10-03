@@ -153,6 +153,7 @@ interface Window {
                         let shoudScroll = scroll && cur.offsetTop + cur.clientHeight - IS_TOP_MARGIN < b.scrollTop;
                         let st = b.scrollTop - cur.clientHeight;
 
+                        let talk = createTaklElement(m);
                         document.body.insertBefore(talk, cur);
                         _afterTalkInserted(talk, cur.clientHeight);
                         cur.remove();
@@ -172,13 +173,13 @@ interface Window {
 
                     if (!prev || (id != pid && !aft)) {
                         // console.debug("Appending message[" + id + "]");
-                        var talk = createTaklElement(m);
+                        let talk = createTaklElement(m);
                         document.body.appendChild(talk);
                         _afterTalkInserted(talk);
                         j++;
                         break;
                     } else if (id <= pid) {
-                        var talk = createTaklElement(m);
+                        let talk = createTaklElement(m);
                         if (id == pid) {
                             let shoudScroll = scroll && aft && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
                             let st = b.scrollTop - prev.clientHeight;
@@ -197,7 +198,7 @@ interface Window {
                         break;
                     } else if (id < aid) {
                         // console.debug("Inserting message[" + id + "] before " + aid);
-                        var talk = createTaklElement(m);
+                        let talk = createTaklElement(m);
 
                         _insertBefore(talk, aft, scroll);
 
