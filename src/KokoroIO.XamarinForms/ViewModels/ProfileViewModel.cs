@@ -29,25 +29,32 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string Avatar
         {
             get => _Avatar;
-            internal set => SetProperty(ref _Avatar, value, onChanged: () => OnPropertyChanged(nameof(DisplayAvatar)));
+            internal set => SetProperty(ref _Avatar, value, onChanged: () =>
+            {
+                OnPropertyChanged(nameof(DisplayAvatar));
+                OnPropertyChanged(nameof(Avatar120px));
+            });
         }
 
         internal Avatar[] Avatars { get; set; }
 
         public string DisplayAvatar
-        {
-            get
-            {
-                if (Avatars != null)
-                {
-                    var s = Application.DisplayScale * 40;
-                    return Avatars.OrderBy(a => a.Size).Where(a => a.Size >= s).FirstOrDefault()?.Url
-                            ?? Avatars.OrderByDescending(a => a.Size).FirstOrDefault()?.Url
-                            ?? _Avatar;
-                }
+            => GetAvatarForSize(40);
 
-                return _Avatar;
+        public string Avatar120px
+            => GetAvatarForSize(120);
+
+        private string GetAvatarForSize(int size)
+        {
+            if (Avatars != null)
+            {
+                var s = Application.DisplayScale * size;
+                return Avatars.OrderBy(a => a.Size).Where(a => a.Size >= s).FirstOrDefault()?.Url
+                        ?? Avatars.OrderByDescending(a => a.Size).FirstOrDefault()?.Url
+                        ?? _Avatar;
             }
+
+            return _Avatar;
         }
 
         #endregion Avatar
