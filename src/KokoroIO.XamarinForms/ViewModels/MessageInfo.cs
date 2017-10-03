@@ -9,27 +9,62 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal MessageInfo(MessagesViewModel page, Message message)
         {
             Page = page;
-            Id = message.Id;
+            _Id = message.Id;
+            IdempotentKey = message.IdempotentKey.HasValue && message.IdempotentKey.Value != default(Guid) ? message.IdempotentKey : null;
             Profile = page.Application.GetProfile(message);
-            PublishedAt = message.PublishedAt;
-            IsNsfw = message.IsNsfw;
+            _PublishedAt = message.PublishedAt;
+            _IsNsfw = message.IsNsfw;
 
             _Content = message.Content;
 
             _EmbedContents = message.EmbedContents;
         }
+        internal MessageInfo(MessagesViewModel page, string content)
+        {
+            Page = page;
+            IdempotentKey = Guid.NewGuid();
+            Profile = page.Application.LoginUser.ToProfile();
+
+            _Content = content.Replace("<", "&lt;").Replace(">", "&gt;");
+        }
 
         internal void Update(Message message)
         {
+            Id = message.Id;
+            Profile = Page.Application.GetProfile(message);
+            PublishedAt = message.PublishedAt;
+            IsNsfw = message.IsNsfw;
             Content = message.Content;
             EmbedContents = message.EmbedContents;
         }
 
         private MessagesViewModel Page { get; }
 
-        public int Id { get; }
+        #region Id
 
-        public Profile Profile { get; }
+        private int? _Id;
+
+        public int? Id
+        {
+            get => _Id;
+            private set => SetProperty(ref _Id, value);
+        }
+
+        #endregion Id
+
+        public Guid? IdempotentKey { get; }
+
+        #region Profile
+
+        private Profile _Profile;
+
+        public Profile Profile
+        {
+            get => _Profile;
+            private set => SetProperty(ref _Profile, value);
+        }
+
+        #endregion Profile
 
         public string DisplayAvatar
         {
@@ -47,9 +82,29 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        public DateTime PublishedAt { get; }
+        #region PublishedAt
 
-        public bool IsNsfw { get; }
+        private DateTime? _PublishedAt;
+
+        public DateTime? PublishedAt
+        {
+            get => _PublishedAt;
+            private set => SetProperty(ref _PublishedAt, value);
+        }
+
+        #endregion PublishedAt
+
+        #region IsNsfw
+
+        private bool _IsNsfw;
+
+        public bool IsNsfw
+        {
+            get => _IsNsfw;
+            private set => SetProperty(ref _IsNsfw, value);
+        }
+
+        #endregion IsNsfw
 
         #region Content
 
@@ -63,7 +118,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Content
 
-        #region Content
+        #region EmbedContents
 
         private IList<EmbedContent> _EmbedContents;
 
@@ -73,7 +128,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             private set => SetProperty(ref _EmbedContents, value);
         }
 
-        #endregion Content
+        #endregion EmbedContents
 
         #region IsMerged
 
@@ -88,7 +143,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal void SetIsMerged(MessageInfo prev)
         {
             IsMerged = prev?.Profile == Profile
-                        && PublishedAt < prev.PublishedAt.AddMinutes(3);
+                        && PublishedAt < prev.PublishedAt?.AddMinutes(3);
         }
 
         #endregion IsMerged

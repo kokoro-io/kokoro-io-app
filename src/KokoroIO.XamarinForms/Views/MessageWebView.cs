@@ -208,10 +208,12 @@ namespace KokoroIO.XamarinForms.Views
                                 using (var sw = new StringWriter())
                                 {
                                     sw.Write("window.removeMessages(");
-                                    js.Serialize(sw, oldItems.Select(m => m.Id));
+                                    js.Serialize(sw, oldItems.Select(m => m.Id).OfType<int>());
+                                    sw.Write(",");
+                                    js.Serialize(sw, oldItems.Select(m => m.IdempotentKey).OfType<Guid>());
                                     sw.Write(",");
                                     IEnumerable<MessageInfo> merged;
-                                    if (e.NewStartingIndex >= 0)
+                                    if (e.OldStartingIndex >= 0)
                                     {
                                         merged = new[]
                                         {
@@ -297,6 +299,8 @@ namespace KokoroIO.XamarinForms.Views
             public JsonMessage(MessageInfo m)
             {
                 Id = m.Id;
+                IdempotentKey = m.IdempotentKey;
+
                 Avatar = m.DisplayAvatar;
                 ScreenName = m.Profile.ScreenName;
                 DisplayName = m.Profile.DisplayName;
@@ -308,12 +312,13 @@ namespace KokoroIO.XamarinForms.Views
                 EmbedContents = m.EmbedContents;
             }
 
-            public int Id { get; }
+            public int? Id { get; }
+            public Guid? IdempotentKey { get; }
             public string Avatar { get; }
             public string ScreenName { get; }
             public string DisplayName { get; }
             public bool IsBot { get; }
-            public DateTime PublishedAt { get; }
+            public DateTime? PublishedAt { get; }
 
             public bool IsNsfw { get; }
             public string Content { get; }
@@ -329,7 +334,7 @@ namespace KokoroIO.XamarinForms.Views
                 IsMerged = m.IsMerged;
             }
 
-            public int Id { get; }
+            public int? Id { get; }
             public bool IsMerged { get; }
         }
 

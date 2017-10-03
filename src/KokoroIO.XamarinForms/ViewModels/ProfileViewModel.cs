@@ -133,5 +133,16 @@ namespace KokoroIO.XamarinForms.ViewModels
                     ex.Trace("PostDirectMessageFailed");
                 }
             }));
+
+        public Profile ToProfile()
+            => new Profile()
+            {
+                Id = Id,
+                Avatar = Avatar,
+                Avatars = Avatars,
+                ScreenName = ScreenName,
+                DisplayName = DisplayName
+            };
+
     }
 }

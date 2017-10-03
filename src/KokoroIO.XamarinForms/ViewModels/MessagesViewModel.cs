@@ -227,6 +227,18 @@ namespace KokoroIO.XamarinForms.ViewModels
                 foreach (var m in messages.OrderBy(e => e.Id))
                 {
                     var vm = new MessageInfo(this, m);
+
+                    if (vm.IdempotentKey != null && vm.Id != null)
+                    {
+                        var cur = Messages.FirstOrDefault(cm => cm.IdempotentKey == vm.IdempotentKey);
+
+                        if (cur != null && (cur.Id == null || cur.Id == vm.Id))
+                        {
+                            _Messages[_Messages.IndexOf(cur)] = vm;
+                            continue;
+                        }
+                    }
+
                     for (; ; i++)
                     {
                         var prev = _Messages[i];
@@ -397,15 +409,29 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+
+            MessageInfo tempMessage = null;
             try
             {
                 IsBusy = true;
-                await Application.PostMessageAsync(Channel.Id, m, _IsNsfw);
+                tempMessage = new MessageInfo(this, m);
                 NewMessage = string.Empty;
+                Messages.Add(tempMessage);
+                await Application.PostMessageAsync(Channel.Id, m, _IsNsfw, idempotentKey: tempMessage.IdempotentKey.Value);
                 succeeded = true;
             }
             catch (Exception ex)
             {
+                if (tempMessage != null)
+                {
+                    Messages.Remove(tempMessage);
+
+                    if (string.IsNullOrEmpty(NewMessage))
+                    {
+                        NewMessage = m;
+                    }
+                }
+
                 ex.Trace("Post message failed");
 
                 MessagingCenter.Send(this, "PostMessageFailed");

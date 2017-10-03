@@ -856,17 +856,27 @@ body {
             }
         }
     };
-    var removeMessages = window.removeMessages = function (ids, merged) {
-        console.debug("Removing " + (ids ? ids.length : 0) + " messages");
+    var removeMessages = window.removeMessages = function (ids, idempotentKeys, merged) {
+        console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
+        var b = document.body;
         if (ids) {
-            var j = 0;
-            var b = document.body;
             for (var i = 0; i < ids.length; i++) {
                 var talk = document.getElementById('talk' + ids[i]);
                 if (talk) {
                     var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
                     talk.remove();
                     b.scrollTop = nt;
+                }
+            }
+        }
+        if (idempotentKeys) {
+            var b_1 = document.body;
+            for (var i_1 = 0; i_1 < idempotentKeys.length; i_1++) {
+                var talk_1 = _talkByIdempotentKey(idempotentKeys[i_1]);
+                if (talk_1) {
+                    var nt = talk_1.offsetTop < b_1.scrollTop ? b_1.scrollTop - talk_1.clientHeight : b_1.scrollTop;
+                    talk_1.remove();
+                    b_1.scrollTop = nt;
                 }
             }
         }
@@ -881,12 +891,27 @@ body {
             for (var i = 0; i < messages.length; i++) {
                 var m = messages[i];
                 var id = m.Id;
-                var avatarUrl = m.Avatar;
-                var displayName = m.DisplayName;
-                var publishedAt = m.PublishedAt;
-                var content = m.Content;
-                var isMerged = m.IsMerged;
-                // console.debug("Processing message[" + id + "]");
+                if (!id) {
+                    var talk_2 = createTaklElement(m);
+                    document.body.appendChild(talk_2);
+                    _afterTalkInserted(talk_2);
+                    continue;
+                }
+                else {
+                    var cur = document.getElementById("talk" + id)
+                        || (m.IdempotentKey ? _talkByIdempotentKey(m.IdempotentKey) : null);
+                    if (cur) {
+                        var shoudScroll = scroll && cur.offsetTop + cur.clientHeight - IS_TOP_MARGIN < b.scrollTop;
+                        var st = b.scrollTop - cur.clientHeight;
+                        document.body.insertBefore(talk, cur);
+                        _afterTalkInserted(talk, cur.clientHeight);
+                        cur.remove();
+                        if (scroll) {
+                            b.scrollTop = st + talk.clientHeight;
+                        }
+                        continue;
+                    }
+                }
                 for (;;) {
                     var prev = b.children[j];
                     var aft = b.children[j + 1];
@@ -983,10 +1008,16 @@ body {
     function createTaklElement(m) {
         var id = m.Id;
         var talk = document.createElement("div");
-        talk.id = "talk" + id;
         talk.classList.add("talk");
         talk.classList.add(m.IsMerged ? "continued" : "not-continued");
-        talk.setAttribute("data-message-id", id.toString());
+        if (id) {
+            talk.id = "talk" + id;
+            talk.setAttribute("data-message-id", id.toString());
+        }
+        var idempotentKey = m.IdempotentKey;
+        if (idempotentKey) {
+            talk.setAttribute("data-Idempotent-key", idempotentKey);
+        }
         try {
             var avatar = document.createElement("div");
             avatar.classList.add("avatar");
@@ -1016,21 +1047,26 @@ body {
             }
             var small = document.createElement("small");
             small.classList.add("timeleft", "text-muted");
-            try {
-                var d = new Date(Date.parse(m.PublishedAt));
-                small.innerText = _padLeft(d.getMonth() + 1, 2)
-                    + '/' + _padLeft(d.getDate(), 2)
-                    + ' ' + _padLeft(d.getHours(), 2)
-                    + ':' + _padLeft(d.getMinutes(), 2);
-                small.title = _padLeft(d.getFullYear(), 4)
-                    + '/' + _padLeft(d.getMonth() + 1, 2)
-                    + '/' + _padLeft(d.getDate(), 2)
-                    + ' ' + _padLeft(d.getHours(), 2)
-                    + ':' + _padLeft(d.getMinutes(), 2)
-                    + ':' + _padLeft(d.getSeconds(), 2);
+            if (m.PublishedAt) {
+                try {
+                    var d = new Date(Date.parse(m.PublishedAt));
+                    small.innerText = _padLeft(d.getMonth() + 1, 2)
+                        + '/' + _padLeft(d.getDate(), 2)
+                        + ' ' + _padLeft(d.getHours(), 2)
+                        + ':' + _padLeft(d.getMinutes(), 2);
+                    small.title = _padLeft(d.getFullYear(), 4)
+                        + '/' + _padLeft(d.getMonth() + 1, 2)
+                        + '/' + _padLeft(d.getDate(), 2)
+                        + ' ' + _padLeft(d.getHours(), 2)
+                        + ':' + _padLeft(d.getMinutes(), 2)
+                        + ':' + _padLeft(d.getSeconds(), 2);
+                }
+                catch (ex) {
+                    small.innerText = m.PublishedAt;
+                }
             }
-            catch (ex) {
-                small.innerText = m.PublishedAt;
+            else {
+                small.innerText = "Now sending...";
             }
             speaker.appendChild(small);
             var filteredText = document.createElement("div");
@@ -1244,6 +1280,9 @@ body {
             imgs[i].addEventListener("load", handler);
             imgs[i].addEventListener("error", handler);
         }
+    }
+    function _talkByIdempotentKey(idempotentKey) {
+        return document.querySelector('div.talk[data-idempotent-key=\"' + idempotentKey + "\"]");
     }
     document.addEventListener("DOMContentLoaded", function () {
         var windowWidth = window.innerWidth;

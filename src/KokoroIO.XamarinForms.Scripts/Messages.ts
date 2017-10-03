@@ -3,6 +3,7 @@
     IsMerged: boolean;
 }
 interface MessageInfo extends MergeInfo {
+    IdempotentKey: string;
     Avatar: string;
     ScreenName: string;
     DisplayName: string;
@@ -46,7 +47,7 @@ interface EmbedDataImageInfo {
 interface Window {
     setMessages(messages: MessageInfo[]);
     addMessages(messages: MessageInfo[], merged: MergeInfo[]);
-    removeMessages(ids: number[], merged: MergeInfo[]);
+    removeMessages(ids: number[], idempotentKeys: string[], merged: MergeInfo[]);
     showMessage(id: number, toTop: boolean, showNewMessage?: boolean);
     setHasUnread(value: boolean);
 }
@@ -95,14 +96,26 @@ interface Window {
         }
     }
 
-    var removeMessages = window.removeMessages = function (ids: number[], merged: MergeInfo[]) {
-        console.debug("Removing " + (ids ? ids.length : 0) + " messages");
+    var removeMessages = window.removeMessages = function (ids: number[], idempotentKeys: string[], merged: MergeInfo[]) {
+        console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
+        let b = document.body;
         if (ids) {
-            var j = 0;
-            var b = document.body;
             for (var i = 0; i < ids.length; i++) {
                 var talk = document.getElementById('talk' + ids[i]);
 
+                if (talk) {
+                    var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+
+                    talk.remove();
+
+                    b.scrollTop = nt;
+                }
+            }
+        }
+        if (idempotentKeys) {
+            let b = document.body;
+            for (let i = 0; i < idempotentKeys.length; i++) {
+                let talk = _talkByIdempotentKey(idempotentKeys[i]);
                 if (talk) {
                     var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
 
@@ -125,19 +138,37 @@ interface Window {
                 var m = messages[i];
 
                 var id = m.Id;
-                var avatarUrl = m.Avatar;
-                var displayName = m.DisplayName;
-                var publishedAt = m.PublishedAt;
-                var content = m.Content;
-                var isMerged = m.IsMerged;
 
-                // console.debug("Processing message[" + id + "]");
+                if (!id) {
+                    let talk = createTaklElement(m);
+                    document.body.appendChild(talk);
+                    _afterTalkInserted(talk);
+
+                    continue;
+                } else {
+                    let cur = <HTMLElement>document.getElementById("talk" + id)
+                        || (m.IdempotentKey ? _talkByIdempotentKey(m.IdempotentKey) : null);
+
+                    if (cur) {
+                        let shoudScroll = scroll && cur.offsetTop + cur.clientHeight - IS_TOP_MARGIN < b.scrollTop;
+                        let st = b.scrollTop - cur.clientHeight;
+
+                        document.body.insertBefore(talk, cur);
+                        _afterTalkInserted(talk, cur.clientHeight);
+                        cur.remove();
+
+                        if (scroll) {
+                            b.scrollTop = st + talk.clientHeight;
+                        }
+                        continue;
+                    }
+                }
 
                 for (; ;) {
-                    var prev = <HTMLDivElement>b.children[j];
-                    var aft = <HTMLDivElement>b.children[j + 1];
-                    var pid = prev ? parseInt(prev.getAttribute("data-message-id"), 10) : -1;
-                    var aid = aft ? parseInt(aft.getAttribute("data-message-id"), 10) : Number.MAX_VALUE;
+                    let prev = <HTMLDivElement>b.children[j];
+                    let aft = <HTMLDivElement>b.children[j + 1];
+                    let pid = prev ? parseInt(prev.getAttribute("data-message-id"), 10) : -1;
+                    let aid = aft ? parseInt(aft.getAttribute("data-message-id"), 10) : Number.MAX_VALUE;
 
                     if (!prev || (id != pid && !aft)) {
                         // console.debug("Appending message[" + id + "]");
@@ -150,7 +181,7 @@ interface Window {
                         var talk = createTaklElement(m);
                         if (id == pid) {
                             let shoudScroll = scroll && aft && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
-                            var st = b.scrollTop - prev.clientHeight;
+                            let st = b.scrollTop - prev.clientHeight;
 
                             document.body.insertBefore(talk, prev);
                             _afterTalkInserted(talk, prev.clientHeight);
@@ -239,10 +270,17 @@ interface Window {
         var id = m.Id;
 
         var talk = document.createElement("div");
-        talk.id = "talk" + id;
         talk.classList.add("talk");
         talk.classList.add(m.IsMerged ? "continued" : "not-continued");
-        talk.setAttribute("data-message-id", id.toString());
+        if (id) {
+            talk.id = "talk" + id;
+            talk.setAttribute("data-message-id", id.toString());
+        }
+
+        var idempotentKey = m.IdempotentKey;
+        if (idempotentKey) {
+            talk.setAttribute("data-Idempotent-key", idempotentKey);
+        }
 
         try {
             var avatar = document.createElement("div");
@@ -280,21 +318,25 @@ interface Window {
 
             var small = document.createElement("small");
             small.classList.add("timeleft", "text-muted");
-            try {
-                let d = new Date(Date.parse(m.PublishedAt));
-                small.innerText = _padLeft(d.getMonth() + 1, 2)
-                    + '/' + _padLeft(d.getDate(), 2)
-                    + ' ' + _padLeft(d.getHours(), 2)
-                    + ':' + _padLeft(d.getMinutes(), 2);
+            if (m.PublishedAt) {
+                try {
+                    let d = new Date(Date.parse(m.PublishedAt));
+                    small.innerText = _padLeft(d.getMonth() + 1, 2)
+                        + '/' + _padLeft(d.getDate(), 2)
+                        + ' ' + _padLeft(d.getHours(), 2)
+                        + ':' + _padLeft(d.getMinutes(), 2);
 
-                small.title = _padLeft(d.getFullYear(), 4)
-                    + '/' + _padLeft(d.getMonth() + 1, 2)
-                    + '/' + _padLeft(d.getDate(), 2)
-                    + ' ' + _padLeft(d.getHours(), 2)
-                    + ':' + _padLeft(d.getMinutes(), 2)
-                    + ':' + _padLeft(d.getSeconds(), 2);
-            } catch (ex) {
-                small.innerText = m.PublishedAt;
+                    small.title = _padLeft(d.getFullYear(), 4)
+                        + '/' + _padLeft(d.getMonth() + 1, 2)
+                        + '/' + _padLeft(d.getDate(), 2)
+                        + ' ' + _padLeft(d.getHours(), 2)
+                        + ':' + _padLeft(d.getMinutes(), 2)
+                        + ':' + _padLeft(d.getSeconds(), 2);
+                } catch (ex) {
+                    small.innerText = m.PublishedAt;
+                }
+            } else {
+                small.innerText = "Now sending...";
             }
             speaker.appendChild(small);
 
@@ -551,6 +593,9 @@ interface Window {
         }
     }
 
+    function _talkByIdempotentKey(idempotentKey: string): HTMLDivElement {
+        return <HTMLDivElement>document.querySelector('div.talk[data-idempotent-key=\"' + idempotentKey + "\"]");
+    }
     document.addEventListener("DOMContentLoaded", function () {
         var windowWidth = window.innerWidth;
 
