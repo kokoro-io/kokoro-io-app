@@ -25,21 +25,21 @@ namespace KokoroIO.XamarinForms.Scripts
 
             Generate(inDir, outDir);
 
-            GenerateIcon(inDir, "kokoroio_icon_white.svg", "kokoro_white", baseSize: 48);
+            //GenerateIcon(inDir, "kokoroio_icon_white.svg", "kokoro_white", baseSize: 48);
 
-            GenerateIcon(inDir, "ic_camera_alt_black_24px.svg", "camera");
-            GenerateIcon(inDir, "ic_image_black_24px.svg", "image");
-            GenerateIcon(inDir, "ic_send_black_24px.svg", "send");
-            GenerateIcon(inDir, "ic_visibility_black_24px.svg", "visibility");
-            GenerateIcon(inDir, "ic_visibility_off_black_24px.svg", "visibility_off");
+            //GenerateIcon(inDir, "ic_camera_alt_black_24px.svg", "camera");
+            //GenerateIcon(inDir, "ic_image_black_24px.svg", "image");
+            //GenerateIcon(inDir, "ic_send_black_24px.svg", "send");
+            //GenerateIcon(inDir, "ic_visibility_black_24px.svg", "visibility");
+            //GenerateIcon(inDir, "ic_visibility_off_black_24px.svg", "visibility_off");
 
-            GenerateIcon(inDir, "ic_account_circle_black_24px.svg", "account");
-            GenerateIcon(inDir, "ic_account_circle_black_24px.svg", "account_white", color: -1);
-            GenerateIcon(inDir, "ic_info_outline_black_24px.svg", "info");
-            GenerateIcon(inDir, "ic_info_outline_black_24px.svg", "info_white", color: -1);
-            GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications");
-            GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications_white", color: -1);
-            GenerateIcon(inDir, "ic_image_black_24px.svg", "image_white", color: -1);
+            //GenerateIcon(inDir, "ic_account_circle_black_24px.svg", "account");
+            //GenerateIcon(inDir, "ic_account_circle_black_24px.svg", "account_white", color: -1);
+            //GenerateIcon(inDir, "ic_info_outline_black_24px.svg", "info");
+            //GenerateIcon(inDir, "ic_info_outline_black_24px.svg", "info_white", color: -1);
+            //GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications");
+            //GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications_white", color: -1);
+            //GenerateIcon(inDir, "ic_image_black_24px.svg", "image_white", color: -1);
         }
 
         private static void Generate(string inDir, string outDir)
@@ -185,7 +185,7 @@ namespace KokoroIO.XamarinForms.Scripts
                 var dirs = new[] { "m", "h", "xh", "xxh", "xxxh" };
                 var sizes = new[] { baseSize, baseSize * 1.5, baseSize * 2, baseSize * 3, baseSize * 4 };
 
-                var procs = new List<Process>();
+               // var procs = new List<Process>();
 
                 for (var i = 0; i < dirs.Length; i++)
                 {
@@ -201,14 +201,15 @@ namespace KokoroIO.XamarinForms.Scripts
                     psi.RedirectStandardError = true;
 
                     var p = Process.Start(psi);
-
-                    procs.Add(p);
-                }
-
-                foreach (var p in procs)
-                {
                     p.WaitForExit();
+
+                    //procs.Add(p);
                 }
+
+                //foreach (var p in procs)
+                //{
+                //    p.WaitForExit();
+                //}
             }
             {
                 File.Copy(new Uri(new Uri(inDir), $"./KokoroIO.XamarinForms.Android/Resources/drawable-mdpi/{dest}.png").LocalPath

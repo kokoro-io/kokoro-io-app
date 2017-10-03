@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -40,7 +38,6 @@ namespace KokoroIO.XamarinForms.Droid
             var channelName = intent.Extras.GetString("title");
             var message = intent.Extras.GetString("alert");
 
-
             if (!string.IsNullOrEmpty(message))
             {
                 var showIntent = new Intent(this, typeof(MainActivity));
@@ -61,7 +58,6 @@ namespace KokoroIO.XamarinForms.Droid
                 notificationManager.Notify(0, notificationBuilder.Build());
             }
         }
-
 
         protected override void OnUnRegistered(Context context, string registrationId)
         {

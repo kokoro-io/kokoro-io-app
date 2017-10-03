@@ -250,6 +250,7 @@ interface Window {
             talk.appendChild(avatar);
 
             var imgLink = document.createElement("a");
+            imgLink.href = 'https://kokoro.io/@' + m.ScreenName;
             imgLink.classList.add("img-rounded");
             avatar.appendChild(imgLink);
 
