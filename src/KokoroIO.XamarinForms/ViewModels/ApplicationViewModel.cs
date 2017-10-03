@@ -154,6 +154,12 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Task DeleteMembershipAsync(string membershipId)
             => EnqueueClientTask(() => Client.DeleteMembershipAsync(membershipId));
 
+        public async Task<ChannelViewModel> GetChannelAsync(string channelId)
+        {
+            var r = await EnqueueClientTask(() => Client.GetChannelAsync(channelId)).ConfigureAwait(false);
+            return GetOrCreateChannelViewModel(r);
+        }
+
         public async Task<ChannelViewModel[]> GetChannelsAsync(bool? archived = null)
         {
             var r = await EnqueueClientTask(() => Client.GetChannelsAsync(archived: archived)).ConfigureAwait(false);
@@ -564,7 +570,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                         // TODO: search channel by id
                         var ch = GetChannelViewModel(id)
-                                    ?? (await GetChannelsAsync()).FirstOrDefault(c => c.Id == id);
+                                    ?? await GetChannelAsync(id);
                         if (ch != null)
                         {
                             ch.ShowDetailCommand.Execute(null);
@@ -736,7 +742,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
-            Debug.WriteLine("Member leaved: @{1} leaved from {0}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName );
+            Debug.WriteLine("Member leaved: @{1} leaved from {0}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
