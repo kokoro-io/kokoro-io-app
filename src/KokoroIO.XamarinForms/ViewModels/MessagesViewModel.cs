@@ -299,12 +299,15 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public bool HasProfile => _SelectedProfile != null;
 
-        internal async void SelectProfile(string screenName)
+        internal async void SelectProfile(string screenName, string profileId)
         {
             Members.GetHashCode();
             await Channel.LoadMembersTask;
 
-            SelectedProfile = Members.FirstOrDefault(p => p.ScreenName.Equals(screenName, StringComparison.OrdinalIgnoreCase));
+            SelectedProfile = Members.FirstOrDefault(p => p.Id == profileId)
+                            ?? Members.FirstOrDefault(p => p.ScreenName.Equals(screenName, StringComparison.OrdinalIgnoreCase));
+
+            // TODO: load from API
         }
 
         private Command _ClearProfileCommand;

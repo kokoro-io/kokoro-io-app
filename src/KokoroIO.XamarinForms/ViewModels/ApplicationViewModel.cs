@@ -559,7 +559,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                         if (mp != null)
                         {
-                            mp.SelectProfile(u.AbsolutePath.Substring(2));
+                            mp.SelectProfile(u.AbsolutePath.Substring(2), u.Fragment?.Length == 10 ? u.Fragment.Substring(1) : null);
 
                             return;
                         }
