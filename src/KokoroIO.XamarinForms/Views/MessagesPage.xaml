@@ -285,7 +285,8 @@
                         BindingContext="{Binding SelectedProfile}"
                         HorizontalOptions="Center"
                         VerticalOptions="Center"
-                        BackgroundColor="White">
+                        BackgroundColor="White"
+                        Margin="8">
                         <Grid.RowDefinitions>
                             <RowDefinition
                                 Height="16" />
@@ -328,16 +329,22 @@
                             <Label
                                 Grid.Column="1"
                                 VerticalOptions="Center"
-                                FontSize="Medium"
+                                HorizontalOptions="Fill"
+                                HorizontalTextAlignment="Start"
+                                FontSize="Small"
                                 Text="{Binding DisplayName}"
-                                Margin="8,4,32,4" />
+                                LineBreakMode="CharacterWrap"
+                                Margin="8,4" />
                             <Label
                                 Grid.Column="1"
                                 Grid.Row="1"
                                 VerticalOptions="Center"
+                                HorizontalOptions="Fill"
+                                HorizontalTextAlignment="Start"
                                 FontSize="Small"
                                 Text="{Binding ScreenName, StringFormat='(@{0})'}"
-                                Margin="8,4,32,4" />
+                                LineBreakMode="CharacterWrap"
+                                Margin="8,0" />
                         </Grid>
                         <Button
                             Grid.Row="2"
