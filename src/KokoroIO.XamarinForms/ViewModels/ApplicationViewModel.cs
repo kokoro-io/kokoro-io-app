@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -144,7 +145,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             foreach (var ms in r)
             {
                 GetProfileViewModel(ms.Profile);
-                GetChannelViewModel(ms);
+                GetOrCreateJoinedChannelViewModel(ms);
             }
 
             return r;
@@ -153,9 +154,23 @@ namespace KokoroIO.XamarinForms.ViewModels
         public Task DeleteMembershipAsync(string membershipId)
             => EnqueueClientTask(() => Client.DeleteMembershipAsync(membershipId));
 
+        public async Task<ChannelViewModel> GetChannelAsync(string channelId)
+        {
+            var r = await EnqueueClientTask(() => Client.GetChannelAsync(channelId)).ConfigureAwait(false);
+            return GetOrCreateChannelViewModel(r);
+        }
+
+        public async Task<ChannelViewModel[]> GetChannelsAsync(bool? archived = null)
+        {
+            var r = await EnqueueClientTask(() => Client.GetChannelsAsync(archived: archived)).ConfigureAwait(false);
+            return r.Select(c => GetOrCreateChannelViewModel(c)).ToArray();
+        }
+
         public async Task<Channel> GetChannelMembershipsAsync(string channelId)
         {
             var r = await EnqueueClientTask(() => Client.GetChannelMembershipsAsync(channelId)).ConfigureAwait(false);
+
+            GetChannelViewModel(r.Id)?.Update(r);
 
             foreach (var ms in r.Memberships)
             {
@@ -190,7 +205,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var channel = await EnqueueClientTask(() => Client.PostDirectMessageChannelAsync(targetUserProfileId));
 
-            return GetChannelViewModel(channel);
+            return GetOrCreateJoinedChannelViewModel(channel);
         }
 
         #endregion kokoro.io API Client
@@ -198,6 +213,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         #region Channels
 
         private Task _LoadInitialDataTask;
+
+        private Dictionary<string, WeakReference<ChannelViewModel>> _ChannelDictionary;
 
         private ObservableRangeCollection<ChannelViewModel> _Channels;
 
@@ -229,7 +246,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             foreach (var ms in memberships)
             {
-                GetChannelViewModel(ms);
+                GetOrCreateJoinedChannelViewModel(ms);
             }
 
             try
@@ -325,14 +342,45 @@ namespace KokoroIO.XamarinForms.ViewModels
             HasNotificationInMenu = _Channels?.Where(r => r != _SelectedChannel).Sum(r => r.UnreadCount) > 0;
         }
 
-        internal ChannelViewModel GetChannelViewModel(Channel channel)
+        internal ChannelViewModel GetChannelViewModel(string id)
+            => _ChannelDictionary != null
+            && _ChannelDictionary.TryGetValue(id, out var w)
+            && w.TryGetTarget(out var v) ? v : null;
+
+        internal ChannelViewModel GetOrCreateChannelViewModel(Channel channel)
         {
-            var cvm = Channels.FirstOrDefault(c => c.Id == channel.Id);
+            if (channel == null)
+            {
+                return null;
+            }
+
+            ChannelViewModel c;
+            if (_ChannelDictionary == null)
+            {
+                _ChannelDictionary = new Dictionary<string, WeakReference<ChannelViewModel>>();
+            }
+            else if (_ChannelDictionary.TryGetValue(channel.Id, out var w)
+                    && w.TryGetTarget(out c))
+            {
+                c.Update(channel);
+                return c;
+            }
+            c = new ChannelViewModel(this, channel);
+            _ChannelDictionary[channel.Id] = new WeakReference<ChannelViewModel>(c);
+            return c;
+        }
+
+        internal ChannelViewModel GetOrCreateJoinedChannelViewModel(Channel channel)
+        {
+            var cvm = GetOrCreateChannelViewModel(channel);
 
             if (cvm == null)
             {
-                cvm = new ChannelViewModel(this, channel);
+                return null;
+            }
 
+            if (!Channels.Contains(cvm))
+            {
                 for (var i = 0; i < Channels.Count; i++)
                 {
                     var aft = Channels[i];
@@ -349,17 +397,13 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 Channels.Add(cvm);
             }
-            else
-            {
-                cvm.Update(channel);
-            }
 
             return cvm;
         }
 
-        internal ChannelViewModel GetChannelViewModel(Membership membership)
+        internal ChannelViewModel GetOrCreateJoinedChannelViewModel(Membership membership)
         {
-            var cvm = GetChannelViewModel(membership.Channel);
+            var cvm = GetOrCreateJoinedChannelViewModel(membership.Channel);
             cvm.Update(membership);
 
             return cvm;
@@ -500,7 +544,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public Command OpenUrlCommand { get; }
 
-        private void OpenUrl(object url)
+        private async void OpenUrl(object url)
         {
             var u = url as Uri ?? (url is string s ? new Uri(s) : null);
 
@@ -516,6 +560,20 @@ namespace KokoroIO.XamarinForms.ViewModels
                         if (mp != null)
                         {
                             mp.SelectProfile(u.AbsolutePath.Substring(2));
+
+                            return;
+                        }
+                    }
+                    else if (u.AbsolutePath.StartsWith("/channels/"))
+                    {
+                        var id = u.AbsolutePath.Substring("/channels/".Length);
+
+                        // TODO: search channel by id
+                        var ch = GetChannelViewModel(id)
+                                    ?? await GetChannelAsync(id);
+                        if (ch != null)
+                        {
+                            ch.ShowDetailCommand.Execute(null);
 
                             return;
                         }
@@ -572,6 +630,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_ProfileUpdated(object sender, EventArgs<Profile> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Profile updated: {0}", e.Data.Id);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data);
@@ -584,6 +648,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+            Debug.WriteLine("Message created: {0}", e.Data.Id);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
@@ -616,6 +681,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return;
             }
 
+            Debug.WriteLine("Message updated: {0}", e.Data.Id);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data.Profile);
@@ -633,11 +700,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_ChannelsUpdated(object sender, EventArgs<Channel[]> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+
+            Debug.WriteLine("Channels updated: {0} channels", e.Data.Length);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 foreach (var c in e.Data)
                 {
-                    GetChannelViewModel(c);
+                    GetOrCreateJoinedChannelViewModel(c);
                 }
 
                 Channels.RemoveRange(Channels.Where(c => !e.Data.Any(d => d.Id == c.Id)).ToArray());
@@ -648,6 +722,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MemberJoined(object sender, EventArgs<Membership> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Member joined: @{1} joined to {0} as {2}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName, e.Data.Authority);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data.Profile);
@@ -658,6 +738,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MemberLeaved(object sender, EventArgs<Membership> e)
         {
+            if (e.Data == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Member leaved: @{1} leaved from {0}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName);
+
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 GetProfileViewModel(e.Data.Profile);

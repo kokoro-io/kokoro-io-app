@@ -122,16 +122,15 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     if (!HasPrevious)
                     {
-                        IsBusy = false;
                         return;
                     }
-                    bid = _Messages.Max(m => m.Id);
+                    bid = _Messages.Min(m => m.Id);
                     aid = null;
                 }
                 else
                 {
                     bid = null;
-                    aid = _Messages.Min(m => m.Id);
+                    aid = _Messages.Max(m => m.Id);
                 }
 
                 var messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
