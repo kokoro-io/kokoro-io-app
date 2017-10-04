@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IAudioService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IDeviceService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Data\ChannelUserProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Data\RealmServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ImgurImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GyazoImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IImageUploader.cs" />

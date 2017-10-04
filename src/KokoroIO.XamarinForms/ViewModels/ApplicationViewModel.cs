@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Views;
-using Realms;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -148,6 +147,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 GetOrCreateJoinedChannelViewModel(ms);
             }
 
+            await GetLastReadIdAsync();
+
             return r;
         }
 
@@ -244,15 +245,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             var memberships = await GetMembershipsAsync().ConfigureAwait(false);
 
-            foreach (var ms in memberships)
-            {
-                GetOrCreateJoinedChannelViewModel(ms);
-            }
-
             try
             {
                 string channelId;
-                using (var realm = Realm.GetInstance())
+                using (var realm = await RealmServices.GetInstanceAsync())
                 {
                     var rup = realm.All<ChannelUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
 
@@ -407,6 +403,24 @@ namespace KokoroIO.XamarinForms.ViewModels
             cvm.Update(membership);
 
             return cvm;
+        }
+
+        private async Task GetLastReadIdAsync()
+        {
+            if (_Channels?.Any(c => c.LastReadId == null) != true)
+            {
+                return;
+            }
+            using (var realm = await RealmServices.GetInstanceAsync())
+            {
+                var d = realm.All<ChannelUserProperties>().ToDictionary(s => s.ChannelId, s => s.LastReadId);
+
+                foreach (var c in _Channels)
+                {
+                    d.TryGetValue(c.Id, out var lid);
+                    c.LastReadId = lid != null ? Math.Max(lid.Value, c.LastReadId ?? 0) : (c.LastReadId ?? 0);
+                }
+            }
         }
 
         #endregion Channels
@@ -707,7 +721,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             Debug.WriteLine("Channels updated: {0} channels", e.Data.Length);
 
-            XDevice.BeginInvokeOnMainThread(() =>
+            XDevice.BeginInvokeOnMainThread(async () =>
             {
                 foreach (var c in e.Data)
                 {
@@ -715,6 +729,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
 
                 Channels.RemoveRange(Channels.Where(c => !e.Data.Any(d => d.Id == c.Id)).ToArray());
+
+                await GetLastReadIdAsync();
 
                 // TODO: subscribe channels
             });

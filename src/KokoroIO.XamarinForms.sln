@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{22C5F147-A27E-4513-AC87-B5FF1DC248E3}"
 	ProjectSection(SolutionItems) = preProject
+		..\doc\notification.md = ..\doc\notification.md
 		..\doc\scrolling.md = ..\doc\scrolling.md
 	EndProjectSection
 EndProject

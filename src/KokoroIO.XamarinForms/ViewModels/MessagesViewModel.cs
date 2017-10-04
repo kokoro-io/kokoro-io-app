@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models.Data;
-using Realms;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 
@@ -162,7 +161,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 try
                 {
                     var rid = Channel.Id;
-                    using (var realm = Realm.GetInstance())
+                    using (var realm = await RealmServices.GetInstanceAsync())
                     {
                         using (var trx = realm.BeginWrite())
                         {

@@ -19,6 +19,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal ApplicationViewModel Application { get; }
 
+        /// <summary>
+        /// Gets or sets the id of th most recente message.
+        /// </summary>
+        internal int? LastReadId { get; set; }
+
         #region Channel
 
         public string Id { get; }
