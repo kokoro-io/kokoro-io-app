@@ -200,8 +200,9 @@
             var avatar = document.createElement("div");
             avatar.classList.add("avatar");
             talk.appendChild(avatar);
+            var profUrl = "https://kokoro.io/@" + m.ScreenName + "#" + m.ProfileId;
             var imgLink = document.createElement("a");
-            imgLink.href = 'https://kokoro.io/@' + m.ScreenName;
+            imgLink.href = profUrl;
             imgLink.classList.add("img-rounded");
             avatar.appendChild(imgLink);
             var img = document.createElement("img");
@@ -215,7 +216,7 @@
             message.appendChild(speaker);
             var name = document.createElement("a");
             name.innerText = m.DisplayName;
-            name.href = 'https://kokoro.io/@' + m.ScreenName;
+            name.href = profUrl;
             speaker.appendChild(name);
             if (m.IsBot) {
                 var small = document.createElement("small");

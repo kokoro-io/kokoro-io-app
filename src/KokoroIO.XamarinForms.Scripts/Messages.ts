@@ -4,6 +4,7 @@
 }
 interface MessageInfo extends MergeInfo {
     IdempotentKey: string;
+    ProfileId: string;
     Avatar: string;
     ScreenName: string;
     DisplayName: string;
@@ -288,8 +289,10 @@ interface Window {
             avatar.classList.add("avatar");
             talk.appendChild(avatar);
 
+            var profUrl = `https://kokoro.io/@${m.ScreenName}#${m.ProfileId}`;
+
             var imgLink = document.createElement("a");
-            imgLink.href = 'https://kokoro.io/@' + m.ScreenName;
+            imgLink.href = profUrl;
             imgLink.classList.add("img-rounded");
             avatar.appendChild(imgLink);
 
@@ -307,7 +310,7 @@ interface Window {
 
             var name = document.createElement("a");
             name.innerText = m.DisplayName;
-            name.href = 'https://kokoro.io/@' + m.ScreenName;
+            name.href = profUrl;
             speaker.appendChild(name);
 
             if (m.IsBot) {

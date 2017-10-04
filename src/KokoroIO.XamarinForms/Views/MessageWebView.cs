@@ -304,6 +304,7 @@ namespace KokoroIO.XamarinForms.Views
                 Id = m.Id;
                 IdempotentKey = m.IdempotentKey;
 
+                ProfileId = m.Profile.Id;
                 Avatar = m.DisplayAvatar;
                 ScreenName = m.Profile.ScreenName;
                 DisplayName = m.Profile.DisplayName;
@@ -317,6 +318,7 @@ namespace KokoroIO.XamarinForms.Views
 
             public int? Id { get; }
             public Guid? IdempotentKey { get; }
+            public string ProfileId { get; }
             public string Avatar { get; }
             public string ScreenName { get; }
             public string DisplayName { get; }
