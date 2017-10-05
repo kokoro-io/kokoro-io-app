@@ -160,7 +160,13 @@ namespace KokoroIO.XamarinForms.ViewModels
         public bool IsShown
         {
             get => _IsShown;
-            set => SetProperty(ref _IsShown, value);
+            set => SetProperty(ref _IsShown, value, onChanged: () =>
+            {
+                if (_IsShown && !(Page.Channel.LastReadId >= Id))
+                {
+                    Page.Channel.LastReadId = Id;
+                }
+            });
         }
 
         #endregion IsShown

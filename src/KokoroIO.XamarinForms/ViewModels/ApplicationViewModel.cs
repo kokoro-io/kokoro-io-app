@@ -418,7 +418,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 foreach (var c in _Channels)
                 {
                     d.TryGetValue(c.Id, out var lid);
-                    c.LastReadId = lid != null ? Math.Max(lid.Value, c.LastReadId ?? 0) : (c.LastReadId ?? 0);
+                    c._LastReadId = lid != null ? Math.Max(lid.Value, c.LastReadId ?? 0) : (c.LastReadId ?? 0);
                 }
             }
         }

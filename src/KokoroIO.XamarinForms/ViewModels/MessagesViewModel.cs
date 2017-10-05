@@ -202,38 +202,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     InsertMessages(messages);
                 }
 
-                // TODO: remove on loaded realm update and update on IsVisible changed
-
-                try
-                {
-                    var rid = Channel.Id;
-                    using (var realm = await RealmServices.GetInstanceAsync())
-                    {
-                        using (var trx = realm.BeginWrite())
-                        {
-                            var rup = realm.All<ChannelUserProperties>().FirstOrDefault(r => r.ChannelId == rid);
-                            if (rup == null)
-                            {
-                                rup = new ChannelUserProperties()
-                                {
-                                    ChannelId = rid,
-                                    UserId = Application.LoginUser.Id
-                                };
-
-                                realm.Add(rup);
-                            }
-
-                            rup.LastVisited = DateTimeOffset.Now;
-                            rup.LastReadId = messages.Any() ? messages.Max(m => m.Id) : (int?)null;
-
-                            trx.Commit();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ex.Trace("SavingChannelUserPropertiesFailed");
-                }
+                Channel.BeginWriteRealm(null);
             }
             catch (Exception ex)
             {

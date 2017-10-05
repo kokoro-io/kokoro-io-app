@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 
@@ -19,10 +20,20 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal ApplicationViewModel Application { get; }
 
+        #region LastReadId
+
+        internal int? _LastReadId;
+
         /// <summary>
         /// Gets or sets the id of th most recente message.
         /// </summary>
-        internal int? LastReadId { get; set; }
+        internal int? LastReadId
+        {
+            get => _LastReadId;
+            set => SetProperty(ref _LastReadId, value, onChanged: () => BeginWriteRealm(_LastReadId));
+        }
+
+        #endregion
 
         #region Channel
 
@@ -348,5 +359,37 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Member events
+
+        internal async void BeginWriteRealm(int? lastReadId)
+        {
+            try
+            {
+                var rid = Id;
+                using (var realm = await RealmServices.GetInstanceAsync())
+                using (var trx = realm.BeginWrite())
+                {
+                    var rup = realm.All<ChannelUserProperties>().FirstOrDefault(r => r.ChannelId == rid);
+                    if (rup == null)
+                    {
+                        rup = new ChannelUserProperties()
+                        {
+                            ChannelId = rid,
+                            UserId = Application.LoginUser.Id
+                        };
+
+                        realm.Add(rup);
+                    }
+
+                    rup.LastVisited = DateTimeOffset.Now;
+                    rup.LastReadId = lastReadId ?? rup.LastReadId;
+
+                    trx.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Trace("SavingChannelUserPropertiesFailed");
+            }
+        }
     }
 }
