@@ -61,6 +61,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region Showing Messages
 
+        private int? _MaxId;
+        private int? _MinId;
+
         #region Messages
 
         private ObservableRangeCollection<MessageInfo> _Messages;
@@ -92,6 +95,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion HasPrevious
 
+        #region HasNext
+
+        private bool _HasNext = true;
+
+        public bool HasNext
+        {
+            get => _HasNext;
+            private set => SetProperty(ref _HasNext, value);
+        }
+
+        #endregion HasNext
+
         public void BeginPrepend()
             => BeginLoadMessages(true).GetHashCode();
 
@@ -104,6 +119,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+
             try
             {
                 IsBusy = true;
@@ -111,11 +127,45 @@ namespace KokoroIO.XamarinForms.ViewModels
                 // TODO: increase page size by depth
                 const int PAGE_SIZE = 30;
 
-                int? bid, aid;
+                //  int? bid, aid;
+                Message[] messages;
 
                 if (Messages.Count == 0)
                 {
-                    aid = bid = null;
+                    // initlial loading
+
+                    messages = null;
+
+                    // TODO: get first message id from argument
+
+                    if (Channel.LastReadId > 0)
+                    {
+                        var afts = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, afterId: Channel.LastReadId);
+
+                        if (afts.Any())
+                        {
+                            var befores = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: afts.Min(m => m.Id));
+
+                            messages = befores.Any() ? befores.Concat(afts).ToArray() : afts;
+                            HasNext = befores.Length == PAGE_SIZE;
+                            HasPrevious = befores.Length == PAGE_SIZE;
+                        }
+
+                        if (afts.Length < PAGE_SIZE)
+                        {
+                            Channel.UnreadCount = 0;
+                        }
+                    }
+
+                    if (messages == null)
+                    {
+                        messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE);
+
+                        if (messages.Length < PAGE_SIZE)
+                        {
+                            Channel.UnreadCount = 0;
+                        }
+                    }
                 }
                 else if (prepend)
                 {
@@ -123,22 +173,17 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         return;
                     }
-                    bid = _Messages.Min(m => m.Id);
-                    aid = null;
+
+                    messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: _MinId);
+                    HasPrevious = messages.Length == PAGE_SIZE;
                 }
                 else
                 {
-                    bid = null;
-                    aid = _Messages.Max(m => m.Id);
-                }
+                    messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, afterId: _MaxId);
 
-                var messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
+                    HasNext = messages.Length == PAGE_SIZE;
 
-                HasPrevious &= aid != null || messages.Length >= PAGE_SIZE;
-
-                if (aid != null)
-                {
-                    if (messages.Length >= PAGE_SIZE)
+                    if (HasNext)
                     {
                         Channel.UnreadCount = Math.Max(0, Channel.UnreadCount - messages.Length);
                     }
@@ -147,16 +192,17 @@ namespace KokoroIO.XamarinForms.ViewModels
                         Channel.UnreadCount = 0;
                     }
                 }
-                else if (bid == null && messages.Length < PAGE_SIZE)
-                {
-                    Channel.UnreadCount = 0;
-                }
+
                 HasUnread = Channel.UnreadCount > 0;
 
                 if (messages.Any())
                 {
+                    _MinId = Math.Min(messages.Min(m => m.Id), _MinId ?? int.MaxValue);
+                    _MaxId = Math.Max(messages.Max(m => m.Id), _MaxId ?? int.MinValue);
                     InsertMessages(messages);
                 }
+
+                // TODO: remove on loaded realm update and update on IsVisible changed
 
                 try
                 {
@@ -171,16 +217,14 @@ namespace KokoroIO.XamarinForms.ViewModels
                                 rup = new ChannelUserProperties()
                                 {
                                     ChannelId = rid,
-                                    UserId = Application.LoginUser.Id,
-                                    LastVisited = DateTimeOffset.Now
+                                    UserId = Application.LoginUser.Id
                                 };
 
                                 realm.Add(rup);
                             }
-                            else
-                            {
-                                rup.LastVisited = DateTimeOffset.Now;
-                            }
+
+                            rup.LastVisited = DateTimeOffset.Now;
+                            rup.LastReadId = messages.Any() ? messages.Max(m => m.Id) : (int?)null;
 
                             trx.Commit();
                         }
