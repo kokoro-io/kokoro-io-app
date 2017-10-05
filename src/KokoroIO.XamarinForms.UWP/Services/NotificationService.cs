@@ -18,5 +18,7 @@ namespace KokoroIO.XamarinForms.UWP.Services
 
         // TODO: implement ios notification service
         public string ShowNotification(Message message) => null;
+        public void CancelNotification(string notificationId)
+        { }
     }
 }

@@ -47,5 +47,16 @@ namespace KokoroIO.XamarinForms.Droid.Services
 
             return message.Id.ToString();
         }
+
+        public void CancelNotification(string notificationId)
+        {
+            var ctx = MainActivity.GetCurrentContext() ?? PushHandlerService.Current;
+
+            if (ctx != null
+                && int.TryParse(notificationId, out var id))
+            {
+                ((NotificationManager)ctx.GetSystemService(Context.NotificationService)).Cancel(id);
+            }
+        }
     }
 }

@@ -296,13 +296,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                     if (_SelectedChannel != null)
                     {
                         _SelectedChannel.IsSelected = false;
-
-                        var mp = _SelectedChannel.MessagesPage;
-
-                        if (mp != null)
-                        {
-                            mp.IsSubscribing = false;
-                        }
                     }
 
                     _SelectedChannel = value;
@@ -313,7 +306,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         _SelectedChannel.IsSelected = true;
                         var mp = _SelectedChannel.GetOrCreateMessagesPage();
-                        mp.IsSubscribing = true;
                         mp.SelectedProfile = null;
                     }
                     OnUnreadCountChanged();
@@ -939,36 +931,13 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Document Interaction
 
-        internal static async void ReceiveNotification(Message message)
+        internal static void ReceiveNotification(Message message)
         {
             var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
 
             if (avm == null)
             {
-                try
-                {
-                    var mid = DependencyService.Get<INotificationService>().ShowNotification(message);
-
-                    if (mid != null)
-                    {
-                        using (var realm = await RealmServices.GetInstanceAsync())
-                        using (var trx = realm.BeginWrite())
-                        {
-                            var mn = new MessageNotification();
-                            mn.MessageId = message.Id;
-                            mn.ChannelId = message.Channel.Id;
-                            mn.NotificationId = mid;
-
-                            realm.Add(mn);
-
-                            trx.Commit();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ex.Trace("ReceiveInactiveNotificationFailed");
-                }
+                    DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
             }
             else
             {
@@ -991,23 +960,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     GetProfileViewModel(message.Profile);
                 }
 
-                var rvm = _Channels?.FirstOrDefault(r => r.Id == message.Channel.Id);
-
-                MessagingCenter.Send(this, "MessageCreated", message);
-
-                if (rvm != null)
-                {
-                    rvm.UnreadCount++;
-                    if (!rvm.NotificationDisabled
-                        && UserSettings.PlayRingtone)
-                    {
-                        try
-                        {
-                            DependencyService.Get<IAudioService>()?.PlayNotification();
-                        }
-                        catch { }
-                    }
-                }
+                _Channels?.FirstOrDefault(r => r.Id == message.Channel.Id)?.Receive(message);
             });
         }
     }

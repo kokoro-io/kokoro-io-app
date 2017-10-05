@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models.Data;
+using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 
@@ -33,7 +35,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             set => SetProperty(ref _LastReadId, value, onChanged: () => BeginWriteRealm(_LastReadId));
         }
 
-        #endregion
+        #endregion LastReadId
 
         #region Channel
 
@@ -208,18 +210,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion MessagesPage
 
-        #region UnreadCount
-
-        private int _UnreadCount;
-
-        public int UnreadCount
-        {
-            get => _UnreadCount;
-            set => SetProperty(ref _UnreadCount, value, onChanged: () => Application.OnUnreadCountChanged());
-        }
-
-        #endregion UnreadCount
-
         #region IsSelected
 
         private bool _IsSelected;
@@ -368,20 +358,36 @@ namespace KokoroIO.XamarinForms.ViewModels
                 using (var realm = await RealmServices.GetInstanceAsync())
                 using (var trx = realm.BeginWrite())
                 {
-                    var rup = realm.All<ChannelUserProperties>().FirstOrDefault(r => r.ChannelId == rid);
-                    if (rup == null)
+                    var up = realm.All<ChannelUserProperties>().FirstOrDefault(r => r.ChannelId == rid);
+                    if (up == null)
                     {
-                        rup = new ChannelUserProperties()
+                        up = new ChannelUserProperties()
                         {
                             ChannelId = rid,
                             UserId = Application.LoginUser.Id
                         };
 
-                        realm.Add(rup);
+                        realm.Add(up);
                     }
 
-                    rup.LastVisited = DateTimeOffset.Now;
-                    rup.LastReadId = lastReadId ?? rup.LastReadId;
+                    up.LastVisited = DateTimeOffset.Now;
+
+                    if (lastReadId != null)
+                    {
+                        up.LastReadId = lastReadId.Value;
+
+                        var ns = realm.All<MessageNotification>().Where(n => n.ChannelId == Id && n.MessageId <= lastReadId).ToList();
+
+                        if (ns.Any())
+                        {
+                            var notification = DependencyService.Get<INotificationService>();
+                            foreach (var n in ns)
+                            {
+                                notification?.CancelNotification(n.NotificationId);
+                                realm.Remove(n);
+                            }
+                        }
+                    }
 
                     trx.Commit();
                 }
@@ -389,6 +395,50 @@ namespace KokoroIO.XamarinForms.ViewModels
             catch (Exception ex)
             {
                 ex.Trace("SavingChannelUserPropertiesFailed");
+            }
+
+            if (lastReadId != null
+                && _Unreads?.RemoveWhere(id => id <= _LastReadId) > 0)
+            {
+                OnPropertyChanged(nameof(UnreadCount));
+            }
+        }
+
+        private HashSet<int> _Unreads;
+
+        public int UnreadCount
+            => _Unreads?.Count ?? 0;
+
+        internal void Receive(Message message)
+        {
+            if (!(LastReadId < message.Id))
+            {
+                return;
+            }
+
+            if (_Unreads == null)
+            {
+                _Unreads = new HashSet<int>();
+            }
+            if (!_Unreads.Add(message.Id))
+            {
+                return;
+            }
+
+            OnPropertyChanged(nameof(UnreadCount));
+
+            if (Application.SelectedChannel == this)
+            {
+                var mp = MessagesPage;
+                if (mp?.HasNext == false
+                    && mp.Messages.Last().IsShown)
+                {
+                    mp.BeginAppend();
+                }
+            }
+            else
+            {
+                DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
             }
         }
     }

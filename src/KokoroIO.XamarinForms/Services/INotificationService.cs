@@ -9,5 +9,7 @@ namespace KokoroIO.XamarinForms.Services
         void UnregisterPlatformNotificationService();
 
         string ShowNotification(Message message);
+
+        void CancelNotification(string notificationId);
     }
 }

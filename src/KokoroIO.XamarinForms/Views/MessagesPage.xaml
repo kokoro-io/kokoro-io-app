@@ -116,54 +116,6 @@
                     BackgroundColor="Khaki"
                     IsVisible="{Binding Application.IsDisconnected}"
                     Command="{Binding Application.ConnectCommand}" />
-                <ListView
-                    VerticalOptions="Start"
-                    HorizontalOptions="End"
-                    SeparatorVisibility="None"
-                    InputTransparent="True"
-                    ItemsSource="{Binding Notifications}">
-                    <ListView.Style>
-                        <Style
-                            TargetType="ListView">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    TargetType="ListView"
-                                    Binding="{Binding Notifications.Count}"
-                                    Value="0">
-                                    <Setter
-                                        Property="IsVisible"
-                                        Value="False" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListView.Style>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Grid
-                                    HorizontalOptions="End">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition
-                                            Width="Auto" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <Image
-                                        VerticalOptions="Center"
-                                        WidthRequest="16"
-                                        HeightRequest="16"
-                                        Source="{Binding Profile.Avatar}" />
-                                    <Label
-                                        Grid.Column="1"
-                                        FontSize="Micro"
-                                        TextColor="Red"
-                                        VerticalOptions="Center"
-                                        VerticalTextAlignment="Center"
-                                        Text="{Binding Channel.DisplayName, StringFormat='posted to {0}'}" />
-                                </Grid>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
             </StackLayout>
             <ActivityIndicator
                 VerticalOptions="Center"
