@@ -63,7 +63,6 @@ namespace KokoroIO.XamarinForms.Droid
 
             var channelName = intent.Extras.GetString("title");
             var message = intent.Extras.GetString("alert");
-            // Log.Info(GcmBroadcastReceiver.TAG, "GCM Message Received!: " + intent.Extras.GetString("custom"));
 
             if (!string.IsNullOrEmpty(message))
             {

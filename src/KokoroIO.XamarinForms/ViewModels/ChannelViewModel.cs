@@ -380,7 +380,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                         if (ns.Any())
                         {
-                            var notification = DependencyService.Get<INotificationService>();
+                            var notification = SH.Notification;
                             foreach (var n in ns)
                             {
                                 notification?.CancelNotification(n.NotificationId);
@@ -438,7 +438,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             else if (message.Profile.Id != Application.LoginUser.Id)
             {
-                DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
+                SH.Notification.ShowNotificationAndSave(message);
             }
         }
     }

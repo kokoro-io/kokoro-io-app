@@ -39,8 +39,8 @@ namespace KokoroIO.XamarinForms
                             AccessToken = at
                         };
 
-                        var ds = DependencyService.Get<IDeviceService>();
-                        var ns = DependencyService.Get<INotificationService>();
+                        var ds = SH.Device;
+                        var ns = SH.Notification;
 
                         var pnsTask = ns.GetPlatformNotificationServiceHandleAsync();
 

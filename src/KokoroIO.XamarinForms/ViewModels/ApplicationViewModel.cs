@@ -39,7 +39,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         private float _DisplayScale;
 
         public float DisplayScale
-            => _DisplayScale <= 0 ? _DisplayScale = DependencyService.Get<IDeviceService>().GetDisplayScale() : _DisplayScale;
+            => _DisplayScale <= 0 ? _DisplayScale = SH.Device.GetDisplayScale() : _DisplayScale;
 
         #region kokoro.io API Client
 
@@ -495,8 +495,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             try
             {
-                var ds = DependencyService.Get<IDeviceService>();
-                var ns = DependencyService.Get<INotificationService>();
+                var ds = SH.Device;
+                var ns = SH.Notification;
                 ns.UnregisterPlatformNotificationService();
 
                 if (avm != null)
@@ -937,7 +937,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (avm == null)
             {
-                DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
+                SH.Notification.ShowNotificationAndSave(message);
             }
             else
             {
