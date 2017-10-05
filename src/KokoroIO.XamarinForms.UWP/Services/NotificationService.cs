@@ -19,7 +19,6 @@ namespace KokoroIO.XamarinForms.UWP.Services
         {
         }
 
-        // TODO: implement ios notification service
         public string ShowNotification(Message message)
         {
             var bg = new ToastBindingGeneric()
