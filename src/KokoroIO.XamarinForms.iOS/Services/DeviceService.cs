@@ -1,11 +1,11 @@
-using System.Threading.Tasks;
-using KokoroIO.XamarinForms.iOS;
+using KokoroIO.XamarinForms.iOS.Services;
+using KokoroIO.XamarinForms.Services;
 using UIKit;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(AudioService))]
+[assembly: Dependency(typeof(DeviceService))]
 
-namespace KokoroIO.XamarinForms.iOS
+namespace KokoroIO.XamarinForms.iOS.Services
 {
     public sealed class DeviceService : IDeviceService
     {
@@ -19,12 +19,5 @@ namespace KokoroIO.XamarinForms.iOS
 
         public float GetDisplayScale()
             => (float)UIScreen.MainScreen.Scale;
-
-        public Task<string> GetPlatformNotificationServiceHandleAsync()
-            => Task.FromResult<string>(null);
-
-        public void UnregisterPlatformNotificationService()
-        {
-        }
     }
 }

@@ -1,12 +1,12 @@
 using System.Text;
-using System.Threading.Tasks;
 using Android.Util;
-using KokoroIO.XamarinForms.Droid;
+using KokoroIO.XamarinForms.Droid.Services;
+using KokoroIO.XamarinForms.Services;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(DeviceService))]
 
-namespace KokoroIO.XamarinForms.Droid
+namespace KokoroIO.XamarinForms.Droid.Services
 {
     public sealed class DeviceService : IDeviceService
     {
@@ -33,11 +33,5 @@ namespace KokoroIO.XamarinForms.Droid
 
             return (float)dm.DensityDpi / (float)DisplayMetricsDensity.Medium;
         }
-
-        public Task<string> GetPlatformNotificationServiceHandleAsync()
-            => PushHandlerService.RegisterAsync();
-
-        public void UnregisterPlatformNotificationService()
-            => PushHandlerService.Unregister();
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
+using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using XLabs.Ioc;
@@ -503,7 +504,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             try
             {
                 var ds = DependencyService.Get<IDeviceService>();
-                ds.UnregisterPlatformNotificationService();
+                var ns = DependencyService.Get<INotificationService>();
+                ns.UnregisterPlatformNotificationService();
 
                 if (avm != null)
                 {
@@ -658,34 +660,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MessageCreated(object sender, EventArgs<Message> e)
         {
-            if (e.Data == null)
-            {
-                return;
-            }
-            Debug.WriteLine("Message created: {0}", e.Data.Id);
-
-            XDevice.BeginInvokeOnMainThread(() =>
-            {
-                GetProfileViewModel(e.Data.Profile);
-
-                var rvm = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id);
-
-                MessagingCenter.Send(this, "MessageCreated", e.Data);
-
-                if (rvm != null)
-                {
-                    rvm.UnreadCount++;
-                    if (!rvm.NotificationDisabled
-                        && UserSettings.PlayRingtone)
-                    {
-                        try
-                        {
-                            DependencyService.Get<IAudioService>()?.PlayNotification();
-                        }
-                        catch { }
-                    }
-                }
-            });
+            ReceiveMessage(e.Data, true);
         }
 
         private void Client_MessageUpdated(object sender, EventArgs<Message> e)
@@ -903,8 +878,12 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        internal static readonly IImageUploader[] Uploaders =
-            { new GyazoImageUploader(), new ImgurImageUploader() };
+        #region Uploaders
+
+        private static IImageUploader[] _Uploaders;
+
+        internal static IImageUploader[] Uploaders
+            => _Uploaders ?? (_Uploaders = new IImageUploader[] { new GyazoImageUploader(), new ImgurImageUploader() });
 
         internal static IImageUploader GetSelectedUploader()
         {
@@ -921,6 +900,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             App.Current.Properties[nameof(GetSelectedUploader)] = uploader?.GetType().FullName;
         }
+
+        #endregion Uploaders
 
         #endregion Uploader
 
@@ -957,5 +938,77 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Document Interaction
+
+        internal static async void ReceiveNotification(Message message)
+        {
+            var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
+
+            if (avm == null)
+            {
+                try
+                {
+                    var mid = DependencyService.Get<INotificationService>().ShowNotification(message);
+
+                    if (mid != null)
+                    {
+                        using (var realm = await RealmServices.GetInstanceAsync())
+                        using (var trx = realm.BeginWrite())
+                        {
+                            var mn = new MessageNotification();
+                            mn.MessageId = message.Id;
+                            mn.ChannelId = message.Channel.Id;
+                            mn.NotificationId = mid;
+
+                            realm.Add(mn);
+
+                            trx.Commit();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.Trace("ReceiveInactiveNotificationFailed");
+                }
+            }
+            else
+            {
+                avm.ReceiveMessage(message, false);
+            }
+        }
+
+        private void ReceiveMessage(Message message, bool updateProfile)
+        {
+            if (message == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Message created: {0}", message.Id);
+
+            XDevice.BeginInvokeOnMainThread(() =>
+            {
+                if (updateProfile)
+                {
+                    GetProfileViewModel(message.Profile);
+                }
+
+                var rvm = _Channels?.FirstOrDefault(r => r.Id == message.Channel.Id);
+
+                MessagingCenter.Send(this, "MessageCreated", message);
+
+                if (rvm != null)
+                {
+                    rvm.UnreadCount++;
+                    if (!rvm.NotificationDisabled
+                        && UserSettings.PlayRingtone)
+                    {
+                        try
+                        {
+                            DependencyService.Get<IAudioService>()?.PlayNotification();
+                        }
+                        catch { }
+                    }
+                }
+            });
+        }
     }
 }

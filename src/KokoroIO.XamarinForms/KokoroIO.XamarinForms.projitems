@@ -18,9 +18,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)DeviceServiceExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IAudioService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IDeviceService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Data\MessageNotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\DeviceServiceExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IAudioService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IDeviceService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Data\ChannelUserProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Data\RealmServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ImgurImageUploader.cs" />
@@ -28,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\IImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RH.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\INotificationService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />

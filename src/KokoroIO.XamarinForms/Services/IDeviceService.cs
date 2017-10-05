@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
-
-namespace KokoroIO.XamarinForms
+namespace KokoroIO.XamarinForms.Services
 {
     public interface IDeviceService
     {
@@ -11,10 +9,5 @@ namespace KokoroIO.XamarinForms
         byte[] GetIdentifier();
 
         float GetDisplayScale();
-
-        Task<string> GetPlatformNotificationServiceHandleAsync();
-
-        void UnregisterPlatformNotificationService();
     }
-
 }

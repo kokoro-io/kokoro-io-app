@@ -1,14 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using KokoroIO.XamarinForms.UWP;
+using KokoroIO.XamarinForms.Services;
+using KokoroIO.XamarinForms.UWP.Services;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(AudioService))]
 
-namespace KokoroIO.XamarinForms.UWP
+namespace KokoroIO.XamarinForms.UWP.Services
 {
     public sealed class AudioService : IAudioService
     {
