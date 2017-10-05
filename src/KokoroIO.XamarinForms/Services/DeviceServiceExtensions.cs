@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace KokoroIO.XamarinForms
+namespace KokoroIO.XamarinForms.Services
 {
     internal static class DeviceServiceExtensions
     {
@@ -11,8 +11,6 @@ namespace KokoroIO.XamarinForms
 
         public static string GetDeviceIdentifierString(this IDeviceService ds)
         {
-            var pnsTask = ds.GetPlatformNotificationServiceHandleAsync();
-
             var hash = TokenName.Select(ch => (byte)ch).Concat(ds.GetIdentifier()).ToArray();
 
             hash = SHA256.Create().ComputeHash(hash);

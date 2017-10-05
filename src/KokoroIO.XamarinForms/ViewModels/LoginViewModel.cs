@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 
@@ -73,8 +74,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
 
                     var ds = DependencyService.Get<IDeviceService>();
+                    var ns = DependencyService.Get<INotificationService>();
 
-                    var pnsTask = ds.GetPlatformNotificationServiceHandleAsync();
+                    var pnsTask = ns.GetPlatformNotificationServiceHandleAsync();
 
                     await Task.WhenAny(pnsTask, Task.Delay(15000));
 

@@ -3,3 +3,4 @@
 ## Design
 
 - [Scrolling](doc/scrolling.md)
+- [Notification](doc/notification.md)

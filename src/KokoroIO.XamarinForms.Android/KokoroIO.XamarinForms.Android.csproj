@@ -177,9 +177,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioService.cs" />
+    <Compile Include="Services\AudioService.cs" />
     <Compile Include="CustomListViewRenderer.cs" />
-    <Compile Include="DeviceService.cs" />
+    <Compile Include="Services\DeviceService.cs" />
     <Compile Include="ExpandableEditorRenderer.cs" />
     <Compile Include="GcmBroadcastReceiver.cs" />
     <Compile Include="MainActivity.cs" />
@@ -189,6 +189,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Secrets.cs" />
+    <Compile Include="Services\NotificationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -438,6 +439,7 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-mdpi\kokoro_white.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\KokoroIO.XamarinForms\KokoroIO.XamarinForms.projitems" Label="Shared" Condition="Exists('..\KokoroIO.XamarinForms\KokoroIO.XamarinForms.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

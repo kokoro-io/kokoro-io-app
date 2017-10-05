@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.ViewModels;
 using KokoroIO.XamarinForms.Views;
 using Microsoft.Azure.Mobile;
@@ -39,7 +40,9 @@ namespace KokoroIO.XamarinForms
                         };
 
                         var ds = DependencyService.Get<IDeviceService>();
-                        var pnsTask = ds.GetPlatformNotificationServiceHandleAsync();
+                        var ns = DependencyService.Get<INotificationService>();
+
+                        var pnsTask = ns.GetPlatformNotificationServiceHandleAsync();
 
                         var pnsTaskTimeout = Task.WhenAny(pnsTask, Task.Delay(15000));
 

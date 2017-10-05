@@ -1,6 +1,6 @@
 using System.Linq;
-using System.Threading.Tasks;
-using KokoroIO.XamarinForms.UWP;
+using KokoroIO.XamarinForms.Services;
+using KokoroIO.XamarinForms.UWP.Services;
 using Windows.Graphics.Display;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
@@ -8,7 +8,7 @@ using Xamarin.Forms;
 
 [assembly: Dependency(typeof(DeviceService))]
 
-namespace KokoroIO.XamarinForms.UWP
+namespace KokoroIO.XamarinForms.UWP.Services
 {
     public sealed class DeviceService : IDeviceService
     {
@@ -32,10 +32,5 @@ namespace KokoroIO.XamarinForms.UWP
 
         public float GetDisplayScale()
             => (float)DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-
-        public Task<string> GetPlatformNotificationServiceHandleAsync()
-            => Task.FromResult<string>(null);
-
-        public void UnregisterPlatformNotificationService() { }
     }
 }

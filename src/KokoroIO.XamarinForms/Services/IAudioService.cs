@@ -1,4 +1,4 @@
-﻿namespace KokoroIO.XamarinForms
+﻿namespace KokoroIO.XamarinForms.Services
 {
     public interface IAudioService
     {

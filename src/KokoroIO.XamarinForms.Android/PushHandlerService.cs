@@ -4,6 +4,8 @@ using Android.App;
 using Android.Content;
 using Android.Util;
 using Gcm.Client;
+using KokoroIO.XamarinForms.ViewModels;
+using Newtonsoft.Json.Linq;
 using WindowsAzure.Messaging;
 
 namespace KokoroIO.XamarinForms.Droid
@@ -15,6 +17,28 @@ namespace KokoroIO.XamarinForms.Droid
             = new TaskCompletionSource<string>();
 
         internal static Task<string> RegistrationTask => _RegistrationTaskSource.Task;
+
+        private static WeakReference<PushHandlerService> _Current;
+
+        internal static PushHandlerService Current
+        {
+            get => _Current != null && _Current.TryGetTarget(out var r) ? r : null;
+            set
+            {
+                if (value == null)
+                {
+                    _Current = null;
+                }
+                else if (_Current != null)
+                {
+                    _Current.SetTarget(value);
+                }
+                else
+                {
+                    _Current = new WeakReference<PushHandlerService>(value);
+                }
+            }
+        }
 
         public static string RegistrationID { get; private set; }
         private NotificationHub Hub { get; set; }
@@ -33,29 +57,54 @@ namespace KokoroIO.XamarinForms.Droid
 
         protected override void OnMessage(Context context, Intent intent)
         {
+            Current = this;
+
             Log.Info(GcmBroadcastReceiver.TAG, "GCM Message Received!: ");
 
             var channelName = intent.Extras.GetString("title");
             var message = intent.Extras.GetString("alert");
+            // Log.Info(GcmBroadcastReceiver.TAG, "GCM Message Received!: " + intent.Extras.GetString("custom"));
 
             if (!string.IsNullOrEmpty(message))
             {
-                var showIntent = new Intent(this, typeof(MainActivity));
-                showIntent.AddFlags(ActivityFlags.ClearTop);
-                var pendingIntent = PendingIntent.GetActivity(this, 0, showIntent, PendingIntentFlags.OneShot);
+                // TODO: plain text
+                var m = new Message()
+                {
+                    Channel = new Channel()
+                    {
+                        ChannelName = channelName
+                    },
+                    Profile = new Profile(),
+                    Content = message,
+                    RawContent = message,
+                };
+                m.Avatar = m.Profile.Avatar = intent.Extras.GetString("licon");
 
-                var notificationBuilder = new Notification.Builder(this)
-                    .SetSmallIcon(Resource.Drawable.kokoro_white)
-                    .SetContentTitle(!string.IsNullOrEmpty(channelName) ? "#" + channelName : "kokoro.io")
-                    .SetContentText(message)
-                    .SetAutoCancel(true)
-                    .SetContentIntent(pendingIntent)
-                    .SetStyle(new Notification.BigTextStyle().BigText(message))
-                    .SetVibrate(new long[] { 100, 0, 100, 0, 100, 0 })
-                    .SetPriority((int)NotificationPriority.Max);
+                var json = intent.Extras.GetString("custom");
 
-                var notificationManager = (NotificationManager)GetSystemService(Context.NotificationService);
-                notificationManager.Notify(0, notificationBuilder.Build());
+                if (!string.IsNullOrEmpty(json))
+                {
+                    try
+                    {
+                        var jo = JObject.Parse(json);
+                        var a = jo.Property("a")?.Value as JObject;
+
+                        if (a != null)
+                        {
+                            var p = a.Property("profile")?.Value as JObject;
+
+                            m.Profile.Id = p?.Property("id")?.Value?.Value<string>();
+                            m.Profile.ScreenName = p?.Property("screen_name")?.Value?.Value<string>();
+                            m.DisplayName = m.Profile.DisplayName = p?.Property("display_name")?.Value?.Value<string>();
+
+                            m.Id = a.Property("message_id")?.Value?.Value<int>() ?? 0;
+                            m.Channel.Id = a.Property("channel_id")?.Value?.Value<string>();
+                        }
+                    }
+                    catch { }
+                }
+
+                ApplicationViewModel.ReceiveNotification(m);
             }
         }
 

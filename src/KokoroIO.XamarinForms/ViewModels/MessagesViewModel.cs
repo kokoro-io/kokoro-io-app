@@ -1,12 +1,8 @@
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using KokoroIO.XamarinForms.Models.Data;
-using Realms;
 using Xamarin.Forms;
-using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -62,6 +58,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region Showing Messages
 
+        private int? _MaxId;
+        private int? _MinId;
+
         #region Messages
 
         private ObservableRangeCollection<MessageInfo> _Messages;
@@ -93,6 +92,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion HasPrevious
 
+        #region HasNext
+
+        private bool _HasNext = true;
+
+        public bool HasNext
+        {
+            get => _HasNext;
+            private set => SetProperty(ref _HasNext, value);
+        }
+
+        #endregion HasNext
+
         public void BeginPrepend()
             => BeginLoadMessages(true).GetHashCode();
 
@@ -105,6 +116,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+
             try
             {
                 IsBusy = true;
@@ -112,11 +124,35 @@ namespace KokoroIO.XamarinForms.ViewModels
                 // TODO: increase page size by depth
                 const int PAGE_SIZE = 30;
 
-                int? bid, aid;
+                //  int? bid, aid;
+                Message[] messages;
 
                 if (Messages.Count == 0)
                 {
-                    aid = bid = null;
+                    // initlial loading
+
+                    messages = null;
+
+                    // TODO: get first message id from argument
+
+                    if (Channel.LastReadId > 0)
+                    {
+                        var afts = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, afterId: Channel.LastReadId);
+
+                        if (afts.Any())
+                        {
+                            var befores = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: afts.Min(m => m.Id));
+
+                            messages = befores.Any() ? befores.Concat(afts).ToArray() : afts;
+                            HasNext = befores.Length == PAGE_SIZE;
+                            HasPrevious = befores.Length == PAGE_SIZE;
+                        }
+                    }
+
+                    if (messages == null)
+                    {
+                        messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE);
+                    }
                 }
                 else if (prepend)
                 {
@@ -124,73 +160,27 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         return;
                     }
-                    bid = _Messages.Min(m => m.Id);
-                    aid = null;
+
+                    messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: _MinId);
+                    HasPrevious = messages.Length == PAGE_SIZE;
                 }
                 else
                 {
-                    bid = null;
-                    aid = _Messages.Max(m => m.Id);
+                    messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, afterId: _MaxId);
+
+                    HasNext = messages.Length == PAGE_SIZE;
                 }
 
-                var messages = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: bid, afterId: aid);
-
-                HasPrevious &= aid != null || messages.Length >= PAGE_SIZE;
-
-                if (aid != null)
-                {
-                    if (messages.Length >= PAGE_SIZE)
-                    {
-                        Channel.UnreadCount = Math.Max(0, Channel.UnreadCount - messages.Length);
-                    }
-                    else
-                    {
-                        Channel.UnreadCount = 0;
-                    }
-                }
-                else if (bid == null && messages.Length < PAGE_SIZE)
-                {
-                    Channel.UnreadCount = 0;
-                }
                 HasUnread = Channel.UnreadCount > 0;
 
                 if (messages.Any())
                 {
+                    _MinId = Math.Min(messages.Min(m => m.Id), _MinId ?? int.MaxValue);
+                    _MaxId = Math.Max(messages.Max(m => m.Id), _MaxId ?? int.MinValue);
                     InsertMessages(messages);
                 }
 
-                try
-                {
-                    var rid = Channel.Id;
-                    using (var realm = Realm.GetInstance())
-                    {
-                        using (var trx = realm.BeginWrite())
-                        {
-                            var rup = realm.All<ChannelUserProperties>().FirstOrDefault(r => r.ChannelId == rid);
-                            if (rup == null)
-                            {
-                                rup = new ChannelUserProperties()
-                                {
-                                    ChannelId = rid,
-                                    UserId = Application.LoginUser.Id,
-                                    LastVisited = DateTimeOffset.Now
-                                };
-
-                                realm.Add(rup);
-                            }
-                            else
-                            {
-                                rup.LastVisited = DateTimeOffset.Now;
-                            }
-
-                            trx.Commit();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ex.Trace("SavingChannelUserPropertiesFailed");
-                }
+                Channel.BeginWriteRealm(null);
             }
             catch (Exception ex)
             {
@@ -580,89 +570,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion ClearArchiveBannerCommand
 
-        #region Notification
-
-        private bool _IsSubscribing;
-
-        public bool IsSubscribing
-        {
-            get => _IsSubscribing;
-            set => SetProperty(ref _IsSubscribing, value, onChanged: () =>
-            {
-                if (_IsSubscribing)
-                {
-                    MessagingCenter.Subscribe<ApplicationViewModel, Message>(this, "MessageCreated", OnMessageCreated, Application);
-                }
-                else
-                {
-                    MessagingCenter.Unsubscribe<ApplicationViewModel, Message>(this, "MessageCreated");
-                    _Notifications?.Clear();
-                }
-            });
-        }
-
-        private void OnMessageCreated(ApplicationViewModel app, Message message)
-        {
-            HasUnread = Channel.UnreadCount > 0;
-            if (message.Channel.Id == Channel.Id)
-            {
-                return;
-            }
-
-            XDevice.BeginInvokeOnMainThread(() =>
-            {
-                var r = app.Channels.FirstOrDefault(rm => rm.Id == message.Channel.Id);
-
-                if (r != null)
-                {
-                    if (Notifications.Count == 0)
-                    {
-                        XDevice.StartTimer(TimeSpan.FromSeconds(1), () =>
-                        {
-                            var dt = DateTime.Now.AddSeconds(-5);
-
-                            for (int i = Notifications.Count - 1; i >= 0; i--)
-                            {
-                                if (Notifications[i].AddedAt < dt)
-                                {
-                                    Notifications.RemoveAt(i);
-                                }
-                            }
-
-                            return Notifications.Count > 0;
-                        });
-                    }
-                    Notifications.Insert(0, new Notification(Application, r, message));
-                }
-            });
-        }
-
-        public sealed class Notification
-        {
-            private ApplicationViewModel _Application;
-
-            public Notification(ApplicationViewModel application, ChannelViewModel channel, Message message)
-            {
-                _Application = application;
-                Channel = channel;
-                Profile = application.GetProfile(message);
-                AddedAt = DateTime.Now;
-            }
-
-            public Profile Profile { get; }
-
-            public ChannelViewModel Channel { get; }
-
-            public DateTime AddedAt { get; }
-
-            public override string ToString()
-                => $"@{Profile.DisplayName} posted messages to {Channel.DisplayName}";
-        }
-
-        private ObservableCollection<Notification> _Notifications;
-
-        public ObservableCollection<Notification> Notifications
-            => _Notifications ?? (_Notifications = new ObservableCollection<Notification>());
+        #region HasUnread
 
         private bool _HasUnread;
 
@@ -672,6 +580,6 @@ namespace KokoroIO.XamarinForms.ViewModels
             private set => SetProperty(ref _HasUnread, value);
         }
 
-        #endregion Notification
+        #endregion HasUnread
     }
 }

@@ -1,10 +1,11 @@
 ﻿using AVFoundation;
-using KokoroIO.XamarinForms.iOS;
+using KokoroIO.XamarinForms.iOS.Services;
+using KokoroIO.XamarinForms.Services;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(AudioService))]
 
-namespace KokoroIO.XamarinForms.iOS
+namespace KokoroIO.XamarinForms.iOS.Services
 {
     public sealed class AudioService : IAudioService
     {

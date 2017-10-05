@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using Android.Media;
-using KokoroIO.XamarinForms.Droid;
+using KokoroIO.XamarinForms.Droid.Services;
+using KokoroIO.XamarinForms.Services;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(AudioService))]
 
-namespace KokoroIO.XamarinForms.Droid
+namespace KokoroIO.XamarinForms.Droid.Services
 {
     public sealed class AudioService : IAudioService
     {

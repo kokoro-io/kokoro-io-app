@@ -456,6 +456,44 @@ namespace KokoroIO.XamarinForms.Views
                 return;
             }
 
+            const string IDURL = "http://kokoro.io/client/control?event=visibility&ids=";
+            if (e.Url.StartsWith(IDURL))
+            {
+                e.Cancel = true;
+
+                var messages = Messages;
+
+                if (messages.Any())
+                {
+                    int? max = null;
+                    int? min = null;
+                    List<Guid> keys = null;
+
+                    foreach (var id in e.Url.Substring(IDURL.Length).Split(','))
+                    {
+                        if (int.TryParse(id, out var i))
+                        {
+                            min = Math.Min(min ?? int.MaxValue, i);
+                            max = Math.Max(max ?? int.MinValue, i);
+                        }
+                        else if (Guid.TryParse(id, out var g))
+                        {
+                            (keys ?? (keys = new List<Guid>())).Add(g);
+                        }
+                    }
+
+                    foreach (var m in messages)
+                    {
+                        m.IsShown = (min <= m.Id && m.Id <= max)
+                                    || (m.Id == null
+                                        && m.IdempotentKey != null
+                                        && keys?.Contains(m.IdempotentKey.Value) == true);
+                    }
+                }
+
+                return;
+            }
+
             var c = NavigatingCommand;
 
             if (c?.CanExecute(e.Url) == true)

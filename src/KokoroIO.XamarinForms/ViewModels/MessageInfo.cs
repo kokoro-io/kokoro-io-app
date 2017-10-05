@@ -19,6 +19,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             _EmbedContents = message.EmbedContents;
         }
+
         internal MessageInfo(MessagesViewModel page, string content)
         {
             Page = page;
@@ -151,5 +152,23 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion IsMerged
+
+        #region IsShown
+
+        private bool _IsShown;
+
+        public bool IsShown
+        {
+            get => _IsShown;
+            set => SetProperty(ref _IsShown, value, onChanged: () =>
+            {
+                if (_IsShown && !(Page.Channel.LastReadId >= Id))
+                {
+                    Page.Channel.LastReadId = Id;
+                }
+            });
+        }
+
+        #endregion IsShown
     }
 }

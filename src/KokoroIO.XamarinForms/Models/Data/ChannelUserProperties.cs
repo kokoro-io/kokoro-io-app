@@ -11,5 +11,10 @@ namespace KokoroIO.XamarinForms.Models.Data
         public string UserId { get; set; }
 
         public DateTimeOffset LastVisited { get; set; }
+
+        /// <summary>
+        /// Gets or sets the id of th most recente message.
+        /// </summary>
+        public int? LastReadId { get; set; }
     }
 }

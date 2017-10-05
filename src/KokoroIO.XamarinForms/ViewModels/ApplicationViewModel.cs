@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
+using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
-using Realms;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -148,6 +148,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 GetOrCreateJoinedChannelViewModel(ms);
             }
 
+            await GetLastReadIdAsync();
+
             return r;
         }
 
@@ -244,15 +246,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             var memberships = await GetMembershipsAsync().ConfigureAwait(false);
 
-            foreach (var ms in memberships)
-            {
-                GetOrCreateJoinedChannelViewModel(ms);
-            }
-
             try
             {
                 string channelId;
-                using (var realm = Realm.GetInstance())
+                using (var realm = await RealmServices.GetInstanceAsync())
                 {
                     var rup = realm.All<ChannelUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
 
@@ -299,13 +296,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                     if (_SelectedChannel != null)
                     {
                         _SelectedChannel.IsSelected = false;
-
-                        var mp = _SelectedChannel.MessagesPage;
-
-                        if (mp != null)
-                        {
-                            mp.IsSubscribing = false;
-                        }
                     }
 
                     _SelectedChannel = value;
@@ -316,7 +306,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         _SelectedChannel.IsSelected = true;
                         var mp = _SelectedChannel.GetOrCreateMessagesPage();
-                        mp.IsSubscribing = true;
                         mp.SelectedProfile = null;
                     }
                     OnUnreadCountChanged();
@@ -409,6 +398,24 @@ namespace KokoroIO.XamarinForms.ViewModels
             return cvm;
         }
 
+        private async Task GetLastReadIdAsync()
+        {
+            if (_Channels?.Any(c => c.LastReadId == null) != true)
+            {
+                return;
+            }
+            using (var realm = await RealmServices.GetInstanceAsync())
+            {
+                var d = realm.All<ChannelUserProperties>().ToDictionary(s => s.ChannelId, s => s.LastReadId);
+
+                foreach (var c in _Channels)
+                {
+                    d.TryGetValue(c.Id, out var lid);
+                    c._LastReadId = lid != null ? Math.Max(lid.Value, c.LastReadId ?? 0) : (c.LastReadId ?? 0);
+                }
+            }
+        }
+
         #endregion Channels
 
         #region Profiles
@@ -489,7 +496,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             try
             {
                 var ds = DependencyService.Get<IDeviceService>();
-                ds.UnregisterPlatformNotificationService();
+                var ns = DependencyService.Get<INotificationService>();
+                ns.UnregisterPlatformNotificationService();
 
                 if (avm != null)
                 {
@@ -644,34 +652,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MessageCreated(object sender, EventArgs<Message> e)
         {
-            if (e.Data == null)
-            {
-                return;
-            }
-            Debug.WriteLine("Message created: {0}", e.Data.Id);
-
-            XDevice.BeginInvokeOnMainThread(() =>
-            {
-                GetProfileViewModel(e.Data.Profile);
-
-                var rvm = _Channels?.FirstOrDefault(r => r.Id == e.Data.Channel.Id);
-
-                MessagingCenter.Send(this, "MessageCreated", e.Data);
-
-                if (rvm != null)
-                {
-                    rvm.UnreadCount++;
-                    if (!rvm.NotificationDisabled
-                        && UserSettings.PlayRingtone)
-                    {
-                        try
-                        {
-                            DependencyService.Get<IAudioService>()?.PlayNotification();
-                        }
-                        catch { }
-                    }
-                }
-            });
+            ReceiveMessage(e.Data, true);
         }
 
         private void Client_MessageUpdated(object sender, EventArgs<Message> e)
@@ -707,7 +688,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             Debug.WriteLine("Channels updated: {0} channels", e.Data.Length);
 
-            XDevice.BeginInvokeOnMainThread(() =>
+            XDevice.BeginInvokeOnMainThread(async () =>
             {
                 foreach (var c in e.Data)
                 {
@@ -715,6 +696,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
 
                 Channels.RemoveRange(Channels.Where(c => !e.Data.Any(d => d.Id == c.Id)).ToArray());
+
+                await GetLastReadIdAsync();
 
                 // TODO: subscribe channels
             });
@@ -887,8 +870,12 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        internal static readonly IImageUploader[] Uploaders =
-            { new GyazoImageUploader(), new ImgurImageUploader() };
+        #region Uploaders
+
+        private static IImageUploader[] _Uploaders;
+
+        internal static IImageUploader[] Uploaders
+            => _Uploaders ?? (_Uploaders = new IImageUploader[] { new GyazoImageUploader(), new ImgurImageUploader() });
 
         internal static IImageUploader GetSelectedUploader()
         {
@@ -905,6 +892,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             App.Current.Properties[nameof(GetSelectedUploader)] = uploader?.GetType().FullName;
         }
+
+        #endregion Uploaders
 
         #endregion Uploader
 
@@ -941,5 +930,38 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Document Interaction
+
+        internal static void ReceiveNotification(Message message)
+        {
+            var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
+
+            if (avm == null)
+            {
+                DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
+            }
+            else
+            {
+                avm.ReceiveMessage(message, false);
+            }
+        }
+
+        private void ReceiveMessage(Message message, bool updateProfile)
+        {
+            if (message == null)
+            {
+                return;
+            }
+            Debug.WriteLine("Message created: {0}", message.Id);
+
+            XDevice.BeginInvokeOnMainThread(() =>
+            {
+                if (updateProfile)
+                {
+                    GetProfileViewModel(message.Profile);
+                }
+
+                _Channels?.FirstOrDefault(r => r.Id == message.Channel.Id)?.Receive(message);
+            });
+        }
     }
 }
