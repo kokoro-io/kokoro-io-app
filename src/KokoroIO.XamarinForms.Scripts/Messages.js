@@ -14,6 +14,7 @@
         _addMessagessCore(messages, null, false);
         var b = document.body;
         b.scrollTop = b.scrollHeight - b.clientHeight;
+        _reportVisibilities();
     };
     window.addMessages = function (messages, merged, showNewMessage) {
         console.debug("Adding " + (messages ? messages.length : 0) + " messages");
@@ -32,6 +33,7 @@
                 _bringToTop(talk);
             }
         }
+        _reportVisibilities();
     };
     var removeMessages = window.removeMessages = function (ids, idempotentKeys, merged) {
         console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
@@ -58,6 +60,7 @@
             }
         }
         updateContinued(merged, true);
+        _reportVisibilities();
     };
     function _addMessagessCore(messages, merged, scroll) {
         var b = document.body;
@@ -194,7 +197,7 @@
         }
         var idempotentKey = m.IdempotentKey;
         if (idempotentKey) {
-            talk.setAttribute("data-Idempotent-key", idempotentKey);
+            talk.setAttribute("data-idempotent-key", idempotentKey);
         }
         try {
             var avatar = document.createElement("div");
@@ -458,6 +461,7 @@
             }
             img.removeEventListener("load", handler);
             img.removeEventListener("error", handler);
+            _reportVisibilities();
         };
         for (var i = 0; i < imgs.length; i++) {
             imgs[i].addEventListener("load", handler);
@@ -466,6 +470,32 @@
     }
     function _talkByIdempotentKey(idempotentKey) {
         return document.querySelector('div.talk[data-idempotent-key=\"' + idempotentKey + "\"]");
+    }
+    var _visibleIds;
+    function _reportVisibilities() {
+        var b = document.body;
+        var talks = document.body.children;
+        var ids = "";
+        for (var i = 0; i < talks.length; i++) {
+            var talk = talks[i];
+            if (b.scrollTop < talk.offsetTop + talk.clientHeight
+                && talk.offsetTop < b.scrollTop + b.clientHeight) {
+                var id = talk.getAttribute("data-message-id") || talk.getAttribute("data-idempotent-key");
+                if (ids.length > 0) {
+                    ids += "," + id;
+                }
+                else {
+                    ids = id;
+                }
+            }
+            else if (ids.length > 0) {
+                break;
+            }
+        }
+        if (_visibleIds !== ids) {
+            location.href = "http://kokoro.io/client/control?event=visibility&ids=" + ids;
+            _visibleIds = ids;
+        }
     }
     document.addEventListener("DOMContentLoaded", function () {
         var windowWidth = window.innerWidth;
@@ -479,6 +509,7 @@
                 var talk = talks[i];
                 talk.setAttribute("data-height", talk.clientHeight.toString());
             }
+            _reportVisibilities();
         });
         document.addEventListener("scroll", function () {
             var b = document.body;
@@ -501,6 +532,7 @@
                     }
                 }
             }
+            _reportVisibilities();
             if (b.scrollHeight < b.clientHeight) {
                 return;
             }

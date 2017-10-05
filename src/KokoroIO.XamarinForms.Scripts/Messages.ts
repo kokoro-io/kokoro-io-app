@@ -50,6 +50,7 @@ interface Window {
     addMessages(messages: MessageInfo[], merged: MergeInfo[]);
     removeMessages(ids: number[], idempotentKeys: string[], merged: MergeInfo[]);
     showMessage(id: number, toTop: boolean, showNewMessage?: boolean);
+
     setHasUnread(value: boolean);
 }
 
@@ -73,6 +74,7 @@ interface Window {
 
         var b = document.body;
         b.scrollTop = b.scrollHeight - b.clientHeight;
+        _reportVisibilities();
     }
 
     window.addMessages = function (messages: MessageInfo[], merged: MergeInfo[], showNewMessage?: boolean) {
@@ -95,6 +97,7 @@ interface Window {
                 _bringToTop(talk);
             }
         }
+        _reportVisibilities();
     }
 
     var removeMessages = window.removeMessages = function (ids: number[], idempotentKeys: string[], merged: MergeInfo[]) {
@@ -127,6 +130,7 @@ interface Window {
             }
         }
         updateContinued(merged, true);
+        _reportVisibilities();
     }
 
     function _addMessagessCore(messages: MessageInfo[], merged: MergeInfo[], scroll: boolean) {
@@ -281,7 +285,7 @@ interface Window {
 
         var idempotentKey = m.IdempotentKey;
         if (idempotentKey) {
-            talk.setAttribute("data-Idempotent-key", idempotentKey);
+            talk.setAttribute("data-idempotent-key", idempotentKey);
         }
 
         try {
@@ -594,6 +598,7 @@ interface Window {
 
             img.removeEventListener("load", handler);
             img.removeEventListener("error", handler);
+            _reportVisibilities();
         }
 
         for (let i = 0; i < imgs.length; i++) {
@@ -605,6 +610,39 @@ interface Window {
     function _talkByIdempotentKey(idempotentKey: string): HTMLDivElement {
         return <HTMLDivElement>document.querySelector('div.talk[data-idempotent-key=\"' + idempotentKey + "\"]");
     }
+
+    var _visibleIds: string;
+
+    function _reportVisibilities() {
+        let b = document.body;
+        let talks = document.body.children;
+
+        let ids = "";
+
+        for (let i = 0; i < talks.length; i++) {
+            let talk = <HTMLDivElement>talks[i];
+
+            if (b.scrollTop < talk.offsetTop + talk.clientHeight
+                && talk.offsetTop < b.scrollTop + b.clientHeight) {
+
+                var id = talk.getAttribute("data-message-id") || talk.getAttribute("data-idempotent-key");
+
+                if (ids.length > 0) {
+                    ids += "," + id;
+                } else {
+                    ids = id;
+                }
+            } else if (ids.length > 0) {
+                break;
+            }
+        }
+
+        if (_visibleIds !== ids) {
+            location.href = "http://kokoro.io/client/control?event=visibility&ids=" + ids;
+            _visibleIds = ids;
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         var windowWidth = window.innerWidth;
 
@@ -620,6 +658,8 @@ interface Window {
                 var talk = talks[i];
                 talk.setAttribute("data-height", talk.clientHeight.toString());
             }
+
+            _reportVisibilities();
         });
 
         document.addEventListener("scroll", function () {
@@ -645,6 +685,8 @@ interface Window {
                     }
                 }
             }
+
+            _reportVisibilities();
 
             if (b.scrollHeight < b.clientHeight) {
                 return;
