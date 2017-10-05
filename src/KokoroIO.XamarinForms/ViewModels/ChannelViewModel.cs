@@ -436,7 +436,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     mp.BeginAppend();
                 }
             }
-            else
+            else if (message.Profile.Id != Application.LoginUser.Id)
             {
                 DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
             }

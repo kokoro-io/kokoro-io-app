@@ -937,7 +937,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (avm == null)
             {
-                    DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
+                DependencyService.Get<INotificationService>().ShowNotificationAndSave(message);
             }
             else
             {
