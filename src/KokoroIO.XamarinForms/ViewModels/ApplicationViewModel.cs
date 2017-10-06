@@ -251,32 +251,32 @@ namespace KokoroIO.XamarinForms.ViewModels
                 string channelId;
                 using (var realm = await RealmServices.GetInstanceAsync())
                 {
-                    var rup = realm.All<ChannelUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
+                    var up = realm.All<ChannelUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
 
-                    if (rup == null)
+                    if (up != null)
                     {
-                        return;
-                    }
-                    else if (rup.UserId != _LoginUser.Id)
-                    {
-                        using (var trx = realm.BeginWrite())
+                        if (up.UserId != _LoginUser.Id)
                         {
-                            realm.RemoveAll<ChannelUserProperties>();
-                            trx.Commit();
+                            using (var trx = realm.BeginWrite())
+                            {
+                                realm.RemoveAll<ChannelUserProperties>();
+                                trx.Commit();
+                            }
+                            channelId = _SelectedChannelId;
                         }
-                        return;
+                        else
+                        {
+                            channelId = _SelectedChannelId ?? up.ChannelId;
+                        }
                     }
                     else
                     {
-                        channelId = rup.ChannelId;
+                        channelId = _SelectedChannelId;
                     }
                 }
 
-                var rvm = _Channels.FirstOrDefault(r => r.Id == channelId);
-                if (rvm != null)
-                {
-                    SelectedChannel = rvm;
-                }
+                SelectedChannel = _Channels.FirstOrDefault(c => c.Id == channelId);
+                _SelectedChannelId = null;
             }
             catch (Exception ex)
             {
@@ -314,6 +314,26 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         ConnectAsync().GetHashCode();
                     }
+                }
+            }
+        }
+
+        private string _SelectedChannelId;
+
+        internal string SelectedChannelId
+        {
+            get => _SelectedChannel?.Id ?? _SelectedChannelId;
+            set
+            {
+                var t = LoadInitialDataTask;
+                if (t.Status == TaskStatus.RanToCompletion)
+                {
+                    SelectedChannel = _Channels.FirstOrDefault(c => c.Id == value);
+                    _SelectedChannelId = null;
+                }
+                else
+                {
+                    _SelectedChannelId = value;
                 }
             }
         }

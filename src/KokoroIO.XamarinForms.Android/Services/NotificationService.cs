@@ -27,7 +27,9 @@ namespace KokoroIO.XamarinForms.Droid.Services
             }
 
             var showIntent = new Intent(ctx, typeof(MainActivity));
-            showIntent.AddFlags(ActivityFlags.ClearTop);
+            showIntent.AddFlags(ActivityFlags.ReorderToFront);
+            showIntent.PutExtra("channelId", message.Channel.Id);
+            showIntent.PutExtra("messageId", message.Id);
 
             var pendingIntent = PendingIntent.GetActivity(ctx, 0, showIntent, PendingIntentFlags.OneShot);
 

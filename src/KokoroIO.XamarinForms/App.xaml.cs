@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.ViewModels;
@@ -19,70 +16,78 @@ namespace KokoroIO.XamarinForms
 {
     public partial class App : Application
     {
-        public App()
+        public App(ApplicationViewModel viewModel = null, string channelId = null)
         {
             InitializeComponent();
+
+            if (viewModel != null)
+            {
+                viewModel.SelectedChannelId = channelId ?? viewModel.SelectedChannel?.Id;
+                App.Current.MainPage = new RootPage(viewModel);
+
+                return;
+            }
 
             var at = UserSettings.AccessToken;
             var ep = UserSettings.EndPoint;
 
             if (!string.IsNullOrEmpty(at))
             {
-                var svm = new SplashViewModel(async () =>
-                {
-                    var preserve = false;
-                    var c = new Client();
-                    try
-                    {
-                        c = new Client()
-                        {
-                            AccessToken = at
-                        };
-
-                        var ds = SH.Device;
-                        var ns = SH.Notification;
-
-                        var pnsTask = ns.GetPlatformNotificationServiceHandleAsync();
-
-                        var pnsTaskTimeout = Task.WhenAny(pnsTask, Task.Delay(15000));
-
-                        c.EndPoint = !string.IsNullOrWhiteSpace(ep) ? ep : c.EndPoint;
-
-                        var me = await c.GetProfileAsync().ConfigureAwait(false);
-
-                        preserve = true;
-
-                        await pnsTaskTimeout;
-
-                        var pns = pnsTask.Status == TaskStatus.RanToCompletion ? pnsTask.Result : UserSettings.PnsHandle;
-
-                        if (pns != UserSettings.PnsHandle)
-                        {
-                            await c.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
-
-                            UserSettings.PnsHandle = pns;
-                            await App.Current.SavePropertiesAsync();
-                        }
-
-                        return new ApplicationViewModel(c, me);
-                    }
-                    finally
-                    {
-                        if (!preserve)
-                        {
-                            c.Dispose();
-                        }
-                    }
-                });
-
                 MainPage = new SplashPage()
                 {
-                    BindingContext = svm
+                    BindingContext = new SplashViewModel(() => LoginAsync(at, ep, channelId))
                 };
             }
             else
             {
                 MainPage = new LoginPage();
+            }
+        }
+
+        private async Task<ApplicationViewModel> LoginAsync(string accessToken, string endPoint, string channelId)
+        {
+            var preserve = false;
+            var c = new Client();
+            try
+            {
+                c = new Client()
+                {
+                    AccessToken = accessToken
+                };
+
+                var ds = SH.Device;
+                var ns = SH.Notification;
+
+                var pnsTask = ns.GetPlatformNotificationServiceHandleAsync();
+
+                var pnsTaskTimeout = Task.WhenAny(pnsTask, Task.Delay(15000));
+
+                c.EndPoint = !string.IsNullOrWhiteSpace(endPoint) ? endPoint : c.EndPoint;
+
+                var me = await c.GetProfileAsync().ConfigureAwait(false);
+
+                preserve = true;
+
+                await pnsTaskTimeout;
+
+                var pns = pnsTask.Status == TaskStatus.RanToCompletion ? pnsTask.Result : UserSettings.PnsHandle;
+
+                if (pns != UserSettings.PnsHandle)
+                {
+                    await c.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
+
+                    UserSettings.PnsHandle = pns;
+                    await App.Current.SavePropertiesAsync();
+                }
+
+                return new ApplicationViewModel(c, me) { SelectedChannelId = channelId };
+            }
+            finally
+            {
+                if (!preserve)
+                {
+                    c.Dispose();
+                }
             }
         }
 
