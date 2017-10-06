@@ -169,7 +169,7 @@ namespace KokoroIO.XamarinForms.UWP
             {
                 if (args is ToastNotificationActivatedEventArgs tne)
                 {
-                    var qp = tne.Argument.Split('?', '&').Select(s => s.Split(new[] { '=' }, 2)).Where(a => a.Length == 2).ToDictionary(a => a[0], a => a[1]);
+                    var qp = tne.Argument.ParseQueryString();
 
                     if (qp.TryGetValue("channelId", out var cid))
                     {

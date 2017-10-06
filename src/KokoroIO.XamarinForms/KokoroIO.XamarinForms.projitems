@@ -33,6 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\NotificationServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SH.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TH.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UrlHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ChannelDetailViewModel.cs" />
