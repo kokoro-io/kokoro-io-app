@@ -28,6 +28,7 @@ namespace KokoroIO.XamarinForms.Droid.Services
 
             var showIntent = new Intent(ctx, typeof(MainActivity));
             showIntent.AddFlags(ActivityFlags.ClearTop);
+
             var pendingIntent = PendingIntent.GetActivity(ctx, 0, showIntent, PendingIntentFlags.OneShot);
 
             var txt = $"{message.Profile.ScreenName}: {message.RawContent}";
