@@ -570,5 +570,11 @@
         document.body.addEventListener("mouseup", function (e) {
             mouseDownStart = null;
         });
+        document.body.addEventListener("wheel", function (e) {
+            if (e.ctrlKey) {
+                e.preventDefault();
+                return;
+            }
+        });
     });
 })();

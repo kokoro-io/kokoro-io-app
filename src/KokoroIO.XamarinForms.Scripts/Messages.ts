@@ -624,7 +624,6 @@ interface Window {
 
             if (b.scrollTop < talk.offsetTop + talk.clientHeight
                 && talk.offsetTop < b.scrollTop + b.clientHeight) {
-
                 var id = talk.getAttribute("data-message-id") || talk.getAttribute("data-idempotent-key");
 
                 if (ids.length > 0) {
@@ -728,6 +727,12 @@ interface Window {
         });
         document.body.addEventListener("mouseup", function (e) {
             mouseDownStart = null;
+        });
+        document.body.addEventListener("wheel", function (e: WheelEvent) {
+            if (e.ctrlKey) {
+                e.preventDefault();
+                return;
+            }
         });
     });
 })();
