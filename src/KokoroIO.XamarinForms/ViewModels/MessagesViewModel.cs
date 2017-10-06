@@ -462,13 +462,15 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             Application.BeginUpload(new UploadParameter(AppendUrl, error =>
             {
+                IsBusy = false;
+
                 data?.Dispose();
 
                 if (error != null)
                 {
                     MessagingCenter.Send(this, "UploadImageFailed");
                 }
-            }, data: data));
+            }, onUploading: () => IsBusy = true, data: data));
         }
 
         #endregion UploadImageCommand
@@ -488,11 +490,13 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             Application.BeginUpload(new UploadParameter(AppendUrl, error =>
             {
+                IsBusy = false;
+
                 if (error != null)
                 {
                     MessagingCenter.Send(this, "TakePhotoFailed");
                 }
-            }, useCamera: true));
+            }, onUploading: () => IsBusy = true, useCamera: true));
         }
 
         #endregion TakePhotoCommand
@@ -522,6 +526,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void AppendUrl(string url)
         {
+            IsBusy = false;
+
             if (string.IsNullOrWhiteSpace(_NewMessage))
             {
                 NewMessage = url;

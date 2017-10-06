@@ -842,6 +842,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 string url;
                 if (parameter.Data != null)
                 {
+                    parameter.OnUploading?.Invoke();
                     using (parameter.Data)
                     {
                         url = await uploader.UploadAsync(parameter.Data, "pasted");
@@ -866,6 +867,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                         return;
                     }
 
+                    parameter.OnUploading?.Invoke();
                     using (var ms = mf.Source)
                     {
                         url = await uploader.UploadAsync(ms, Path.GetFileName(mf.Path));
