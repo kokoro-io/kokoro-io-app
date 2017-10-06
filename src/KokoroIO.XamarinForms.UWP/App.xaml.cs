@@ -4,7 +4,6 @@ using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -160,6 +159,32 @@ namespace KokoroIO.XamarinForms.UWP
 
                 LaunchCore(args, tmp);
             }
+        }
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            var avm = XamarinForms.App.Current?.MainPage?.BindingContext as ApplicationViewModel;
+
+            if (avm != null)
+            {
+                if (args is ToastNotificationActivatedEventArgs tne)
+                {
+                    var qp = tne.Argument.Split('?', '&').Select(s => s.Split(new[] { '=' }, 2)).Where(a => a.Length == 2).ToDictionary(a => a[0], a => a[1]);
+
+                    if (qp.TryGetValue("channelId", out var cid))
+                    {
+                        var ch = avm.Channels.FirstOrDefault(c => c.Id == cid);
+
+                        if (ch != null)
+                        {
+                            avm.SelectedChannel = ch;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            base.OnActivated(args);
         }
     }
 }

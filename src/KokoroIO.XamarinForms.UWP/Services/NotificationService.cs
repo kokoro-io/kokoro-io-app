@@ -48,7 +48,8 @@ namespace KokoroIO.XamarinForms.UWP.Services
                 Visual = new ToastVisual()
                 {
                     BindingGeneric = bg
-                }
+                },
+                Launch = $"?channelId={message.Channel.Id}&messageId={message.Id}"
             };
 
             var toast = new ToastNotification(tc.GetXml());
