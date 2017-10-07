@@ -24,16 +24,6 @@ namespace KokoroIO.XamarinForms.ViewModels
             OpenUrlCommand = new Command(OpenUrl);
 
             _LoginUser = GetProfileViewModel(loginUser);
-
-            client.ProfileUpdated += Client_ProfileUpdated;
-            client.MessageCreated += Client_MessageCreated;
-            client.MessageUpdated += Client_MessageUpdated;
-            client.ChannelsUpdated += Client_ChannelsUpdated;
-
-            client.MemberJoined += Client_MemberJoined;
-            client.MemberLeaved += Client_MemberLeaved;
-
-            client.Disconnected += Client_Disconnected;
         }
 
         private float _DisplayScale;
@@ -43,7 +33,45 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region kokoro.io API Client
 
-        private readonly Client Client;
+        private Client _Client;
+
+        private Client Client
+        {
+            get => _Client;
+            set
+            {
+                if (value == _Client)
+                {
+                    return;
+                }
+                if (_Client != null)
+                {
+                    _Client.ProfileUpdated -= Client_ProfileUpdated;
+                    _Client.MessageCreated -= Client_MessageCreated;
+                    _Client.MessageUpdated -= Client_MessageUpdated;
+                    _Client.ChannelsUpdated -= Client_ChannelsUpdated;
+                    _Client.MemberJoined -= Client_MemberJoined;
+                    _Client.MemberLeaved -= Client_MemberLeaved;
+
+                    _Client.Disconnected -= Client_Disconnected;
+
+                    _Client.Dispose();
+                }
+                _Client = value;
+                if (_Client != null)
+                {
+                    _Client.ProfileUpdated += Client_ProfileUpdated;
+                    _Client.MessageCreated += Client_MessageCreated;
+                    _Client.MessageUpdated += Client_MessageUpdated;
+                    _Client.ChannelsUpdated += Client_ChannelsUpdated;
+                    _Client.MemberJoined += Client_MemberJoined;
+                    _Client.MemberLeaved += Client_MemberLeaved;
+
+                    _Client.Disconnected += Client_Disconnected;
+                }
+            }
+        }
+
         private readonly Queue<Func<Task>> _ClientTasks = new Queue<Func<Task>>();
 
         private void EnqueueClientTaskCore(Func<Task> taskExecutor)
@@ -148,7 +176,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                 GetOrCreateJoinedChannelViewModel(ms);
             }
 
-            await GetLastReadIdAsync();
+            await GetLastReadIdAsync().ConfigureAwait(false);
+
+            await SubscribeAsync().ConfigureAwait(false);
 
             return r;
         }
@@ -614,25 +644,128 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region Connection
 
-        public async Task ConnectAsync()
-        {
-            if (Client.State == ClientState.Disconnected)
-            {
-                await Client.ConnectAsync();
-                await Client.SubscribeAsync(Channels.Select(r => r.Id));
+        /// <summary>
+        /// A value indicating whether the application enabled the Connection.
+        /// </summary>
+        private bool _IsWebSocketEnabled;
 
-                OnPropertyChanged(nameof(IsDisconnected));
+        private Task _ConnectTask;
+
+        private int _ConnectionVersion;
+
+        private string[] _SubscribingChannels;
+
+        private Task _RecconectTask;
+
+        public Task ConnectAsync()
+        {
+            _IsWebSocketEnabled = true;
+
+            if (_ConnectTask != null
+                && (Client.State == ClientState.Connecting
+                    || (Client.State == ClientState.Connected && !(Client.LastPingAt < DateTime.Now.AddSeconds(-10)))))
+            {
+                return _ConnectTask;
+            }
+
+            _ConnectTask = ConnectAsyncCore();
+            _ConnectTask.ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    ReconnectAsync().ConfigureAwait(false).GetHashCode();
+                }
+            });
+            return _ConnectTask;
+        }
+
+        private async Task ConnectAsyncCore()
+        {
+            try
+            {
+                await Client.ConnectAsync().ConfigureAwait(false);
+            }
+            catch (TaskCanceledException)
+            {
+                Client = new Client()
+                {
+                    AccessToken = Client.AccessToken,
+                    EndPoint = Client.EndPoint,
+                    WebSocketEndPoint = Client.WebSocketEndPoint
+                };
+
+                await Client.ConnectAsync().ConfigureAwait(false);
+            }
+
+            _SubscribingChannels = Channels.Where(c => !c.IsArchived).Select(r => r.Id).ToArray();
+
+            await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
+
+            var v = ++_ConnectionVersion;
+
+            XDevice.StartTimer(TimeSpan.FromSeconds(1), () =>
+            {
+                if (v != _ConnectionVersion)
+                {
+                    return false;
+                }
+
+                if (Client.State == ClientState.Connected
+                    && Client.LastPingAt < DateTime.Now.AddSeconds(-10))
+                {
+                    OnPropertyChanged(nameof(IsDisconnected));
+                    ReconnectAsync().ConfigureAwait(false).GetHashCode();
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        private async Task SubscribeAsync()
+        {
+            if (Client.State != ClientState.Connected)
+            {
+                return;
+            }
+            var current = _SubscribingChannels;
+            _SubscribingChannels = Channels.Where(c => !c.IsArchived).Select(r => r.Id).ToArray();
+
+            if (current?.SequenceEqual(_SubscribingChannels) != true)
+            {
+                await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
+            }
+        }
+
+        private Task ReconnectAsync()
+            => _RecconectTask ?? (_RecconectTask = ReconnectAsyncCore());
+
+        private async Task ReconnectAsyncCore()
+        {
+            // TODO: change wait
+            await Task.Delay(5000);
+
+            if (_IsWebSocketEnabled)
+            {
+                await ConnectAsync().ConfigureAwait(false);
             }
         }
 
         public async Task CloseAsync()
         {
-            await Client.CloseAsync();
+            _IsWebSocketEnabled = false;
+            _ConnectTask = null;
+            _ConnectionVersion++;
+            _SubscribingChannels = null;
+            _RecconectTask = null;
+            await Client.CloseAsync().ConfigureAwait(false);
         }
 
         public bool IsDisconnected
-            => Channels.Any(r => !r.IsArchived)
-            && Client.State == ClientState.Disconnected;
+            => _ConnectTask == null
+            || Client.State == ClientState.Disconnected
+            || (Client.State == ClientState.Connected
+                    && Client.LastPingAt < DateTime.Now.AddSeconds(-10));
 
         private Command _ConnectCommand;
 
@@ -643,13 +776,11 @@ namespace KokoroIO.XamarinForms.ViewModels
                  {
                      try
                      {
-                         await ConnectAsync();
+                         await ConnectAsync().ConfigureAwait(false);
                      }
                      catch (Exception ex)
                      {
                          ex.Trace("Connection failed");
-
-                         BeginReconnect();
                      }
                  }
              }));
@@ -717,9 +848,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 Channels.RemoveRange(Channels.Where(c => !e.Data.Any(d => d.Id == c.Id)).ToArray());
 
-                await GetLastReadIdAsync();
+                await GetLastReadIdAsync().ConfigureAwait(false);
 
-                // TODO: subscribe channels
+                await SubscribeAsync().ConfigureAwait(false);
             });
         }
 
@@ -757,37 +888,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_Disconnected(object sender, EventArgs e)
         {
+            _ConnectTask = null;
+            _ConnectionVersion++;
+            _SubscribingChannels = null;
+            _RecconectTask = null;
             OnPropertyChanged(nameof(IsDisconnected));
 
             TH.TraceError("Disconnected");
 
-            // TODO: check for explicit close
-
-            BeginReconnect();
+            ReconnectAsync().GetHashCode();
         }
 
         #endregion Client Events
-
-        private async void BeginReconnect()
-        {
-            if (IsDisconnected)
-            {
-                await Task.Delay(5);
-                if (IsDisconnected)
-                {
-                    try
-                    {
-                        await ConnectAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.Trace("Reconnection failed");
-
-                        BeginReconnect();
-                    }
-                }
-            }
-        }
 
         #endregion Connection
 
