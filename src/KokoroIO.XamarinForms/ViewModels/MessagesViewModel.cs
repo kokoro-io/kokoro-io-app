@@ -124,7 +124,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 // TODO: increase page size by depth
                 const int PAGE_SIZE = 30;
 
-                //  int? bid, aid;
+                // int? bid, aid;
                 Message[] messages;
 
                 if (Messages.Count == 0)
@@ -300,10 +300,14 @@ namespace KokoroIO.XamarinForms.ViewModels
             // TODO: load from API
         }
 
-        private Command _ClearProfileCommand;
+        private Command _ClearPopupCommand;
 
-        public Command ClearProfileCommand
-            => _ClearProfileCommand ?? (_ClearProfileCommand = new Command(() => SelectedProfile = null));
+        public Command ClearPopupCommand
+            => _ClearPopupCommand ?? (_ClearPopupCommand = new Command(() =>
+            {
+                SelectedProfile = null;
+                PopupUrl = null;
+            }));
 
         #endregion SelectedProfile
 
@@ -587,5 +591,29 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion HasUnread
+
+        private string _PopupUrl;
+
+        public string PopupUrl
+        {
+            get => _PopupUrl;
+            private set => SetProperty(ref _PopupUrl, value);
+        }
+
+        public bool OpenUrl(Uri u)
+        {
+            if (u.Host == "www.youtube.com"
+                && u.AbsolutePath == "/watch")
+            {
+                if (u.Query.ParseQueryString().TryGetValue("v", out var v))
+                {
+                    PopupUrl = $"https://www.youtube.com/embed/{v}";
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

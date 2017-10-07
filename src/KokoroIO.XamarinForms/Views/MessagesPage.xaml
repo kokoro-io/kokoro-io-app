@@ -229,7 +229,7 @@
                 IsVisible="{Binding HasProfile}">
                 <xlabs:PopupLayout.GestureRecognizers>
                     <TapGestureRecognizer
-                        Command="{Binding ClearProfileCommand}" />
+                        Command="{Binding ClearPopupCommand}" />
                 </xlabs:PopupLayout.GestureRecognizers>
                 <xlabs:PopupLayout.Content>
 
@@ -291,6 +291,25 @@
                                 Command="{Binding BeginDirectMessageCommand}" />
                         </StackLayout>
                     </Grid>
+                </xlabs:PopupLayout.Content>
+            </xlabs:PopupLayout>
+
+            <xlabs:PopupLayout
+                x:Name="webViewPopup"
+                Grid.RowSpan="3"
+                BackgroundColor="#80000000"
+                IsVisible="False">
+                <xlabs:PopupLayout.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding ClearPopupCommand}" />
+                </xlabs:PopupLayout.GestureRecognizers>
+                <xlabs:PopupLayout.Content>
+                    <WebView
+                        x:Name="popupWebView"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        BindingContext="{Binding PopupUrl}"
+                        BindingContextChanged="PopupWebView_BindingContextChanged" />
                 </xlabs:PopupLayout.Content>
             </xlabs:PopupLayout>
         </Grid>

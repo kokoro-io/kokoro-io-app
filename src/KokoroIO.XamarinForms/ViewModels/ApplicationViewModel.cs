@@ -336,7 +336,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         _SelectedChannel.IsSelected = true;
                         var mp = _SelectedChannel.GetOrCreateMessagesPage();
-                        mp.SelectedProfile = null;
+                        mp.ClearPopupCommand.Execute(null);
                     }
                     OnUnreadCountChanged();
                     if (Client.State == ClientState.Disconnected
@@ -608,13 +608,13 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (u != null)
             {
+                var mp = SelectedChannel.MessagesPage;
+
                 if (u.Scheme == "https"
                     && u.Host == "kokoro.io")
                 {
                     if (u.AbsolutePath.StartsWith("/@"))
                     {
-                        var mp = SelectedChannel.MessagesPage;
-
                         if (mp != null)
                         {
                             mp.SelectProfile(u.AbsolutePath.Substring(2), u.Fragment?.Length == 10 ? u.Fragment.Substring(1) : null);
@@ -636,6 +636,11 @@ namespace KokoroIO.XamarinForms.ViewModels
                             return;
                         }
                     }
+                }
+
+                if (mp?.OpenUrl(u) == true)
+                {
+                    return;
                 }
 
                 XDevice.OpenUri(u);

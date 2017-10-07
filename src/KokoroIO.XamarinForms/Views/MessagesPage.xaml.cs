@@ -44,6 +44,7 @@ namespace KokoroIO.XamarinForms.Views
 
             vm.BeginUploadImage(e.Data);
         }
+
         private void ExpandableEditor_Unfocused(object sender, FocusEventArgs e)
         {
             var vm = BindingContext as MessagesViewModel;
@@ -51,6 +52,34 @@ namespace KokoroIO.XamarinForms.Views
             if (vm?.CandicateClicked > DateTime.Now.AddSeconds(-0.5))
             {
                 e.VisualElement.Focus();
+            }
+        }
+
+        private void PopupWebView_BindingContextChanged(object sender, EventArgs e)
+        {
+            var mvm = BindingContext as MessagesViewModel;
+
+            if (mvm.PopupUrl != null)
+            {
+                var r = 9.0 / 16;
+
+                var w = Math.Min(480, Width);
+                popupWebView.WidthRequest = w;
+                popupWebView.HeightRequest = r * w;
+
+                popupWebView.Source = new UrlWebViewSource()
+                {
+                    Url = mvm.PopupUrl
+                };
+                webViewPopup.IsVisible = true;
+            }
+            else
+            {
+                webViewPopup.IsVisible = false;
+                popupWebView.Source = new UrlWebViewSource()
+                {
+                    Url = "about:blank"
+                };
             }
         }
     }
