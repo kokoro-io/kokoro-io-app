@@ -602,16 +602,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public bool OpenUrl(Uri u)
         {
-            if (u.Host == "www.youtube.com"
-                && u.AbsolutePath == "/watch")
-            {
-                if (u.Query.ParseQueryString().TryGetValue("v", out var v))
-                {
-                    PopupUrl = $"https://www.youtube.com/embed/{v}";
+            // TODO: support dedicated urls
 
-                    return true;
-                }
-            }
+            //if (u.Host == "www.youtube.com"
+            //    && u.AbsolutePath == "/watch")
+            //{
+            //    if (u.Query.ParseQueryString().TryGetValue("v", out var v))
+            //    {
+            //        PopupUrl = $"https://www.youtube.com/embed/{v}";
+
+            //        return true;
+            //    }
+            //}
 
             return false;
         }

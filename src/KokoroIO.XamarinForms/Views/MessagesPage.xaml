@@ -294,7 +294,7 @@
                 </xlabs:PopupLayout.Content>
             </xlabs:PopupLayout>
 
-            <xlabs:PopupLayout
+            <!--TODO: support dedicated contents <xlabs:PopupLayout
                 x:Name="webViewPopup"
                 Grid.RowSpan="3"
                 BackgroundColor="#80000000"
@@ -311,7 +311,7 @@
                         BindingContext="{Binding PopupUrl}"
                         BindingContextChanged="PopupWebView_BindingContextChanged" />
                 </xlabs:PopupLayout.Content>
-            </xlabs:PopupLayout>
+            </xlabs:PopupLayout>-->
         </Grid>
     </ContentPage.Content>
 </ContentPage>
