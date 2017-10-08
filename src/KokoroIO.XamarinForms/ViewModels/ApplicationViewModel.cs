@@ -662,9 +662,31 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private Task _RecconectTask;
 
+        private bool _IsDisconnected = true;
+
+        public bool IsDisconnected => _IsDisconnected;
+
+        private bool UpdateIsDisconnected()
+        {
+            var v = _ConnectTask == null
+            || Client.State == ClientState.Disconnected
+            || (Client.State == ClientState.Connected
+                    && Client.LastPingAt < DateTime.Now.AddSeconds(-10));
+
+            if (_IsDisconnected != v)
+            {
+                _IsDisconnected = v;
+                OnPropertyChanged(nameof(IsDisconnected));
+            }
+
+            return v;
+        }
+
         public Task ConnectAsync()
         {
             _IsWebSocketEnabled = true;
+
+            UpdateIsDisconnected();
 
             if (_ConnectTask != null
                 && (Client.State == ClientState.Connecting
@@ -686,12 +708,16 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private async Task ConnectAsyncCore()
         {
+            UpdateIsDisconnected();
+
             try
             {
                 await Client.ConnectAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
             {
+                UpdateIsDisconnected();
+
                 Client = new Client()
                 {
                     AccessToken = Client.AccessToken,
@@ -699,10 +725,14 @@ namespace KokoroIO.XamarinForms.ViewModels
                     WebSocketEndPoint = Client.WebSocketEndPoint
                 };
 
+                UpdateIsDisconnected();
+
                 await Client.ConnectAsync().ConfigureAwait(false);
             }
 
             _SubscribingChannels = Channels.Where(c => !c.IsArchived).Select(r => r.Id).ToArray();
+
+            UpdateIsDisconnected();
 
             await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
 
@@ -710,6 +740,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             XDevice.StartTimer(TimeSpan.FromSeconds(1), () =>
             {
+                UpdateIsDisconnected();
+
                 if (v != _ConnectionVersion)
                 {
                     return false;
@@ -718,7 +750,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                 if (Client.State == ClientState.Connected
                     && Client.LastPingAt < DateTime.Now.AddSeconds(-10))
                 {
-                    OnPropertyChanged(nameof(IsDisconnected));
                     ReconnectAsync().ConfigureAwait(false).GetHashCode();
                     return false;
                 }
@@ -729,12 +760,16 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private async Task SubscribeAsync()
         {
+            UpdateIsDisconnected();
+
             if (Client.State != ClientState.Connected)
             {
                 return;
             }
             var current = _SubscribingChannels;
             _SubscribingChannels = Channels.Where(c => !c.IsArchived).Select(r => r.Id).ToArray();
+
+            UpdateIsDisconnected();
 
             if (current?.SequenceEqual(_SubscribingChannels) != true)
             {
@@ -747,53 +782,59 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private async Task ReconnectAsyncCore()
         {
+            UpdateIsDisconnected();
+
             // TODO: change wait
             await Task.Delay(5000);
+
+            UpdateIsDisconnected();
 
             if (_IsWebSocketEnabled)
             {
                 await ConnectAsync().ConfigureAwait(false);
+
+                UpdateIsDisconnected();
             }
         }
 
         public async Task CloseAsync()
         {
+            UpdateIsDisconnected();
+
             _IsWebSocketEnabled = false;
             _ConnectTask = null;
             _ConnectionVersion++;
             _SubscribingChannels = null;
             _RecconectTask = null;
             await Client.CloseAsync().ConfigureAwait(false);
-        }
 
-        public bool IsDisconnected
-            => _ConnectTask == null
-            || Client.State == ClientState.Disconnected
-            || (Client.State == ClientState.Connected
-                    && Client.LastPingAt < DateTime.Now.AddSeconds(-10));
+            UpdateIsDisconnected();
+        }
 
         private Command _ConnectCommand;
 
         public Command ConnectCommand
             => _ConnectCommand ?? (_ConnectCommand = new Command(async () =>
-             {
-                 if (IsDisconnected)
-                 {
-                     try
-                     {
-                         await ConnectAsync().ConfigureAwait(false);
-                     }
-                     catch (Exception ex)
-                     {
-                         ex.Trace("Connection failed");
-                     }
-                 }
-             }));
+            {
+                if (UpdateIsDisconnected())
+                {
+                    try
+                    {
+                        await ConnectAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.Trace("Connection failed");
+                    }
+                }
+            }));
 
         #region Client Events
 
         private void Client_ProfileUpdated(object sender, EventArgs<Profile> e)
         {
+            UpdateIsDisconnected();
+
             if (e.Data == null)
             {
                 return;
@@ -808,11 +849,15 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MessageCreated(object sender, EventArgs<Message> e)
         {
+            UpdateIsDisconnected();
+
             ReceiveMessage(e.Data, true);
         }
 
         private void Client_MessageUpdated(object sender, EventArgs<Message> e)
         {
+            UpdateIsDisconnected();
+
             if (e.Data == null)
             {
                 return;
@@ -837,6 +882,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_ChannelsUpdated(object sender, EventArgs<Channel[]> e)
         {
+            UpdateIsDisconnected();
+
             if (e.Data == null)
             {
                 return;
@@ -861,6 +908,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MemberJoined(object sender, EventArgs<Membership> e)
         {
+            UpdateIsDisconnected();
+
             if (e.Data == null)
             {
                 return;
@@ -877,6 +926,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void Client_MemberLeaved(object sender, EventArgs<Membership> e)
         {
+            UpdateIsDisconnected();
+
             if (e.Data == null)
             {
                 return;
@@ -897,11 +948,12 @@ namespace KokoroIO.XamarinForms.ViewModels
             _ConnectionVersion++;
             _SubscribingChannels = null;
             _RecconectTask = null;
-            OnPropertyChanged(nameof(IsDisconnected));
+
+            UpdateIsDisconnected();
 
             TH.TraceError("Disconnected");
 
-            ReconnectAsync().GetHashCode();
+            ReconnectAsync().ConfigureAwait(false).GetHashCode();
         }
 
         #endregion Client Events
