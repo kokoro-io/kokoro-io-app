@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
@@ -442,6 +443,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             OnPropertyChanged(nameof(UnreadCount));
             HasUnread = _Unreads?.Count > 0;
+            var byOtherUser = message.Profile.Id != Application.LoginUser.Id;
 
             if (Application.SelectedChannel == this)
             {
@@ -452,9 +454,14 @@ namespace KokoroIO.XamarinForms.ViewModels
                     mp.BeginAppend();
                 }
             }
-            else if (message.Profile.Id != Application.LoginUser.Id)
+            else if (byOtherUser)
             {
                 SH.Notification.ShowNotificationAndSave(message);
+            }
+
+            if (byOtherUser && UserSettings.PlayRingtone)
+            {
+                SH.Audio.PlayNotification();
             }
         }
 
