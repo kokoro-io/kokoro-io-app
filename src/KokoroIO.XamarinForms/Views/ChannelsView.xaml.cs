@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
@@ -48,7 +49,129 @@ namespace KokoroIO.XamarinForms.Views
 
         private void ItemsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (tableView.Root != null)
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        if (OnItemAdding(e))
+                        {
+                            return;
+                        }
+                        break;
+
+                    case NotifyCollectionChangedAction.Remove:
+                        if (OnItemRemoving(e))
+                        {
+                            return;
+                        }
+
+                        break;
+                }
+            }
             OnItemSourceReset();
+        }
+
+        private bool OnItemAdding(NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems == null)
+            {
+                return false;
+            }
+            var nsi = e.NewStartingIndex >= 0 ? e.NewStartingIndex : ((IList)ItemsSource).IndexOf(e.NewItems[0]);
+            if (nsi < 0)
+            {
+                return false;
+            }
+            TableSection s = null;
+            int ni = 0;
+            var prev = ItemsSource.ElementAtOrDefault(nsi - 1);
+
+            foreach (ChannelViewModel n in e.NewItems)
+            {
+                if (prev?.Kind == n.Kind
+                    && prev?.IsArchived == n.IsArchived)
+                {
+                    if (s == null)
+                    {
+                        s = tableView.Root.FirstOrDefault(ts => ts.Any(c => c.BindingContext == prev));
+                        if (s == null)
+                        {
+                            s = new TableSection(n.KindName);
+                            tableView.Root.Add(s);
+                            ni = 0;
+                        }
+                        else
+                        {
+                            ni = s.IndexOf(s.FirstOrDefault(c => c.BindingContext == prev));
+                            if (ni < 0)
+                            {
+                                ni = s.Count;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var os = s;
+
+                    s = new TableSection(n.KindName);
+
+                    tableView.Root.Insert(os == null ? tableView.Root.Count : tableView.Root.IndexOf(os) + 1, s);
+                    ni = 0;
+                }
+
+                var cell = ItemTemplate.CreateContent() as Cell;
+                cell.BindingContext = n;
+                cell.Tapped += Cell_Tapped;
+
+                s.Insert(ni++, cell);
+
+                prev = n;
+            }
+
+            return true;
+        }
+
+        private bool OnItemRemoving(NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems == null)
+            {
+                return false;
+            }
+
+            foreach (ChannelViewModel o in e.OldItems)
+            {
+                var removed = false;
+                foreach (var s in tableView.Root)
+                {
+                    foreach (var c in s)
+                    {
+                        if (c.BindingContext == o)
+                        {
+                            c.Tapped -= Cell_Tapped;
+                            s.Remove(c);
+                            if (!s.Any())
+                            {
+                                tableView.Root.Remove(s);
+                            }
+                            removed = true;
+                            break;
+                        }
+                    }
+                    if (removed)
+                    {
+                        break;
+                    }
+                }
+
+                if (!removed)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void OnItemSourceReset()
