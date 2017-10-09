@@ -730,12 +730,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 await Client.ConnectAsync().ConfigureAwait(false);
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
-            Debug.WriteLine("Subscribing...");
 
             _SubscribingChannels = Channels.Where(c => !c.IsArchived).Select(r => r.Id).ToArray();
 
@@ -743,15 +737,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
 
-            Debug.WriteLine("Subscribed");
-
             var v = ++_ConnectionVersion;
             XDevice.BeginInvokeOnMainThread(() =>
             {
                 XDevice.StartTimer(TimeSpan.FromSeconds(1), () =>
                 {
-                    Debug.WriteLine("ConnectAsyncCore Timer");
-
                     UpdateIsDisconnected();
 
                     if (v != _ConnectionVersion)
