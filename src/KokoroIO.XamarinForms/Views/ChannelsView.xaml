@@ -1,39 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Application
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
-    x:Class="KokoroIO.XamarinForms.App">
-    <Application.Resources>
+    x:Class="KokoroIO.XamarinForms.Views.ChannelsView">
+    <ContentView.Resources>
         <ResourceDictionary>
-            <Color
-                x:Key="Primary">#2196F3</Color>
-            <Color
-                x:Key="PrimaryDark">#1976D2</Color>
-            <Color
-                x:Key="Accent">#96d1ff</Color>
-            <Color
-                x:Key="LightBackgroundColor">#FAFAFA</Color>
-            <Color
-                x:Key="DarkBackgroundColor">#C0C0C0</Color>
-            <Color
-                x:Key="MediumGrayTextColor">#4d4d4d</Color>
-            <Color
-                x:Key="LightTextColor">#999999</Color>
-
-            <Style
-                TargetType="NavigationPage">
-                <Setter
-                    Property="BarBackgroundColor"
-                    Value="{StaticResource Primary}" />
-                <Setter
-                    Property="BarTextColor"
-                    Value="White" />
-            </Style>
-
-            <view:BooleanNegationConverter
-                x:Key="BooleanNegationConverter" />
-
             <DataTemplate
                 x:Key="channelListViewItemTemplate">
                 <ViewCell>
@@ -106,7 +77,22 @@
                     </Grid>
                 </ViewCell>
             </DataTemplate>
-
         </ResourceDictionary>
-    </Application.Resources>
-</Application>
+    </ContentView.Resources>
+    <ContentView.Content>
+        <!--<ListView
+            x:Name="listView"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            ItemSelected="ListView_ItemSelected">
+
+        </ListView>-->
+        <TableView
+            x:Name="tableView"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            Intent="Menu">
+
+        </TableView>
+    </ContentView.Content>
+</ContentView>
