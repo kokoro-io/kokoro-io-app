@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using Foundation;
 using KokoroIO.XamarinForms.iOS;
@@ -18,6 +19,7 @@ namespace KokoroIO.XamarinForms.iOS
 
             if (Control != null)
             {
+                Control.Changed += Control_Changed;
                 Control.SelectionChanged += Control_SelectionChanged;
             }
         }
@@ -45,6 +47,21 @@ namespace KokoroIO.XamarinForms.iOS
             }
 
             base.OnElementPropertyChanged(sender, e);
+        }
+
+        private int _PreviousLineCount = 1;
+
+        private void Control_Changed(object sender, System.EventArgs e)
+        {
+            var ee = Element as ExpandableEditor;
+            var rlc = Control.ContentSize.Height / Control.Font.LineHeight;
+            var lc = Math.Min((int)Math.Round(rlc), ee?.MaxLines > 0 ? ee.MaxLines : int.MaxValue);
+
+            if (lc != _PreviousLineCount)
+            {
+                _PreviousLineCount = lc;
+                Element.MinimumHeightRequest = lc * Control.Font.LineHeight;
+            }
         }
 
         private void Control_SelectionChanged(object sender, System.EventArgs e)
@@ -77,6 +94,7 @@ namespace KokoroIO.XamarinForms.iOS
             {
                 if (Control != null)
                 {
+                    Control.Changed -= Control_Changed;
                     Control.SelectionChanged -= Control_SelectionChanged;
                 }
             }
