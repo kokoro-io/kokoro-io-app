@@ -56,9 +56,16 @@
                         </Grid.Triggers>
                         <Label
                             Text="{Binding DisplayName}"
-                            LineBreakMode="NoWrap"
-                            Style="{DynamicResource ListItemTextStyle}"
-                            FontSize="16">
+                            FontSize="16"
+                            TextColor="#aaa">
+                            <Label.FontAttributes>
+                                <!-- HACK: UWP workaround -->
+                                <OnPlatform
+                                    x:TypeArguments="FontAttributes"
+                                    Android="None"
+                                    iOS="None"
+                                    WinPhone="Bold" />
+                            </Label.FontAttributes>
                             <Label.Triggers>
                                 <DataTrigger
                                     TargetType="Label"
@@ -80,7 +87,7 @@
                                     Value="True">
                                     <Setter
                                         Property="TextColor"
-                                        Value="#999" />
+                                        Value="#ccc" />
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
