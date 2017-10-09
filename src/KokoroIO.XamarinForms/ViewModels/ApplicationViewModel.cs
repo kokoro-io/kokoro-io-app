@@ -712,6 +712,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             try
             {
+                Client?.Dispose();
                 await Client.ConnectAsync().ConfigureAwait(false);
             }
             catch (TaskCanceledException)
@@ -729,6 +730,12 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 await Client.ConnectAsync().ConfigureAwait(false);
             }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            Debug.WriteLine("Subscribing...");
 
             _SubscribingChannels = Channels.Where(c => !c.IsArchived).Select(r => r.Id).ToArray();
 
@@ -736,25 +743,31 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
 
+            Debug.WriteLine("Subscribed");
+
             var v = ++_ConnectionVersion;
-
-            XDevice.StartTimer(TimeSpan.FromSeconds(1), () =>
+            XDevice.BeginInvokeOnMainThread(() =>
             {
-                UpdateIsDisconnected();
-
-                if (v != _ConnectionVersion)
+                XDevice.StartTimer(TimeSpan.FromSeconds(1), () =>
                 {
-                    return false;
-                }
+                    Debug.WriteLine("ConnectAsyncCore Timer");
 
-                if (Client.State == ClientState.Connected
-                    && Client.LastPingAt < DateTime.Now.AddSeconds(-10))
-                {
-                    ReconnectAsync().ConfigureAwait(false).GetHashCode();
-                    return false;
-                }
+                    UpdateIsDisconnected();
 
-                return true;
+                    if (v != _ConnectionVersion)
+                    {
+                        return false;
+                    }
+
+                    if (Client.State == ClientState.Connected
+                        && Client.LastPingAt < DateTime.Now.AddSeconds(-10))
+                    {
+                        ReconnectAsync().ConfigureAwait(false).GetHashCode();
+                        return false;
+                    }
+
+                    return true;
+                });
             });
         }
 
