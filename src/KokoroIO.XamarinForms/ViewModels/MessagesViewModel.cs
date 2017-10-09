@@ -13,7 +13,6 @@ namespace KokoroIO.XamarinForms.ViewModels
             Channel = channel;
             Title = channel.DisplayName;
             _IsArchiveBannerShown = channel.IsArchived;
-            _HasUnread = Channel.UnreadCount > 0;
 
             PrependCommand = new Command(BeginPrepend);
             RefreshCommand = new Command(BeginAppend);
@@ -170,8 +169,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     HasNext = messages.Length == PAGE_SIZE;
                 }
-
-                HasUnread = Channel.UnreadCount > 0;
 
                 if (messages.Any())
                 {
@@ -580,17 +577,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion ClearArchiveBannerCommand
 
-        #region HasUnread
-
-        private bool _HasUnread;
-
-        public bool HasUnread
-        {
-            get => _HasUnread;
-            private set => SetProperty(ref _HasUnread, value);
-        }
-
-        #endregion HasUnread
 
         private string _PopupUrl;
 

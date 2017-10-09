@@ -401,6 +401,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 && _Unreads?.RemoveWhere(id => id <= _LastReadId) > 0)
             {
                 OnPropertyChanged(nameof(UnreadCount));
+                HasUnread = _Unreads?.Count > 0;
             }
         }
 
@@ -408,6 +409,19 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public int UnreadCount
             => _Unreads?.Count ?? 0;
+
+
+        #region HasUnread
+
+        private bool _HasUnread;
+
+        public bool HasUnread
+        {
+            get => _HasUnread;
+            private set => SetProperty(ref _HasUnread, value);
+        }
+
+        #endregion HasUnread
 
         internal void Receive(Message message)
         {
@@ -426,7 +440,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
 
             OnPropertyChanged(nameof(UnreadCount));
-
+            HasUnread = _Unreads?.Count > 0;
+            
             if (Application.SelectedChannel == this)
             {
                 var mp = MessagesPage;
