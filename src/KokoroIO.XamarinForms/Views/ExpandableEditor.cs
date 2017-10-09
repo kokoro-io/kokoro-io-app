@@ -27,6 +27,19 @@ namespace KokoroIO.XamarinForms.Views
 
         #endregion Placeholder
 
+        #region MaxLines
+
+        public static readonly BindableProperty MaxLinesProperty
+            = BindableProperty.Create(nameof(MaxLines), typeof(int), typeof(ExpandableEditor), defaultValue: 0);
+
+        public int MaxLines
+        {
+            get => (int)GetValue(MaxLinesProperty);
+            set => SetValue(MaxLinesProperty, value);
+        }
+
+        #endregion MaxLines
+
         #region SelectionStart
 
         public static readonly BindableProperty SelectionStartProperty

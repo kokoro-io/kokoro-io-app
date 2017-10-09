@@ -211,6 +211,7 @@
                     Placeholder="{Binding Channel.Placeholder}"
                     SelectionStart="{Binding SelectionStart}"
                     SelectionLength="{Binding SelectionLength}"
+                    MaxLines="10"
                     HasFocus="{Binding NewMessageFocused, Mode=TwoWay}"
                     PostCommand="{Binding PostCommand}"
                     FilePasted="ExpandableEditor_FilePasted"

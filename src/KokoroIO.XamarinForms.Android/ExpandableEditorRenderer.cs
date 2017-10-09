@@ -1,4 +1,7 @@
+using System;
 using System.ComponentModel;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Android.Views;
 using KokoroIO.XamarinForms.Droid;
 using KokoroIO.XamarinForms.Views;
@@ -31,9 +34,24 @@ namespace KokoroIO.XamarinForms.Droid
             UpdateSelection();
         }
 
+        private int _PreviousLineCount = 1;
+
         private void Control_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
         {
             UpdateSelection();
+
+            if (Control?.LineCount > 0)
+            {
+                var ee = Element as ExpandableEditor;
+                var lc = Math.Min(Control.LineCount, ee?.MaxLines > 0 ? ee.MaxLines : int.MaxValue);
+
+                if (lc != _PreviousLineCount)
+                {
+                    _PreviousLineCount = lc;
+                    Control.SetLines(lc);
+                    Invalidate();
+                }
+            }
         }
 
         private void Control_KeyPress(object sender, KeyEventArgs e)
