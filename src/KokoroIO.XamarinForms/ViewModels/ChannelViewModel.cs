@@ -378,12 +378,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                         var ns = realm.All<MessageNotification>().Where(n => n.ChannelId == Id && n.MessageId <= lastReadId).ToList();
 
+                        var remCount = realm.All<MessageNotification>().Where(n => n.ChannelId == Id && n.MessageId > lastReadId).Count();
+
                         if (ns.Any())
                         {
                             var notification = SH.Notification;
                             foreach (var n in ns)
                             {
-                                notification?.CancelNotification(n.NotificationId);
+                                notification?.CancelNotification(n.ChannelId, n.NotificationId, remCount);
                                 realm.Remove(n);
                             }
                         }
@@ -409,7 +411,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public int UnreadCount
             => _Unreads?.Count ?? 0;
-
 
         #region HasUnread
 
@@ -441,7 +442,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             OnPropertyChanged(nameof(UnreadCount));
             HasUnread = _Unreads?.Count > 0;
-            
+
             if (Application.SelectedChannel == this)
             {
                 var mp = MessagesPage;

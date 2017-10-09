@@ -29,21 +29,28 @@ namespace KokoroIO.XamarinForms.iOS.Services
             n.AlertBody = $"{message.Profile.DisplayName}: {message.RawContent}";
             n.AlertAction = $"?channelId={message.Channel.Id}&messageId={message.Id}";
 
-            n.UserInfo = NSDictionary.FromObjectAndKey((NSString)message.Id.ToString(), (NSString)"ID");
+            var ui = new NSMutableDictionary();
+            ui[(NSString)"channelId"] = (NSString)message.Channel.Id;
+            ui[(NSString)"id"] = (NSString)message.Id.ToString();
+
+            n.UserInfo = ui;
 
             UIApplication.SharedApplication.ScheduleLocalNotification(n);
 
             return message.Id.ToString();
         }
 
-        public void CancelNotification(string notificationId)
+        public void CancelNotification(string channelId, string notificationId, int channelUnreadCount)
         {
-            var k = (NSString)"id";
+            var k1 = (NSString)"channelId";
+            var k2 = (NSString)"id";
             foreach (var n in UIApplication.SharedApplication.ScheduledLocalNotifications)
             {
-                if (n.UserInfo.TryGetValue(k, out var id))
+                if (n.UserInfo.TryGetValue(k1, out var cid)
+                    && n.UserInfo.TryGetValue(k2, out var id))
                 {
-                    if (id as NSString == notificationId)
+                    if (cid as NSString == channelId
+                        && id as NSString == notificationId)
                     {
                         UIApplication.SharedApplication.CancelLocalNotification(n);
                         break;

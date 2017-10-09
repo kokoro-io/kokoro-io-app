@@ -33,32 +33,58 @@ namespace KokoroIO.XamarinForms.Droid.Services
 
             var pendingIntent = PendingIntent.GetActivity(ctx, 0, showIntent, PendingIntentFlags.OneShot);
 
-            var txt = $"{message.Profile.ScreenName}: {message.RawContent}";
+            var nm = (NotificationManager)ctx.GetSystemService(Context.NotificationService);
+            {
+                var txt = $"{(string.IsNullOrEmpty(message.Channel.ChannelName) ? "A kokoro.io channel" : ("#" + message.Channel.ChannelName))} has unread messages.";
 
-            var notificationBuilder = new Notification.Builder(ctx)
-                .SetSmallIcon(Resource.Drawable.kokoro_white)
-                .SetContentTitle(!string.IsNullOrEmpty(message.Channel.ChannelName) ? "#" + message.Channel.ChannelName : "kokoro.io")
-                .SetContentText(txt)
-                .SetAutoCancel(true)
-                .SetContentIntent(pendingIntent)
-                .SetStyle(new Notification.BigTextStyle().BigText(txt))
-                .SetVibrate(new long[] { 100, 0, 100, 0, 100, 0 })
-                .SetPriority((int)NotificationPriority.Max);
+                var nb = new Notification.Builder(ctx)
+                    .SetGroup(message.Channel.Id)
+                    .SetGroupSummary(true)
+                    .SetSmallIcon(Resource.Drawable.kokoro_white)
+                    .SetContentTitle(!string.IsNullOrEmpty(message.Channel.ChannelName) ? "#" + message.Channel.ChannelName : "kokoro.io")
+                    .SetStyle(new Notification.BigTextStyle().SetSummaryText(txt))
+                    .SetContentText(txt)
+                    .SetAutoCancel(true)
+                    .SetContentIntent(pendingIntent)
+                    .SetVibrate(new long[] { 100, 0, 100, 0, 100, 0 })
+                    .SetPriority((int)NotificationPriority.Max);
 
-            var notificationManager = (NotificationManager)ctx.GetSystemService(Context.NotificationService);
-            notificationManager.Notify(message.Id, notificationBuilder.Build());
+                nm.Notify(message.Channel.Id, 0, nb.Build());
+            }
+            {
+                var txt = $"{message.Profile.ScreenName}: {message.RawContent}";
 
+                var nb = new Notification.Builder(ctx)
+                    .SetGroup(message.Channel.Id)
+                    .SetGroupSummary(false)
+                    .SetSmallIcon(Resource.Drawable.kokoro_white)
+                    .SetContentTitle(!string.IsNullOrEmpty(message.Channel.ChannelName) ? "#" + message.Channel.ChannelName : "kokoro.io")
+                    .SetContentText(txt)
+                    .SetAutoCancel(true)
+                    .SetContentIntent(pendingIntent)
+                    .SetStyle(new Notification.BigTextStyle().BigText(txt))
+                    .SetVibrate(new long[] { 100, 0, 100, 0, 100, 0 })
+                    .SetPriority((int)NotificationPriority.Max);
+
+                nm.Notify(message.Channel.Id, message.Id, nb.Build());
+            }
             return message.Id.ToString();
         }
 
-        public void CancelNotification(string notificationId)
+        public void CancelNotification(string channelId, string notificationId, int channelUnreadCount)
         {
             var ctx = MainActivity.GetCurrentContext() ?? PushHandlerService.Current;
 
             if (ctx != null
                 && int.TryParse(notificationId, out var id))
             {
-                ((NotificationManager)ctx.GetSystemService(Context.NotificationService)).Cancel(id);
+                var nm = (NotificationManager)ctx.GetSystemService(Context.NotificationService);
+                nm?.Cancel(channelId, id);
+
+                if (channelUnreadCount <= 0)
+                {
+                    nm?.Cancel(channelId, 0);
+                }
             }
         }
     }

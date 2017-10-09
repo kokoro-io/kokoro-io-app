@@ -53,7 +53,7 @@ namespace KokoroIO.XamarinForms.UWP.Services
             };
 
             var toast = new ToastNotification(tc.GetXml());
-            toast.Group = nameof(Message);
+            toast.Group = message.Channel.Id;
             toast.Tag = message.Id.ToString();
             toast.ExpirationTime = DateTime.Now.AddDays(1);
 
@@ -62,9 +62,9 @@ namespace KokoroIO.XamarinForms.UWP.Services
             return toast.Tag;
         }
 
-        public void CancelNotification(string notificationId)
+        public void CancelNotification(string channelId, string notificationId, int channelUnreadCount)
         {
-            ToastNotificationManager.History.Remove(notificationId, nameof(Message));
+            ToastNotificationManager.History.Remove(notificationId, channelId);
         }
     }
 }

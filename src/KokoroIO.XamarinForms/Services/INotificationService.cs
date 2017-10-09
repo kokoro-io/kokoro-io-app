@@ -10,6 +10,6 @@ namespace KokoroIO.XamarinForms.Services
 
         string ShowNotification(Message message);
 
-        void CancelNotification(string notificationId);
+        void CancelNotification(string channelId, string notificationId, int channelUnreadCount);
     }
 }
