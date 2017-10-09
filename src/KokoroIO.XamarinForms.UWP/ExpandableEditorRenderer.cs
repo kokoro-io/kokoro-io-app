@@ -9,6 +9,8 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
@@ -29,12 +31,49 @@ namespace KokoroIO.XamarinForms.UWP
 
                 Control.AllowDrop = true;
                 Control.AddHandler(FormsTextBox.KeyDownEvent, (KeyEventHandler)Control_KeyDown, true);
+                Control.TextChanged += Control_TextChanged;
                 Control.SelectionChanged += Control_SelectionChanged;
                 Control.DragEnter += Control_DragOver;
                 Control.DragOver += Control_DragOver;
                 Control.Drop += Control_Drop;
 
                 Control.Paste += Control_Paste;
+            }
+        }
+
+        private TextBlock _TextForMeasure;
+        private int _PreviousLineCount;
+        private double _LineHeight;
+
+        private void Control_TextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
+        {
+            _TextForMeasure = _TextForMeasure ?? new TextBlock()
+            {
+                TextWrapping = TextWrapping.Wrap
+            };
+            _TextForMeasure.FontFamily = Control.FontFamily;
+            _TextForMeasure.FontSize = Control.FontSize;
+            _TextForMeasure.FontStretch = Control.FontStretch;
+            _TextForMeasure.FontStyle = Control.FontStyle;
+            _TextForMeasure.FontWeight = Control.FontWeight;
+            _TextForMeasure.Width = Math.Ceiling(Control.ActualWidth);
+            _TextForMeasure.Padding = Control.Padding;
+            if (_LineHeight == 0)
+            {
+                _TextForMeasure.Text = "M";
+                _TextForMeasure.Measure(new Windows.Foundation.Size(Control.ActualWidth, Window.Current.Bounds.Height));
+                _LineHeight = Math.Ceiling(_TextForMeasure.ActualHeight * 1.1);
+            }
+            _TextForMeasure.Text = Control.Text;
+            _TextForMeasure.Measure(new Windows.Foundation.Size(Control.ActualWidth, Window.Current.Bounds.Height));
+
+            var ee = Element as ExpandableEditor;
+            var lc = Math.Min((int)Math.Round(_TextForMeasure.ActualHeight / _LineHeight), ee?.MaxLines > 0 ? ee.MaxLines : int.MaxValue);
+            if (lc != _PreviousLineCount)
+            {
+                _PreviousLineCount = lc;
+                Control.Height = _LineHeight * lc;
+                InvalidateMeasure();
             }
         }
 
@@ -210,6 +249,7 @@ namespace KokoroIO.XamarinForms.UWP
                 if (Control != null)
                 {
                     Control.RemoveHandler(FormsTextBox.KeyDownEvent, (KeyEventHandler)Control_KeyDown);
+                    Control.TextChanged -= Control_TextChanged;
                     Control.SelectionChanged -= Control_SelectionChanged;
                     Control.DragEnter -= Control_DragOver;
                     Control.DragOver -= Control_DragOver;
