@@ -177,6 +177,11 @@ namespace KokoroIO.XamarinForms.ViewModels
                     InsertMessages(messages);
                 }
 
+                if (!HasNext && _Messages?.LastOrDefault().IsShown != false)
+                {
+                    await Channel.ClearUnreadAsync().ConfigureAwait(false);
+                }
+
                 Channel.BeginWriteRealm(null);
             }
             catch (Exception ex)
@@ -576,7 +581,6 @@ namespace KokoroIO.XamarinForms.ViewModels
             => IsArchiveBannerShown = false;
 
         #endregion ClearArchiveBannerCommand
-
 
         private string _PopupUrl;
 

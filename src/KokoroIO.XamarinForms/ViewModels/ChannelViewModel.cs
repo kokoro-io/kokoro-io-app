@@ -457,5 +457,39 @@ namespace KokoroIO.XamarinForms.ViewModels
                 SH.Notification.ShowNotificationAndSave(message);
             }
         }
+
+        public async Task ClearUnreadAsync()
+        {
+            if (_Unreads?.Count > 0)
+            {
+                _Unreads.Clear();
+                OnPropertyChanged(nameof(UnreadCount));
+                HasUnread = _Unreads?.Count > 0;
+
+                try
+                {
+                    using (var realm = await RealmServices.GetInstanceAsync())
+                    using (var trx = realm.BeginWrite())
+                    {
+                        var ns = realm.All<MessageNotification>().Where(n => n.ChannelId == Id);
+
+                        if (ns.Any())
+                        {
+                            var notification = SH.Notification;
+                            foreach (var n in ns)
+                            {
+                                notification?.CancelNotification(n.ChannelId, n.NotificationId, 0);
+                                realm.Remove(n);
+                            }
+                            trx.Commit();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.Trace("SavingChannelUserPropertiesFailed");
+                }
+            }
+        }
     }
 }
