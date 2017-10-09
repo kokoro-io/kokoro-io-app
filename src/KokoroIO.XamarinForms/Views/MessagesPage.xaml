@@ -119,8 +119,8 @@
             </StackLayout>
             <ActivityIndicator
                 VerticalOptions="Center"
-                HorizontalOptions="Center"
-                IsRunning="True"
+                HorizontalOptions="Fill"
+                IsRunning="{Binding IsBusy}"
                 IsVisible="{Binding IsBusy}" />
 
             <Grid
