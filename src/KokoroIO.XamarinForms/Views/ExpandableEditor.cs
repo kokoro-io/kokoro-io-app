@@ -11,7 +11,6 @@ namespace KokoroIO.XamarinForms.Views
         {
             this.Focused += (_, __) => HasFocus = IsFocused;
             this.Unfocused += (_, __) => HasFocus = IsFocused;
-            this.TextChanged += ExpandableEditor_TextChanged;
         }
 
         #region Placeholder
@@ -107,17 +106,17 @@ namespace KokoroIO.XamarinForms.Views
 
         #endregion PostCommand
 
-        private void ExpandableEditor_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            InvalidateMeasure();
-        }
-
         internal EventHandler<EventArgs<Stream>> _FilePasted;
 
         public event EventHandler<EventArgs<Stream>> FilePasted
         {
             add { _FilePasted += value; }
             remove { _FilePasted -= value; }
+        }
+
+        internal new void InvalidateMeasure()
+        {
+            base.InvalidateMeasure();
         }
     }
 }

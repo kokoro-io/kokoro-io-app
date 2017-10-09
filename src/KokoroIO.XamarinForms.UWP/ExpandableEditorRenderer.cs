@@ -73,7 +73,7 @@ namespace KokoroIO.XamarinForms.UWP
             {
                 _PreviousLineCount = lc;
                 Control.Height = _LineHeight * lc;
-                InvalidateMeasure();
+                ee?.InvalidateMeasure();
             }
         }
 

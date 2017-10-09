@@ -61,6 +61,7 @@ namespace KokoroIO.XamarinForms.iOS
             {
                 _PreviousLineCount = lc;
                 Element.MinimumHeightRequest = lc * Control.Font.LineHeight;
+                ee?.InvalidateMeasure();
             }
         }
 

@@ -49,7 +49,7 @@ namespace KokoroIO.XamarinForms.Droid
                 {
                     _PreviousLineCount = lc;
                     Control.SetLines(lc);
-                    Invalidate();
+                    ee?.InvalidateMeasure();
                 }
             }
         }
