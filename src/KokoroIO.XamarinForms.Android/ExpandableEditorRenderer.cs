@@ -1,7 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using Android.Views;
 using KokoroIO.XamarinForms.Droid;
 using KokoroIO.XamarinForms.Views;
@@ -60,13 +58,18 @@ namespace KokoroIO.XamarinForms.Droid
             e.Handled = false;
         }
 
+        private bool _IsSelectionUpdating;
+
         private void UpdateSelection()
         {
             var ee = Element as ExpandableEditor;
             if (ee != null)
             {
+                _IsSelectionUpdating = true;
                 ee.SelectionStart = Control.SelectionStart;
                 ee.SelectionLength = Control.SelectionEnd - Control.SelectionStart;
+                _IsSelectionUpdating = false;
+                ApplySelection();
             }
         }
 
@@ -84,21 +87,29 @@ namespace KokoroIO.XamarinForms.Droid
 
                     case nameof(ExpandableEditor.SelectionStart):
                     case nameof(ExpandableEditor.SelectionLength):
-                        if (Element is ExpandableEditor ee)
-                        {
-                            if (!_IsTouching
-                                && 0 <= ee.SelectionStart
-                                && ee.SelectionLength >= 0
-                                && ee.SelectionStart + ee.SelectionLength < Control.Text.Length)
-                            {
-                                Control.SetSelection(ee.SelectionStart, ee.SelectionStart + ee.SelectionLength);
-                            }
-                        }
+                        ApplySelection();
                         break;
                 }
             }
 
             base.OnElementPropertyChanged(sender, e);
+        }
+
+        private void ApplySelection()
+        {
+            if (Element is ExpandableEditor ee)
+            {
+                if (!_IsTouching
+                    && !_IsSelectionUpdating
+                    && 0 <= ee.SelectionStart
+                    && ee.SelectionLength >= 0
+                    && ee.SelectionStart + ee.SelectionLength < Control.Text.Length
+                    && (ee.SelectionStart != Control.SelectionStart
+                        || ee.SelectionLength != Control.SelectionEnd - Control.SelectionStart))
+                {
+                    Control.SetSelection(ee.SelectionStart, ee.SelectionStart + ee.SelectionLength);
+                }
+            }
         }
 
         private bool _IsTouching;
