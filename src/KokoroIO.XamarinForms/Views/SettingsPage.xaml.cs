@@ -33,7 +33,7 @@ namespace KokoroIO.XamarinForms.Views
             });
 
             if (XDevice.Idiom == TargetIdiom.Phone
-                && XDevice.RuntimePlatform != XDevice.Windows)
+                && XDevice.RuntimePlatform != XDevice.UWP)
             {
                 foreach (var c in Children)
                 {
