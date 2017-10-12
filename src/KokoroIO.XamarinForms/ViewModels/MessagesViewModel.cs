@@ -172,6 +172,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 if (messages.Any())
                 {
+                    Channel.Members.GetHashCode();
+                    await Channel.LoadMembersTask;
+
                     _MinId = Math.Min(messages.Min(m => m.Id), _MinId ?? int.MaxValue);
                     _MaxId = Math.Max(messages.Max(m => m.Id), _MaxId ?? int.MinValue);
                     InsertMessages(messages);
@@ -238,7 +241,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                         if (m.Id < prev.Id)
                         {
+                            vm.SetIsMerged(Messages.ElementAtOrDefault(i - 1));
                             _Messages.Insert(i, vm);
+                            prev.SetIsMerged(vm);
                             break;
                         }
                         else if (m.Id == prev.Id)
@@ -248,13 +253,22 @@ namespace KokoroIO.XamarinForms.ViewModels
                         }
                         else if (i + 1 >= _Messages.Count)
                         {
+                            vm.SetIsMerged(_Messages.LastOrDefault());
                             _Messages.Add(vm);
                             break;
                         }
-                        else if (m.Id < _Messages[i + 1].Id)
+                        else
                         {
-                            _Messages.Insert(i, vm);
-                            break;
+                            var next = _Messages[i + 1];
+
+                            if (m.Id < next.Id)
+                            {
+                                vm.SetIsMerged(prev);
+                                _Messages.Insert(i + 1, vm);
+                                next.SetIsMerged(vm);
+
+                                break;
+                            }
                         }
                     }
                 }

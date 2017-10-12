@@ -451,8 +451,29 @@ interface Window {
                 descriptionDiv.classList.add("description");
                 info.appendChild(descriptionDiv);
 
-                var description = document.createElement("p");
-                description.innerText = d.description;
+                let description = document.createElement("p");
+
+                let re = /(https?:\/\/[a-z0-9]+(?:[-.][a-z0-9]+)*(?:\/|[!$&-;=?-Z\\^_a-~]|%[A-F0-9]{2})*)/;
+
+                let ary = d.description.split(re);
+
+                if (ary && ary.length > 1) {
+                    for (let i = 0; i < ary.length; i++) {
+                        let t = ary[i];
+                        if (i % 2 == 0) {
+                            description.appendChild(document.createTextNode(t));
+                        } else {
+                            let a = document.createElement("a");
+                            a.setAttribute("href", t);
+                            a.appendChild(document.createTextNode(t));
+
+                            description.appendChild(a);
+                        }
+                    }
+                } else {
+                    description.innerText = d.description;
+                }
+
                 descriptionDiv.appendChild(description);
             }
         }

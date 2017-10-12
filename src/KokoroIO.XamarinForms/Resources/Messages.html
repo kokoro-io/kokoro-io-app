@@ -1164,7 +1164,25 @@ body {
                 descriptionDiv.classList.add("description");
                 info.appendChild(descriptionDiv);
                 var description = document.createElement("p");
-                description.innerText = d.description;
+                var re = /(https?:\/\/[a-z0-9]+(?:[-.][a-z0-9]+)*(?:\/|[!$&-;=?-Z\\^_a-~]|%[A-F0-9]{2})*)/;
+                var ary = d.description.split(re);
+                if (ary && ary.length > 1) {
+                    for (var i_2 = 0; i_2 < ary.length; i_2++) {
+                        var t = ary[i_2];
+                        if (i_2 % 2 == 0) {
+                            description.appendChild(document.createTextNode(t));
+                        }
+                        else {
+                            var a = document.createElement("a");
+                            a.setAttribute("href", t);
+                            a.appendChild(document.createTextNode(t));
+                            description.appendChild(a);
+                        }
+                    }
+                }
+                else {
+                    description.innerText = d.description;
+                }
                 descriptionDiv.appendChild(description);
             }
         }
