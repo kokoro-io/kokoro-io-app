@@ -622,6 +622,15 @@ namespace KokoroIO.XamarinForms.ViewModels
                             return;
                         }
                     }
+                    else if (u.AbsolutePath.StartsWith("/profiles/"))
+                    {
+                        if (mp != null)
+                        {
+                            mp.SelectProfile(null, u.AbsolutePath.Substring("/profiles/".Length));
+
+                            return;
+                        }
+                    }
                     else if (u.AbsolutePath.StartsWith("/channels/"))
                     {
                         var id = u.AbsolutePath.Substring("/channels/".Length);
