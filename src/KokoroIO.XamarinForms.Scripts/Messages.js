@@ -203,7 +203,7 @@
             var avatar = document.createElement("div");
             avatar.classList.add("avatar");
             talk.appendChild(avatar);
-            var profUrl = "https://kokoro.io/@" + m.ScreenName + "#" + m.ProfileId;
+            var profUrl = "https://kokoro.io/profiles/" + m.ProfileId;
             var imgLink = document.createElement("a");
             imgLink.href = profUrl;
             imgLink.classList.add("img-rounded");
