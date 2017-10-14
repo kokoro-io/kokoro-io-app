@@ -154,6 +154,12 @@ namespace KokoroIO.XamarinForms.ViewModels
                                         {
                                             inAnchor |= "a".Equals(xr.LocalName, StringComparison.OrdinalIgnoreCase);
                                             xw.WriteStartElement(xr.Prefix, xr.LocalName, xr.NamespaceURI);
+
+                                            while (xr.MoveToNextAttribute())
+                                            {
+                                                xw.WriteAttributeString(xr.LocalName, xr.NamespaceURI, xr.Value);
+                                            }
+
                                             continue;
                                         }
                                         break;
