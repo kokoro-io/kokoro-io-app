@@ -19,6 +19,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Models\Data\MessageNotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MessageHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\DeviceServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IAudioService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IDeviceService.cs" />
