@@ -62,7 +62,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #region Messages
 
-        private ObservableRangeCollection<MessageInfo> _Messages;
+        private InsertableObservableRangeCollection<MessageInfo> _Messages;
 
         public ObservableRangeCollection<MessageInfo> Messages
         {
@@ -70,7 +70,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 if (_Messages == null)
                 {
-                    _Messages = new ObservableRangeCollection<MessageInfo>();
+                    _Messages = new InsertableObservableRangeCollection<MessageInfo>();
                     BeginLoadMessages().GetHashCode();
                 }
                 return _Messages;
@@ -204,7 +204,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             var minId = messages.Min(m => m.Id);
             var maxId = messages.Max(m => m.Id);
 
-            if (!_Messages.Any() || _Messages.Last().Id < minId)
+            if (!_Messages.Any() || minId > _Messages.Last().Id)
             {
                 var mvms = messages.OrderBy(m => m.Id).Select(m => new MessageInfo(this, m)).ToList();
                 for (var i = 0; i < mvms.Count; i++)
@@ -213,6 +213,18 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
 
                 _Messages.AddRange(mvms);
+            }
+            else if (maxId < _Messages.First().Id)
+            {
+                var mvms = messages.OrderBy(m => m.Id).Select(m => new MessageInfo(this, m)).ToList();
+                MessageInfo prev = null;
+                for (var i = 0; i < mvms.Count; i++)
+                {
+                    mvms[i].SetIsMerged(prev);
+                    prev = mvms[i];
+                }
+                _Messages[0].SetIsMerged(prev);
+                _Messages.InsertRange(0, mvms);
             }
             else
             {
