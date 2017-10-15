@@ -14,9 +14,9 @@ namespace KokoroIO.XamarinForms.Views
         {
             InitializeComponent();
             BindingContext = viewModel;
-            Master = new ChannelsPage()
+            Master = new MenuPage()
             {
-                BindingContext = new ChannelsViewModel(viewModel)
+                BindingContext = new MenuViewModel(viewModel)
             };
 
             if (viewModel.SelectedChannel == null)

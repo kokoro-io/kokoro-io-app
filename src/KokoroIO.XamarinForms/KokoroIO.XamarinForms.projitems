@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\ChannelsPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\MenuPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
@@ -95,11 +95,11 @@
       <DependentUpon>WelcomePage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\ChannelsPage.xaml.cs">
-      <DependentUpon>ChannelsPage.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MenuPage.xaml.cs">
+      <DependentUpon>MenuPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\BaseViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ChannelsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MenuViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ObservableRangeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\LoginPage.xaml.cs">

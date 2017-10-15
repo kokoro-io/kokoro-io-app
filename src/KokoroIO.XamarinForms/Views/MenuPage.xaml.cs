@@ -6,11 +6,9 @@ using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
-    public partial class ChannelsPage : ContentPage
+    public partial class MenuPage : ContentPage
     {
-        // ChannelsViewModel viewModel;
-
-        public ChannelsPage()
+        public MenuPage()
         {
             InitializeComponent();
             LogoImage.IsVisible = XDevice.Idiom != TargetIdiom.Phone;

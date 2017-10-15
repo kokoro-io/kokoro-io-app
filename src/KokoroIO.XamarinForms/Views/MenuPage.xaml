@@ -6,7 +6,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
-    x:Class="KokoroIO.XamarinForms.Views.ChannelsPage"
+    x:Class="KokoroIO.XamarinForms.Views.MenuPage"
     Title="{Binding Title}">
     <ContentPage.Content>
         <Grid>

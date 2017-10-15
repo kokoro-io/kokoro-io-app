@@ -1,11 +1,11 @@
 ﻿namespace KokoroIO.XamarinForms.ViewModels
 {
-    public class ChannelsViewModel : BaseViewModel
+    public class MenuViewModel : BaseViewModel
     {
-        internal ChannelsViewModel(ApplicationViewModel application)
+        internal MenuViewModel(ApplicationViewModel application)
         {
             Application = application;
-            Title = "Channels";
+            Title = "Menu";
         }
 
         public ApplicationViewModel Application { get; }
