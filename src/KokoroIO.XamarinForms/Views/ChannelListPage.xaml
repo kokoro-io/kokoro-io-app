@@ -3,11 +3,34 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
+    xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.ChannelListPage"
     Title="{Binding Title}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="imageButtonStyle"
+                TargetType="xlabs:ImageButton">
+                <Setter
+                    Property="BackgroundColor"
+                    Value="Transparent" />
+                <Setter
+                    Property="Margin"
+                    Value="0" />
+                <Setter
+                    Property="ImageWidthRequest"
+                    Value="24" />
+                <Setter
+                    Property="ImageHeightRequest"
+                    Value="24" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
                 <RowDefinition
                     Height="Auto" />
                 <RowDefinition />
@@ -15,12 +38,64 @@
                     Height="Auto" />
             </Grid.RowDefinitions>
 
+            <StackLayout
+                Orientation="Horizontal"
+                HorizontalOptions="Start">
+                <xlabs:ImageButton
+                    Image="search.png"
+                    Text="Public"
+                    Command="{Binding ShowInvitationsCommand}"
+                    CommandParameter="False">
+                    <xlabs:ImageButton.Style>
+                        <Style
+                            TargetType="xlabs:ImageButton"
+                            BasedOn="{StaticResource imageButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    TargetType="xlabs:ImageButton"
+                                    Binding="{Binding ShowInvitations}"
+                                    Value="False">
+                                    <Setter
+                                        Property="TextColor"
+                                        Value="#18BC9C" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </xlabs:ImageButton.Style>
+                </xlabs:ImageButton>
+                <xlabs:ImageButton
+                    Image="email.png"
+                    Text="Invited"
+                    Command="{Binding ShowInvitationsCommand}"
+                    CommandParameter="True">
+                    <xlabs:ImageButton.Style>
+                        <Style
+                            TargetType="xlabs:ImageButton"
+                            BasedOn="{StaticResource imageButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    TargetType="xlabs:ImageButton"
+                                    Binding="{Binding ShowInvitations}"
+                                    Value="True">
+                                    <Setter
+                                        Property="TextColor"
+                                        Value="#18BC9C" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </xlabs:ImageButton.Style>
+                </xlabs:ImageButton>
+            </StackLayout>
+
             <Entry
+                Grid.Row="1"
+                Margin="4"
                 FontSize="Medium"
                 Text="{Binding Query}" />
 
             <ListView
-                Grid.Row="1"
+                Grid.Row="2"
+                Margin="0,4"
                 ItemsSource="{Binding Channels}"
                 HasUnevenRows="True"
                 ItemSelected="ListView_ItemSelected">
@@ -30,9 +105,11 @@
                             <StackLayout>
                                 <Label
                                     FontSize="Medium"
+                                    Margin="8,0"
                                     Text="{Binding DisplayName}" />
                                 <Label
                                     FontSize="Small"
+                                    Margin="12,0"
                                     Text="{Binding Description}" />
                             </StackLayout>
                         </ViewCell>
@@ -41,14 +118,14 @@
             </ListView>
 
             <ActivityIndicator
-                Grid.Row="1"
+                Grid.Row="2"
                 VerticalOptions="Center"
                 HorizontalOptions="Fill"
                 IsRunning="{Binding IsBusy}"
                 IsVisible="{Binding IsBusy}" />
-            
+
             <StackLayout
-                Grid.Row="2"
+                Grid.Row="3"
                 Orientation="Horizontal"
                 HorizontalOptions="End">
                 <Button

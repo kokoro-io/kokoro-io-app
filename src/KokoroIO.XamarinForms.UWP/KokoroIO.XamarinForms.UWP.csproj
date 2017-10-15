@@ -126,6 +126,7 @@
     <Content Include="Assets\StoreLogo.scale-400.png" />
     <Content Include="Assets\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="email.png" />
     <Content Include="image_white.png" />
     <Content Include="info.png" />
     <Content Include="info_white.png" />

@@ -66,6 +66,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems, startIndex));
         }
 
+        internal void ReplaceRange(object p)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Removes the first occurence of each item in the specified collection from ObservableCollection(Of T).
         /// </summary>
