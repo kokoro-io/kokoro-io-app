@@ -7,6 +7,37 @@ namespace KokoroIO.XamarinForms
 {
     internal static class TH
     {
+#if DEBUG
+        private sealed class ScopeDisposable : IDisposable
+        {
+            private readonly string _Name;
+            private readonly Stopwatch _Stopwatch;
+
+            public ScopeDisposable(string name)
+            {
+                _Name = name;
+                Debug.WriteLine("Begin {0}", (object)_Name);
+                _Stopwatch = new Stopwatch();
+                _Stopwatch.Start();
+            }
+
+            public void Dispose()
+            {
+                _Stopwatch.Stop();
+                Debug.WriteLine("End {0} in {1:0}ms", _Name, _Stopwatch.Elapsed.TotalMilliseconds);
+            }
+        }
+#endif
+
+        public static IDisposable BeginScope(string name)
+        {
+#if DEBUG
+            return new ScopeDisposable(name);
+#else
+            return null;
+#endif
+        }
+
         public static void TraceError(string message)
         {
             Debug.WriteLine(message);

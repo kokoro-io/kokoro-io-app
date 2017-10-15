@@ -345,13 +345,16 @@ namespace KokoroIO.XamarinForms.Views
 
         private async Task InvokeScriptAsync(string script)
         {
-            if (InvokeScriptAsyncCore != null)
+            using (TH.BeginScope("Invoking script"))
             {
-                await InvokeScriptAsyncCore(script);
-            }
-            else
-            {
-                Eval(script);
+                if (InvokeScriptAsyncCore != null)
+                {
+                    await InvokeScriptAsyncCore(script);
+                }
+                else
+                {
+                    Eval(script);
+                }
             }
         }
 

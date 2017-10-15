@@ -103,7 +103,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 try
                 {
-                    await e().ConfigureAwait(false);
+                    using (TH.BeginScope("Invoking REST API"))
+                    {
+                        await e().ConfigureAwait(false);
+                    }
                 }
                 catch { }
             }
@@ -157,7 +160,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async Task<ProfileViewModel> PutProfileAsync(string screenName = null, string displayName = null, Stream avatar = null)
         {
-            var p = await EnqueueClientTask(() => Client.PutProfileAsync(screenName: screenName, displayName: displayName, avatar: avatar));
+            Profile p;
+            using (TH.BeginScope("Executing PUT /profiles/me"))
+            {
+                p = await EnqueueClientTask(() => Client.PutProfileAsync(screenName: screenName, displayName: displayName, avatar: avatar));
+            }
 
             var pvm = GetProfileViewModel(p);
 
@@ -168,7 +175,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async Task<Membership[]> GetMembershipsAsync(bool? archived = null, Authority? authority = null)
         {
-            var r = await EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority)).ConfigureAwait(false);
+            Membership[] r;
+            using (TH.BeginScope("Executing GET /memberships"))
+            {
+                r = await EnqueueClientTask(() => Client.GetMembershipsAsync(archived: archived, authority: authority)).ConfigureAwait(false);
+            }
 
             foreach (var ms in r)
             {
@@ -183,25 +194,40 @@ namespace KokoroIO.XamarinForms.ViewModels
             return r;
         }
 
-        public Task DeleteMembershipAsync(string membershipId)
-            => EnqueueClientTask(() => Client.DeleteMembershipAsync(membershipId));
-
+        public async Task DeleteMembershipAsync(string membershipId)
+        {
+            using (TH.BeginScope("Executing DELETE /memberships"))
+            {
+                await EnqueueClientTask(() => Client.DeleteMembershipAsync(membershipId)).ConfigureAwait(false);
+            }
+        }
         public async Task<ChannelViewModel> GetChannelAsync(string channelId)
         {
-            var r = await EnqueueClientTask(() => Client.GetChannelAsync(channelId)).ConfigureAwait(false);
+            Channel r;
+            using (TH.BeginScope("Executing GET /channels/{id}"))
+            {
+                r = await EnqueueClientTask(() => Client.GetChannelAsync(channelId)).ConfigureAwait(false);
+            }
             return GetOrCreateChannelViewModel(r);
         }
 
         public async Task<ChannelViewModel[]> GetChannelsAsync(bool? archived = null)
         {
-            var r = await EnqueueClientTask(() => Client.GetChannelsAsync(archived: archived)).ConfigureAwait(false);
+            Channel[] r;
+            using (TH.BeginScope("Executing GET /channels"))
+            {
+                r = await EnqueueClientTask(() => Client.GetChannelsAsync(archived: archived)).ConfigureAwait(false);
+            }
             return r.Select(c => GetOrCreateChannelViewModel(c)).ToArray();
         }
 
         public async Task<Channel> GetChannelMembershipsAsync(string channelId)
         {
-            var r = await EnqueueClientTask(() => Client.GetChannelMembershipsAsync(channelId)).ConfigureAwait(false);
-
+            Channel r;
+            using (TH.BeginScope("Executing GET /channels/{id}/memberships"))
+            {
+                r = await EnqueueClientTask(() => Client.GetChannelMembershipsAsync(channelId)).ConfigureAwait(false);
+            }
             GetChannelViewModel(r.Id)?.Update(r);
 
             foreach (var ms in r.Memberships)
@@ -214,7 +240,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async Task<Message[]> GetMessagesAsync(string channelId, int? limit = null, int? beforeId = null, int? afterId = null)
         {
-            var r = await EnqueueClientTask(() => Client.GetMessagesAsync(channelId, limit: limit, beforeId: beforeId, afterId: afterId)).ConfigureAwait(false);
+            Message[] r;
+            using (TH.BeginScope("Executing GET /channels/{id}/messages"))
+            {
+                r = await EnqueueClientTask(() => Client.GetMessagesAsync(channelId, limit: limit, beforeId: beforeId, afterId: afterId)).ConfigureAwait(false);
+            }
 
             foreach (var ms in r)
             {
@@ -226,7 +256,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async Task<Message> PostMessageAsync(string channelId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
         {
-            var r = await EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey)).ConfigureAwait(false);
+            Message r;
+            using (TH.BeginScope("Executing POST /channels/{id}/messages"))
+            {
+                r = await EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey)).ConfigureAwait(false);
+            }
 
             GetProfileViewModel(r.Profile);
 
@@ -235,8 +269,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async Task<ChannelViewModel> PostDirectMessageChannelAsync(string targetUserProfileId)
         {
-            var channel = await EnqueueClientTask(() => Client.PostDirectMessageChannelAsync(targetUserProfileId));
-
+            Channel channel;
+            using (TH.BeginScope("Executing POST /channels/direct_message"))
+            {
+                channel = await EnqueueClientTask(() => Client.PostDirectMessageChannelAsync(targetUserProfileId));
+            }
             return GetOrCreateJoinedChannelViewModel(channel);
         }
 
@@ -454,6 +491,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
+
+            using (TH.BeginScope("Reading LastReadId of Channels"))
             using (var realm = await RealmServices.GetInstanceAsync())
             {
                 var d = realm.All<ChannelUserProperties>().ToDictionary(s => s.ChannelId, s => s.LastReadId);
@@ -740,11 +779,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 await Client.ConnectAsync().ConfigureAwait(false);
             }
 
-            _SubscribingChannels = Channels.Where(c => !c.IsArchived).Select(r => r.Id).ToArray();
-
-            UpdateIsDisconnected();
-
-            await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
+            await SubscribeAsync().ConfigureAwait(false);
 
             var v = ++_ConnectionVersion;
             XDevice.BeginInvokeOnMainThread(() =>
@@ -785,7 +820,10 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             if (current?.SequenceEqual(_SubscribingChannels) != true)
             {
-                await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
+                using (TH.BeginScope("Subscribing channels"))
+                {
+                    await Client.SubscribeAsync(_SubscribingChannels).ConfigureAwait(false);
+                }
             }
         }
 
