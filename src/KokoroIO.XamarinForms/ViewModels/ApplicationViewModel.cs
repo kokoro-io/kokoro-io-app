@@ -618,6 +618,21 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion SettingCommand
 
+        #region ChannelListCommand
+
+        private Command _ChannelListCommand;
+
+        public Command ChannelListCommand
+            => _ChannelListCommand ?? (_ChannelListCommand = new Command(async (p) =>
+            {
+                await App.Current.MainPage.Navigation.PushModalAsync(new ChannelListPage()
+                {
+                    BindingContext = new ChannelListViewModel(this)
+                });
+            }));
+
+        #endregion ChannelListCommand
+
         #region PopToRootCommand
 
         private static Command _PopToRootCommand;

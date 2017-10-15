@@ -8,6 +8,26 @@
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.MenuPage"
     Title="{Binding Title}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="footerButtonStyle"
+                TargetType="xlabs:ImageButton">
+                <Setter
+                    Property="BackgroundColor"
+                    Value="Transparent" />
+                <Setter
+                    Property="Margin"
+                    Value="0" />
+                <Setter
+                    Property="ImageWidthRequest"
+                    Value="24" />
+                <Setter
+                    Property="ImageHeightRequest"
+                    Value="24" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -66,8 +86,15 @@
             <StackLayout
                 Grid.Row="3"
                 Orientation="Horizontal"
-                HorizontalOptions="End">
-                <Button
+                HorizontalOptions="Start">
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="search.png"
+                    Text="Channels"
+                    Command="{Binding Application.ChannelListCommand}" />
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="settings.png"
                     Text="Settings"
                     Command="{Binding Application.SettingsCommand}" />
             </StackLayout>
