@@ -132,7 +132,9 @@
     <Content Include="kokoro_white.png" />
     <Content Include="notifications.png" />
     <Content Include="notifications_white.png" />
+    <Content Include="search.png" />
     <Content Include="send.png" />
+    <Content Include="settings.png" />
     <Content Include="visibility_off.png" />
     <Content Include="visibility.png" />
     <None Include="project.json" />

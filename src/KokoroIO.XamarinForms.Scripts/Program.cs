@@ -40,6 +40,8 @@ namespace KokoroIO.XamarinForms.Scripts
             //GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications");
             //GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications_white", color: -1);
             //GenerateIcon(inDir, "ic_image_black_24px.svg", "image_white", color: -1);
+            //GenerateIcon(inDir, "ic_search_black_24px.svg", "search");
+            //GenerateIcon(inDir, "ic_settings_black_24px.svg", "settings");
         }
 
         private static void Generate(string inDir, string outDir)
@@ -185,7 +187,7 @@ namespace KokoroIO.XamarinForms.Scripts
                 var dirs = new[] { "m", "h", "xh", "xxh", "xxxh" };
                 var sizes = new[] { baseSize, baseSize * 1.5, baseSize * 2, baseSize * 3, baseSize * 4 };
 
-               // var procs = new List<Process>();
+                // var procs = new List<Process>();
 
                 for (var i = 0; i < dirs.Length; i++)
                 {
