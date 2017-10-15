@@ -13,6 +13,11 @@ namespace KokoroIO.XamarinForms.Models
 
         public static string InsertLinks(string content, Func<string, string> channelNameResolver, Func<string, string> screenNameResolver)
         {
+            if (content == null || !_LinkStart.IsMatch(content))
+            {
+                return content;
+            }
+
             try
             {
                 using (var sr = new StringReader(content.Replace("<br>", "<br />")))
