@@ -26,6 +26,8 @@ namespace KokoroIO.XamarinForms.Views
             public string Title { get; set; }
             public ChannelKind Kind { get; set; }
 
+            internal List<TreeNode> Descendants { get; } = new List<TreeNode>();
+
             public void Add(TreeNode item)
             {
                 _Children.Add(item);
@@ -69,9 +71,53 @@ namespace KokoroIO.XamarinForms.Views
 
             public abstract int UnreadCount { get; }
 
+            private bool _IsVisible = true;
+
+            public bool IsVisible
+            {
+                get => _IsVisible;
+                protected set => SetProperty(ref _IsVisible, value);
+            }
+
+            internal abstract void SetIsVisible();
+
+            private bool _IsUnreadCountVisible;
+
+            public bool IsUnreadCountVisible => _IsUnreadCountVisible;
+
+            protected void SetIsUnreadCountVisible()
+                => SetProperty(ref _IsUnreadCountVisible, UnreadCount > 0 && (!IsGroup || !IsExpanded), nameof(IsUnreadCountVisible));
+
+            public abstract bool IsExpanded { get; }
+
+            private Cell _Cell;
+
+            internal Cell Cell
+            {
+                get
+                {
+                    if (_Cell == null)
+                    {
+                        _Cell = Control.ItemTemplate.CreateContent() as Cell;
+                        _Cell.BindingContext = this;
+                        _Cell.Tapped += Control.Cell_Tapped;
+                    }
+
+                    return _Cell;
+                }
+            }
+
+            internal bool HasCell => _Cell != null;
+
             public virtual void Dispose()
             {
                 Parent?.Remove(this);
+
+                if (_Cell != null)
+                {
+                    _Cell.Tapped -= Control.Cell_Tapped;
+                    _Cell = null;
+                }
             }
         }
 
@@ -92,10 +138,26 @@ namespace KokoroIO.XamarinForms.Views
 
             public override bool IsSelected => Channel.IsSelected;
             public override bool IsArchived => Channel.IsArchived;
+            public override bool IsExpanded => true;
 
             public override int UnreadCount => Channel.UnreadCount;
 
             public override string FullName => Parent?.FullName + Name;
+
+            internal override void SetIsVisible()
+            {
+                var p = Parent;
+                while (p != null)
+                {
+                    if (!p.IsExpanded)
+                    {
+                        IsVisible = false;
+                        return;
+                    }
+                    p = p.Parent;
+                }
+                IsVisible = true;
+            }
 
             private void Channel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
             {
@@ -108,8 +170,12 @@ namespace KokoroIO.XamarinForms.Views
                         break;
 
                     case nameof(Channel.IsSelected):
+                        OnPropertyChanged(e.PropertyName);
+                        break;
+
                     case nameof(Channel.UnreadCount):
                         OnPropertyChanged(e.PropertyName);
+                        SetIsUnreadCountVisible();
                         break;
                 }
             }
@@ -144,7 +210,7 @@ namespace KokoroIO.XamarinForms.Views
             public override int UnreadCount => _UnreadCount;
 
             private void SetUnreadCount()
-                => SetProperty(ref _UnreadCount, _Children.Sum(c => c.UnreadCount), nameof(UnreadCount));
+                => SetProperty(ref _UnreadCount, _Children.Sum(c => c.UnreadCount), nameof(UnreadCount), onChanged: () => SetIsUnreadCountVisible());
 
             private bool _IsArchived;
 
@@ -152,6 +218,51 @@ namespace KokoroIO.XamarinForms.Views
 
             private void SetIsArchived()
                 => SetProperty(ref _IsArchived, _Children.All(c => c.IsArchived), nameof(IsArchived));
+
+            private bool _IsExpanded = true;
+            public override bool IsExpanded => _IsExpanded;
+
+            internal void SetIsExpanded(bool value)
+            {
+                if (value != _IsExpanded)
+                {
+                    _IsExpanded = value;
+                    OnPropertyChanged(nameof(IsExpanded));
+
+                    SetIsUnreadCountVisible();
+
+                    foreach (var c in _Children)
+                    {
+                        c.SetIsVisible();
+                    }
+                }
+            }
+
+            internal override void SetIsVisible()
+            {
+                var p = Parent;
+                while (p != null)
+                {
+                    if (!p.IsExpanded)
+                    {
+                        IsVisible = false;
+
+                        foreach (var c in _Children)
+                        {
+                            c.SetIsVisible();
+                        }
+
+                        return;
+                    }
+                    p = p.Parent;
+                }
+                IsVisible = true;
+
+                foreach (var c in _Children)
+                {
+                    c.SetIsVisible();
+                }
+            }
 
             public void Add(TreeNode item)
             {
@@ -277,6 +388,11 @@ namespace KokoroIO.XamarinForms.Views
                 Add(n);
             }
 
+            foreach (var s in tableView.Root)
+            {
+                SyncCells(s);
+            }
+
             return true;
         }
 
@@ -290,6 +406,11 @@ namespace KokoroIO.XamarinForms.Views
             foreach (ChannelViewModel o in e.OldItems)
             {
                 Remove(o);
+            }
+
+            foreach (var s in tableView.Root)
+            {
+                SyncCells(s);
             }
 
             return true;
@@ -331,6 +452,11 @@ namespace KokoroIO.XamarinForms.Views
                 }
             }
 
+            foreach (var s in root)
+            {
+                SyncCells(s);
+            }
+
             tableView.Root = root;
         }
 
@@ -352,7 +478,7 @@ namespace KokoroIO.XamarinForms.Views
             var kind = (KindNode)sec.BindingContext;
 
             var path = item.ChannelName.Split('/');
-            var parent = sec.BindingContext as ITreeNodeParent;
+            ITreeNodeParent parent = kind;
 
             var si = 0;
 
@@ -381,36 +507,31 @@ namespace KokoroIO.XamarinForms.Views
                 }
 
                 var pd = pg?.Depth ?? -1;
-                var siblings = sec.Skip(si).TakeWhile(cell => ((TreeNode)cell.BindingContext).Depth > pd);
+                var siblings = kind.Descendants.Skip(si).TakeWhile(cell => cell.Depth > pd);
 
                 if (newNode == null)
                 {
                     if (isGroup)
                     {
-                        si = sec.IndexOf(siblings.First(cell => cell.BindingContext == parent)) + 1;
+                        si = kind.Descendants.IndexOf((GroupNode)parent) + 1;
                     }
                 }
                 else
                 {
-                    var next = siblings.Where(cell => cell.BindingContext is TreeNode n
-                                                    && n.Depth == pd + 1
+                    var next = siblings.Where(n => n.Depth == pd + 1
                                                     && Compare(newNode, n) < 0).FirstOrDefault()
-                                ?? sec.Skip(si).SkipWhile(cell => ((TreeNode)cell.BindingContext).Depth > pd).FirstOrDefault();
+                                ?? kind.Descendants.Skip(si).SkipWhile(n => n.Depth > pd).FirstOrDefault();
 
                     if (next == null)
                     {
-                        si = sec.Count;
+                        si = kind.Descendants.Count;
                     }
                     else
                     {
-                        si = sec.IndexOf(next);
+                        si = kind.Descendants.IndexOf(next);
                     }
 
-                    var vc = ItemTemplate.CreateContent() as Cell;
-                    vc.BindingContext = newNode;
-                    vc.Tapped += Cell_Tapped;
-
-                    sec.Insert(si++, vc);
+                    kind.Descendants.Insert(si++, newNode);
 
                     if (pg == null)
                     {
@@ -450,16 +571,12 @@ namespace KokoroIO.XamarinForms.Views
                 return;
             }
 
-            var cell = sec.FirstOrDefault(c => (c.BindingContext as ChannelNode)?.Channel == item);
-            var node = cell.BindingContext as TreeNode;
+            var kn = (KindNode)sec.BindingContext;
+
+            TreeNode node = kn.Descendants.OfType<ChannelNode>().FirstOrDefault(c => c.Channel == item);
             while (node != null)
             {
-                if (cell != null)
-                {
-                    cell.Tapped -= Cell_Tapped;
-                    sec.Remove(cell);
-                }
-
+                kn.Descendants.Remove(node);
                 node.Dispose();
 
                 if (node.Parent == null || node.Parent.Any())
@@ -467,7 +584,6 @@ namespace KokoroIO.XamarinForms.Views
                     break;
                 }
                 node = node.Parent;
-                cell = sec.FirstOrDefault(c => c.BindingContext == node);
             }
         }
 
@@ -482,7 +598,27 @@ namespace KokoroIO.XamarinForms.Views
             }
             else if (lv.BindingContext is GroupNode g)
             {
+                g.SetIsExpanded(!g.IsExpanded);
 
+                foreach (var s in tableView.Root)
+                {
+                    SyncCells(s);
+                }
+            }
+        }
+
+        private void SyncCells(TableSection s)
+        {
+            // TODO: merge insertion
+
+            s.Clear();
+
+            foreach (var n in ((KindNode)s.BindingContext).Descendants)
+            {
+                if (n.IsVisible)
+                {
+                    s.Add(n.Cell);
+                }
             }
         }
 

@@ -65,7 +65,8 @@
                 x:Key="channelListViewItemTemplate">
                 <ViewCell>
                     <Grid
-                        Padding="10">
+                        Padding="10"
+                        IsVisible="{Binding IsVisible}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition
                                 Width="{Binding Depth, Converter={StaticResource gridLengthConverter}}" />
@@ -103,6 +104,22 @@
                                         Property="FontSize"
                                         Value="8" />
                                 </DataTrigger>
+                                <DataTrigger
+                                    TargetType="Label"
+                                    Binding="{Binding IsExpanded}"
+                                    Value="True">
+                                    <Setter
+                                        Property="Rotation"
+                                        Value="0" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    TargetType="Label"
+                                    Binding="{Binding IsExpanded}"
+                                    Value="False">
+                                    <Setter
+                                        Property="Rotation"
+                                        Value="-90" />
+                                </DataTrigger>
                             </Label.Triggers>
                         </Label>
                         <Label
@@ -127,18 +144,8 @@
                             TextColor="#fff"
                             BackgroundColor="#f66"
                             Font="Monospace,Bold"
-                            FontSize="Small">
-                            <Label.Triggers>
-                                <DataTrigger
-                                    TargetType="Label"
-                                    Binding="{Binding UnreadCount}"
-                                    Value="0">
-                                    <Setter
-                                        Property="IsVisible"
-                                        Value="False" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
+                            FontSize="Small"
+                            IsVisible="{Binding IsUnreadCountVisible}" />
                     </Grid>
                 </ViewCell>
             </DataTemplate>
