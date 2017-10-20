@@ -394,8 +394,7 @@ namespace KokoroIO.XamarinForms.Views
                 {
                     var next = siblings.Where(cell => cell.BindingContext is TreeNode n
                                                     && n.Depth == pd + 1
-                                                    && n.IsGroup == isGroup
-                                                    && newNode.Name.CompareTo(n.Name) < 0).FirstOrDefault()
+                                                    && Compare(newNode, n) < 0).FirstOrDefault()
                                 ?? sec.Skip(si).SkipWhile(cell => ((TreeNode)cell.BindingContext).Depth > pd).FirstOrDefault();
 
                     if (next == null)
@@ -419,6 +418,21 @@ namespace KokoroIO.XamarinForms.Views
                     }
                 }
             }
+        }
+
+        private static int Compare(TreeNode a, TreeNode b)
+        {
+            if (a.IsGroup != b.IsGroup)
+            {
+                return a.IsGroup ? -1 : 1;
+            }
+            if (a.IsArchived != b.IsArchived)
+            {
+                return a.IsArchived ? 1 : -1;
+            }
+            var nr = StringComparer.CurrentCultureIgnoreCase.Compare(a.Name, b.Name);
+
+            return nr != 0 || a.IsGroup ? nr : ((ChannelNode)a).Channel.Id.CompareTo(((ChannelNode)b).Channel.Id);
         }
 
         private void Remove(ChannelViewModel item)
