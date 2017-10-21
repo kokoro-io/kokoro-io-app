@@ -75,8 +75,14 @@
       <DependentUpon>ChannelsView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)views\ChannelsViewChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)views\ChannelsViewGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)views\ChannelsViewKind.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)views\ChannelsViewNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\EntitiesLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExpandableEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\GridLengthConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)views\IChannelsViewNodeParent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MembersLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessageWebView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPage.xaml.cs">

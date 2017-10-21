@@ -80,8 +80,7 @@
             <view:ChannelsView
                 Grid.Row="2"
                 VerticalOptions="Fill"
-                ItemsSource="{Binding Channels}"
-                ItemTemplate="{StaticResource channelListViewItemTemplate}" />
+                ItemsSource="{Binding Channels}" />
 
             <StackLayout
                 Grid.Row="3"
