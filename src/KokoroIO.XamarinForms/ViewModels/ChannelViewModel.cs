@@ -218,7 +218,23 @@ namespace KokoroIO.XamarinForms.ViewModels
         public bool IsSelected
         {
             get => _IsSelected;
-            internal set => SetProperty(ref _IsSelected, value);
+            internal set => SetProperty(ref _IsSelected, value, onChanged: () =>
+            {
+                if (_IsSelected)
+                {
+                    var mp = MessagesPage;
+
+                    if (mp != null)
+                    {
+                        mp.ClearPopupCommand.Execute(null);
+
+                        if (mp.MessagesLoaded && mp.Messages.Count == 0 && !mp.IsBusy)
+                        {
+                            mp.BeginAppend();
+                        }
+                    }
+                }
+            });
         }
 
         #endregion IsSelected

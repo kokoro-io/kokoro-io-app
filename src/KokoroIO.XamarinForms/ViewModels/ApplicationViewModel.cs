@@ -372,8 +372,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                     if (_SelectedChannel != null)
                     {
                         _SelectedChannel.IsSelected = true;
-                        var mp = _SelectedChannel.GetOrCreateMessagesPage();
-                        mp.ClearPopupCommand.Execute(null);
                     }
                     OnUnreadCountChanged();
                     if (Client.State == ClientState.Disconnected

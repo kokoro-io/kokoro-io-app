@@ -109,6 +109,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         public void BeginAppend()
             => BeginLoadMessages(false).GetHashCode();
 
+        internal bool MessagesLoaded { get; private set; }
+
         private async Task BeginLoadMessages(bool prepend = false)
         {
             if (IsBusy || (Channel.IsArchived && Channel.UnreadCount <= 0 && !prepend && _Messages?.Count > 0))
@@ -169,6 +171,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     HasNext = messages.Length == PAGE_SIZE;
                 }
+
+                MessagesLoaded = true;
 
                 if (messages.Any())
                 {
