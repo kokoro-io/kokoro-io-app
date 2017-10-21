@@ -2,6 +2,7 @@
 <ContentView
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:views="clr-namespace:KokoroIO.XamarinForms.Views"
     x:Class="KokoroIO.XamarinForms.Views.ChannelsView">
     <ContentView.Resources>
@@ -63,8 +64,7 @@
             </Style>
             <DataTemplate
                 x:Key="channelListViewItemTemplate">
-                <ViewCell
-                    Height="32">
+                <ViewCell>
                     <Grid
                         Padding="10">
                         <Grid.ColumnDefinitions>
@@ -156,8 +156,14 @@
             x:Name="tableView"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
-            Intent="Menu"
-            RowHeight="32">
+            Intent="Menu">
+            <TableView.RowHeight>
+                <OnPlatform
+                    x:TypeArguments="sys:Int32"
+                    Android="40"
+                    iOS="40"
+                    WinPhone="32" />
+            </TableView.RowHeight>
         </TableView>
     </ContentView.Content>
 </ContentView>
