@@ -12,308 +12,7 @@ namespace KokoroIO.XamarinForms.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ChannelsView : ContentView
     {
-        private interface ITreeNodeParent : IEnumerable<TreeNode>
-        {
-            void Add(TreeNode item);
-
-            void Remove(TreeNode item);
-        }
-
-        private sealed class KindNode : ITreeNodeParent
-        {
-            private readonly List<TreeNode> _Children = new List<TreeNode>();
-
-            public string Title { get; set; }
-            public ChannelKind Kind { get; set; }
-
-            internal List<TreeNode> Descendants { get; } = new List<TreeNode>();
-
-            public void Add(TreeNode item)
-            {
-                _Children.Add(item);
-            }
-
-            public void Remove(TreeNode item)
-            {
-                _Children.Remove(item);
-            }
-
-            public IEnumerator<TreeNode> GetEnumerator()
-                => _Children.GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator()
-                => _Children.GetEnumerator();
-        }
-
-        private abstract class TreeNode : ObservableObject, IDisposable
-        {
-            protected readonly ChannelsView Control;
-
-            protected TreeNode(ChannelsView control, GroupNode parent, string name)
-            {
-                Control = control;
-                Parent = parent;
-                Name = name;
-            }
-
-            internal GroupNode Parent { get; }
-
-            public int Depth => (Parent?.Depth ?? -1) + 1;
-
-            public string Name { get; }
-            public abstract string FullName { get; }
-
-            public abstract bool IsGroup { get; }
-
-            public abstract bool IsSelected { get; }
-
-            public abstract bool IsArchived { get; }
-
-            public abstract int UnreadCount { get; }
-
-            private bool _IsVisible = true;
-
-            public bool IsVisible
-            {
-                get => _IsVisible;
-                protected set => SetProperty(ref _IsVisible, value);
-            }
-
-            internal abstract void SetIsVisible();
-
-            private bool _IsUnreadCountVisible;
-
-            public bool IsUnreadCountVisible => _IsUnreadCountVisible;
-
-            protected void SetIsUnreadCountVisible()
-                => SetProperty(ref _IsUnreadCountVisible, UnreadCount > 0 && (!IsGroup || !IsExpanded), nameof(IsUnreadCountVisible));
-
-            public abstract bool IsExpanded { get; }
-
-            private Cell _Cell;
-
-            internal Cell Cell
-            {
-                get
-                {
-                    if (_Cell == null)
-                    {
-                        _Cell = Control.ItemTemplate.CreateContent() as Cell;
-                        _Cell.BindingContext = this;
-                        _Cell.Tapped += Control.Cell_Tapped;
-                    }
-
-                    return _Cell;
-                }
-            }
-
-            internal bool HasCell => _Cell != null;
-
-            public virtual void Dispose()
-            {
-                Parent?.Remove(this);
-
-                if (_Cell != null)
-                {
-                    _Cell.Tapped -= Control.Cell_Tapped;
-                    _Cell = null;
-                }
-            }
-        }
-
-        private sealed class ChannelNode : TreeNode
-        {
-            internal ChannelViewModel Channel;
-
-            public ChannelNode(ChannelsView control, ChannelViewModel channel, GroupNode parent, string name)
-                : base(control, parent, name)
-            {
-                Channel = channel;
-                Channel.PropertyChanged += Channel_PropertyChanged;
-
-                Parent?.Add(this);
-            }
-
-            public override bool IsGroup => false;
-
-            public override bool IsSelected => Channel.IsSelected;
-            public override bool IsArchived => Channel.IsArchived;
-            public override bool IsExpanded => true;
-
-            public override int UnreadCount => Channel.UnreadCount;
-
-            public override string FullName => Parent?.FullName + Name;
-
-            internal override void SetIsVisible()
-            {
-                var p = Parent;
-                while (p != null)
-                {
-                    if (!p.IsExpanded)
-                    {
-                        IsVisible = false;
-                        return;
-                    }
-                    p = p.Parent;
-                }
-                IsVisible = true;
-            }
-
-            private void Channel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-            {
-                switch (e.PropertyName)
-                {
-                    case nameof(Channel.IsArchived):
-                    case nameof(Channel.DisplayName):
-                        Control.Remove(Channel);
-                        Control.Add(Channel);
-                        break;
-
-                    case nameof(Channel.IsSelected):
-                        OnPropertyChanged(e.PropertyName);
-                        break;
-
-                    case nameof(Channel.UnreadCount):
-                        OnPropertyChanged(e.PropertyName);
-                        SetIsUnreadCountVisible();
-                        break;
-                }
-            }
-
-            public override void Dispose()
-            {
-                base.Dispose();
-                Channel.PropertyChanged -= Channel_PropertyChanged;
-            }
-        }
-
-        private sealed class GroupNode : TreeNode, ITreeNodeParent
-        {
-            private readonly List<TreeNode> _Children;
-
-            public GroupNode(ChannelsView control, GroupNode parent, string name)
-                : base(control, parent, name)
-            {
-                _Children = new List<TreeNode>(4);
-
-                Parent?.Add(this);
-            }
-
-            public override string FullName => Parent?.FullName + Name + "/";
-
-            public override bool IsGroup => true;
-
-            public override bool IsSelected => false;
-
-            private int _UnreadCount;
-
-            public override int UnreadCount => _UnreadCount;
-
-            private void SetUnreadCount()
-                => SetProperty(ref _UnreadCount, _Children.Sum(c => c.UnreadCount), nameof(UnreadCount), onChanged: () => SetIsUnreadCountVisible());
-
-            private bool _IsArchived;
-
-            public override bool IsArchived => _IsArchived;
-
-            private void SetIsArchived()
-                => SetProperty(ref _IsArchived, _Children.All(c => c.IsArchived), nameof(IsArchived));
-
-            private bool _IsExpanded = true;
-            public override bool IsExpanded => _IsExpanded;
-
-            internal void SetIsExpanded(bool value)
-            {
-                if (value != _IsExpanded)
-                {
-                    _IsExpanded = value;
-                    OnPropertyChanged(nameof(IsExpanded));
-
-                    SetIsUnreadCountVisible();
-
-                    foreach (var c in _Children)
-                    {
-                        c.SetIsVisible();
-                    }
-                }
-            }
-
-            internal override void SetIsVisible()
-            {
-                var p = Parent;
-                while (p != null)
-                {
-                    if (!p.IsExpanded)
-                    {
-                        IsVisible = false;
-
-                        foreach (var c in _Children)
-                        {
-                            c.SetIsVisible();
-                        }
-
-                        return;
-                    }
-                    p = p.Parent;
-                }
-                IsVisible = true;
-
-                foreach (var c in _Children)
-                {
-                    c.SetIsVisible();
-                }
-            }
-
-            public void Add(TreeNode item)
-            {
-                _Children.Add(item);
-                SetUnreadCount();
-                SetIsArchived();
-                item.PropertyChanged += Item_PropertyChanged;
-            }
-
-            public void Remove(TreeNode item)
-            {
-                item.PropertyChanged -= Item_PropertyChanged;
-                _Children.Remove(item);
-                SetUnreadCount();
-                SetIsArchived();
-            }
-
-            private void Item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-            {
-                switch (e.PropertyName)
-                {
-                    case nameof(UnreadCount):
-                        SetUnreadCount();
-                        break;
-
-                    case nameof(IsArchived):
-                        SetIsArchived();
-                        break;
-                }
-            }
-
-            public override void Dispose()
-            {
-                base.Dispose();
-
-                foreach (var e in _Children)
-                {
-                    e.PropertyChanged -= Item_PropertyChanged;
-                }
-
-                _Children.Clear();
-            }
-
-            public IEnumerator<TreeNode> GetEnumerator()
-                => _Children.GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator()
-                => _Children.GetEnumerator();
-        }
-
-        private DataTemplate ItemTemplate;
+        internal readonly DataTemplate ItemTemplate;
 
         public ChannelsView()
         {
@@ -420,11 +119,11 @@ namespace KokoroIO.XamarinForms.Views
         {
             var root = new TableRoot();
 
-            foreach (var kn in new KindNode[]
+            foreach (var kn in new ChannelsViewKind[]
             {
-                new KindNode(){ Title="Public Channels", Kind= ChannelKind.PublicChannel },
-                new KindNode(){ Title="Private Channels", Kind= ChannelKind.PrivateChannel },
-                new KindNode(){ Title="Direct Messages", Kind= ChannelKind.DirectMessage }
+                new ChannelsViewKind(){ Title="Public Channels", Kind= ChannelKind.PublicChannel },
+                new ChannelsViewKind(){ Title="Private Channels", Kind= ChannelKind.PrivateChannel },
+                new ChannelsViewKind(){ Title="Direct Messages", Kind= ChannelKind.DirectMessage }
             })
             {
                 root.Add(new TableSection(kn.Title) { BindingContext = kn });
@@ -446,7 +145,6 @@ namespace KokoroIO.XamarinForms.Views
                 {
                     foreach (var c in s)
                     {
-                        c.Tapped -= Cell_Tapped;
                         (c.BindingContext as IDisposable)?.Dispose();
                     }
                 }
@@ -460,7 +158,7 @@ namespace KokoroIO.XamarinForms.Views
             tableView.Root = root;
         }
 
-        private void Add(ChannelViewModel item, TableRoot root = null)
+        internal void Add(ChannelViewModel item, TableRoot root = null)
         {
             root = root ?? tableView.Root;
             if (root == null)
@@ -468,41 +166,41 @@ namespace KokoroIO.XamarinForms.Views
                 return;
             }
 
-            var sec = root.FirstOrDefault(s => (s.BindingContext as KindNode)?.Kind == item.Kind);
+            var sec = root.FirstOrDefault(s => (s.BindingContext as ChannelsViewKind)?.Kind == item.Kind);
 
             if (sec == null)
             {
-                var kn = new KindNode() { Title = item.Kind.ToString(), Kind = item.Kind };
+                var kn = new ChannelsViewKind() { Title = item.Kind.ToString(), Kind = item.Kind };
                 root.Add(new TableSection(kn.Title) { BindingContext = kn });
             }
-            var kind = (KindNode)sec.BindingContext;
+            var kind = (ChannelsViewKind)sec.BindingContext;
 
             var path = item.ChannelName.Split('/');
-            ITreeNodeParent parent = kind;
+            IChannelsViewNodeParent parent = kind;
 
             var si = 0;
 
             for (var i = 0; i < path.Length; i++)
             {
-                var pg = parent as GroupNode;
+                var pg = parent as ChannelsViewGroup;
                 var name = path[i];
                 bool isGroup = i < path.Length - 1;
-                TreeNode newNode = null;
+                ChannelsViewNode newNode = null;
                 if (isGroup)
                 {
-                    var g = parent.OfType<GroupNode>().FirstOrDefault(n => n.Name == name);
+                    var g = parent.OfType<ChannelsViewGroup>().FirstOrDefault(n => n.Name == name);
                     if (g == null)
                     {
-                        newNode = g = new GroupNode(this, pg, name);
+                        newNode = g = new ChannelsViewGroup(this, pg, name);
                     }
                     parent = g;
                 }
                 else
                 {
-                    var c = parent.OfType<ChannelNode>().FirstOrDefault(n => n.Channel == item);
+                    var c = parent.OfType<ChannelsViewChannel>().FirstOrDefault(n => n.Channel == item);
                     if (c == null)
                     {
-                        newNode = c = new ChannelNode(this, item, pg, name);
+                        newNode = c = new ChannelsViewChannel(this, item, pg, name);
                     }
                 }
 
@@ -513,7 +211,7 @@ namespace KokoroIO.XamarinForms.Views
                 {
                     if (isGroup)
                     {
-                        si = kind.Descendants.IndexOf((GroupNode)parent) + 1;
+                        si = kind.Descendants.IndexOf((ChannelsViewGroup)parent) + 1;
                     }
                 }
                 else
@@ -541,7 +239,7 @@ namespace KokoroIO.XamarinForms.Views
             }
         }
 
-        private static int Compare(TreeNode a, TreeNode b)
+        private static int Compare(ChannelsViewNode a, ChannelsViewNode b)
         {
             if (a.IsGroup != b.IsGroup)
             {
@@ -553,10 +251,10 @@ namespace KokoroIO.XamarinForms.Views
             }
             var nr = StringComparer.CurrentCultureIgnoreCase.Compare(a.Name, b.Name);
 
-            return nr != 0 || a.IsGroup ? nr : ((ChannelNode)a).Channel.Id.CompareTo(((ChannelNode)b).Channel.Id);
+            return nr != 0 || a.IsGroup ? nr : ((ChannelsViewChannel)a).Channel.Id.CompareTo(((ChannelsViewChannel)b).Channel.Id);
         }
 
-        private void Remove(ChannelViewModel item)
+        internal void Remove(ChannelViewModel item)
         {
             var root = tableView.Root;
             if (root == null)
@@ -564,16 +262,16 @@ namespace KokoroIO.XamarinForms.Views
                 return;
             }
 
-            var sec = root.FirstOrDefault(s => (s.BindingContext as KindNode)?.Kind == item.Kind);
+            var sec = root.FirstOrDefault(s => (s.BindingContext as ChannelsViewKind)?.Kind == item.Kind);
 
             if (sec == null)
             {
                 return;
             }
 
-            var kn = (KindNode)sec.BindingContext;
+            var kn = (ChannelsViewKind)sec.BindingContext;
 
-            TreeNode node = kn.Descendants.OfType<ChannelNode>().FirstOrDefault(c => c.Channel == item);
+            ChannelsViewNode node = kn.Descendants.OfType<ChannelsViewChannel>().FirstOrDefault(c => c.Channel == item);
             while (node != null)
             {
                 kn.Descendants.Remove(node);
@@ -587,16 +285,16 @@ namespace KokoroIO.XamarinForms.Views
             }
         }
 
-        private void Cell_Tapped(object sender, System.EventArgs e)
+        internal void Cell_Tapped(object sender, System.EventArgs e)
         {
             var lv = sender as Cell;
 
-            if (lv.BindingContext is ChannelNode c)
+            if (lv.BindingContext is ChannelsViewChannel c)
             {
                 var item = c.Channel;
                 item.Application.SelectedChannel = item;
             }
-            else if (lv.BindingContext is GroupNode g)
+            else if (lv.BindingContext is ChannelsViewGroup g)
             {
                 g.SetIsExpanded(!g.IsExpanded);
 
@@ -609,14 +307,14 @@ namespace KokoroIO.XamarinForms.Views
 
         private void SyncCells(TableSection s)
         {
-            var kn = (KindNode)s.BindingContext;
+            var kn = (ChannelsViewKind)s.BindingContext;
 
             var j = 0;
 
             for (int i = 0; i < s.Count; i++)
             {
                 var cell = s[i];
-                var cellNode = (TreeNode)cell.BindingContext;
+                var cellNode = (ChannelsViewNode)cell.BindingContext;
                 var cellNodeIndex = kn.Descendants.IndexOf(cellNode, j);
 
                 if (cellNodeIndex < j)

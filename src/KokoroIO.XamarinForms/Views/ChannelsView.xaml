@@ -69,7 +69,7 @@
                         Padding="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition
-                                Width="{Binding Depth, Converter={StaticResource gridLengthConverter}}" />
+                                Width="{Binding ConcatenationDepth, Converter={StaticResource gridLengthConverter}}" />
                             <ColumnDefinition
                                 Width="8" />
                             <ColumnDefinition />
@@ -124,7 +124,7 @@
                         </Label>
                         <Label
                             Grid.Column="2"
-                            Text="{Binding Name}"
+                            Text="{Binding ConcatenatedName}"
                             Style="{StaticResource channelLabelStyle}">
                             <Label.Triggers>
                                 <DataTrigger
