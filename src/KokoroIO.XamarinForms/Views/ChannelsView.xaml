@@ -63,10 +63,10 @@
             </Style>
             <DataTemplate
                 x:Key="channelListViewItemTemplate">
-                <ViewCell>
+                <ViewCell
+                    Height="32">
                     <Grid
-                        Padding="10"
-                        IsVisible="{Binding IsVisible}">
+                        Padding="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition
                                 Width="{Binding Depth, Converter={StaticResource gridLengthConverter}}" />
@@ -156,7 +156,8 @@
             x:Name="tableView"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
-            Intent="Menu">
+            Intent="Menu"
+            RowHeight="32">
         </TableView>
     </ContentView.Content>
 </ContentView>
