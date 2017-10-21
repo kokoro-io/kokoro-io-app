@@ -22,6 +22,8 @@ namespace KokoroIO.XamarinForms.Views
 
         public override bool IsSelected => false;
 
+        public override string Discriminator => null;
+
         #region UnreadCount
 
         private int _UnreadCount;
@@ -66,6 +68,7 @@ namespace KokoroIO.XamarinForms.Views
         }
 
         #endregion IsExpanded
+
 
         internal bool HasSingleChild => _Children.Count == 1;
 

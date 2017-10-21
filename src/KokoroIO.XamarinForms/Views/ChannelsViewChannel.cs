@@ -40,6 +40,17 @@ namespace KokoroIO.XamarinForms.Views
             IsVisible = true;
         }
 
+        private string _Discriminator;
+
+        public override string Discriminator => _Discriminator;
+
+        internal override void OnAncestorHasSingleChildFailed()
+        {
+            base.OnAncestorHasSingleChildFailed();
+
+            SetProperty(ref _Discriminator, string.IsNullOrEmpty(ConcatenatedName) ? "empty" : null, nameof(Discriminator));
+        }
+
         private void Channel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)

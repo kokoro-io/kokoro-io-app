@@ -48,6 +48,7 @@ namespace KokoroIO.XamarinForms.Views
             => SetProperty(ref _IsUnreadCountVisible, UnreadCount > 0 && (!IsGroup || !IsExpanded), nameof(IsUnreadCountVisible));
 
         public abstract bool IsExpanded { get; }
+        public abstract string Discriminator { get; }
 
         private Cell _Cell;
 
@@ -112,7 +113,8 @@ namespace KokoroIO.XamarinForms.Views
         {
             get
             {
-                if (_ConcatenatedName == null)
+                if (_ConcatenatedName == null
+                    && Discriminator == null)
                 {
                     OnAncestorHasSingleChildFailed();
                 }
@@ -126,7 +128,8 @@ namespace KokoroIO.XamarinForms.Views
         {
             get
             {
-                if (_ConcatenatedName == null)
+                if (_ConcatenatedName == null
+                    && Discriminator == null)
                 {
                     OnAncestorHasSingleChildFailed();
                 }

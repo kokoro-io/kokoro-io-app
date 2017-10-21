@@ -72,6 +72,8 @@
                                 Width="{Binding ConcatenationDepth, Converter={StaticResource gridLengthConverter}}" />
                             <ColumnDefinition
                                 Width="8" />
+                            <ColumnDefinition
+                                Width="Auto" />
                             <ColumnDefinition />
                             <ColumnDefinition
                                 Width="Auto" />
@@ -139,6 +141,23 @@
                         </Label>
                         <Label
                             Grid.Column="3"
+                            Text="{Binding Discriminator}"
+                            Style="{StaticResource channelLabelStyle}"
+                            FontSize="9"
+                            TextColor="#fcc">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    TargetType="Label"
+                                    Binding="{Binding Discriminator}"
+                                    Value="{x:Null}">
+                                    <Setter
+                                        Property="IsVisible"
+                                        Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label
+                            Grid.Column="4"
                             Margin="4,0"
                             Text="{Binding UnreadCount}"
                             TextColor="#fff"
