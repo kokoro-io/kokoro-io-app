@@ -609,12 +609,47 @@ namespace KokoroIO.XamarinForms.Views
 
         private void SyncCells(TableSection s)
         {
-            // TODO: merge insertion
+            var kn = (KindNode)s.BindingContext;
 
-            s.Clear();
+            var j = 0;
 
-            foreach (var n in ((KindNode)s.BindingContext).Descendants)
+            for (int i = 0; i < s.Count; i++)
             {
+                var cell = s[i];
+                var cellNode = (TreeNode)cell.BindingContext;
+                var cellNodeIndex = kn.Descendants.IndexOf(cellNode, j);
+
+                if (cellNodeIndex < j)
+                {
+                    s.RemoveAt(i--);
+                }
+                else
+                {
+                    while (j <= cellNodeIndex)
+                    {
+                        var n = kn.Descendants[j++];
+
+                        if (n.IsVisible)
+                        {
+                            if (n != cellNode)
+                            {
+                                s.Insert(i++, n.Cell);
+                            }
+                        }
+                        else
+                        {
+                            if (n == cellNode)
+                            {
+                                s.RemoveAt(i--);
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (; j < kn.Descendants.Count; j++)
+            {
+                var n = kn.Descendants[j];
                 if (n.IsVisible)
                 {
                     s.Add(n.Cell);
