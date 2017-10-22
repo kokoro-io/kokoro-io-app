@@ -18,7 +18,9 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             Content = message.Content;
 
-            _EmbedContents = message.EmbedContents;
+            _EmbedContents = message.EmbedContents?.Count > 1
+                            ? message.EmbedContents.OrderBy(c => c.Position).ToArray()
+                            : message.EmbedContents;
         }
 
         internal MessageInfo(MessagesViewModel page, string content)
