@@ -58,6 +58,32 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem
             Order="Secondary"
+            Command="{Binding Channel.ToggleNotificationCommand}">
+            <ToolbarItem.Text>
+                <Binding
+                    Path="Channel.NotificationDisabled">
+                    <Binding.Converter>
+                        <view:ConditionalConverter
+                            x:TypeArguments="sys:String"
+                            True="Notifications disabled"
+                            False="Notifications enabled" />
+                    </Binding.Converter>
+                </Binding>
+            </ToolbarItem.Text>
+            <ToolbarItem.Icon>
+                <Binding
+                    Path="Channel.NotificationDisabled">
+                    <Binding.Converter>
+                        <view:ConditionalConverter
+                            x:TypeArguments="FileImageSource"
+                            True="notifications_off.png"
+                            False="notifications.png" />
+                    </Binding.Converter>
+                </Binding>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+        <ToolbarItem
+            Order="Secondary"
             Text="Members"
             Command="{Binding Channel.ShowDetailCommand}" />
         <ToolbarItem

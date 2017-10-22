@@ -189,6 +189,34 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
+        #region ToggleNotification
+
+        private Command _ToggleNotificationCommand;
+
+        public Command ToggleNotificationCommand
+            => _ToggleNotificationCommand ?? (_ToggleNotificationCommand = new Command(ToggleNotification));
+
+        private async void ToggleNotification()
+        {
+            var mid = _MembershipId;
+            var v = _NotificationDisabled;
+            if (mid == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await Application.PutMembershipAsync(mid, v == false);
+            }
+            catch (Exception ex)
+            {
+                ex.Trace("PutMembershipFailed");
+            }
+        }
+
+        #endregion ToggleNotification
+
         #endregion Membership
 
         #region MessagesPage
@@ -459,7 +487,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             OnPropertyChanged(nameof(UnreadCount));
             HasUnread = _Unreads?.Count > 0;
-            var byOtherUser = message.Profile.Id != Application.LoginUser.Id;
+            var byOtherUser = message.Profile.Id != Application.LoginUser.Id
+                            && _NotificationDisabled == false;
 
             if (Application.SelectedChannel == this)
             {

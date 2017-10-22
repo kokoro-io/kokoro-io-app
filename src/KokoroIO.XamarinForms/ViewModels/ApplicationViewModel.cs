@@ -194,6 +194,16 @@ namespace KokoroIO.XamarinForms.ViewModels
             return r;
         }
 
+        public async Task<ChannelViewModel> PutMembershipAsync(string membershipId, bool? disableNotification = null)
+        {
+            Membership ms;
+            using (TH.BeginScope("Executing PUT /memberships"))
+            {
+                ms = await EnqueueClientTask(() => Client.PutMembershipAsync(membershipId, disableNotification)).ConfigureAwait(false);
+            }
+            return GetOrCreateJoinedChannelViewModel(ms);
+        }
+
         public async Task DeleteMembershipAsync(string membershipId)
         {
             using (TH.BeginScope("Executing DELETE /memberships"))
@@ -201,6 +211,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 await EnqueueClientTask(() => Client.DeleteMembershipAsync(membershipId)).ConfigureAwait(false);
             }
         }
+
         public async Task<ChannelViewModel> GetChannelAsync(string channelId)
         {
             Channel r;

@@ -39,6 +39,7 @@ namespace KokoroIO.XamarinForms.Scripts
             //GenerateIcon(inDir, "ic_info_outline_black_24px.svg", "info_white", color: -1);
             //GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications");
             //GenerateIcon(inDir, "ic_notifications_black_24px.svg", "notifications_white", color: -1);
+            //GenerateIcon(inDir, "ic_notifications_off_black_24px.svg", "notifications_off");
             //GenerateIcon(inDir, "ic_image_black_24px.svg", "image_white", color: -1);
             //GenerateIcon(inDir, "ic_search_black_24px.svg", "search");
             //GenerateIcon(inDir, "ic_settings_black_24px.svg", "settings");

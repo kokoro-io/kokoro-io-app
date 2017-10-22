@@ -132,6 +132,7 @@
     <Content Include="info_white.png" />
     <Content Include="kokoro_white.png" />
     <Content Include="notifications.png" />
+    <Content Include="notifications_off.png" />
     <Content Include="notifications_white.png" />
     <Content Include="search.png" />
     <Content Include="send.png" />

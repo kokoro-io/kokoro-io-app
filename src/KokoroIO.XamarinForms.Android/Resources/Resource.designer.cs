@@ -4136,32 +4136,35 @@ namespace KokoroIO.XamarinForms.Droid
 			// aapt resource value: 0x7f0200ae
 			public const int mr_ic_play_light = 2130837678;
 			
-			// aapt resource value: 0x7f0200b7
-			public const int notification_template_icon_bg = 2130837687;
+			// aapt resource value: 0x7f0200b8
+			public const int notification_template_icon_bg = 2130837688;
 			
 			// aapt resource value: 0x7f0200af
 			public const int notifications = 2130837679;
 			
 			// aapt resource value: 0x7f0200b0
-			public const int notifications_white = 2130837680;
+			public const int notifications_off = 2130837680;
 			
 			// aapt resource value: 0x7f0200b1
-			public const int search = 2130837681;
+			public const int notifications_white = 2130837681;
 			
 			// aapt resource value: 0x7f0200b2
-			public const int send = 2130837682;
+			public const int search = 2130837682;
 			
 			// aapt resource value: 0x7f0200b3
-			public const int settings = 2130837683;
+			public const int send = 2130837683;
 			
 			// aapt resource value: 0x7f0200b4
-			public const int slideout = 2130837684;
+			public const int settings = 2130837684;
 			
 			// aapt resource value: 0x7f0200b5
-			public const int visibility = 2130837685;
+			public const int slideout = 2130837685;
 			
 			// aapt resource value: 0x7f0200b6
-			public const int visibility_off = 2130837686;
+			public const int visibility = 2130837686;
+			
+			// aapt resource value: 0x7f0200b7
+			public const int visibility_off = 2130837687;
 			
 			static Drawable()
 			{
