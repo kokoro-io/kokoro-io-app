@@ -16,17 +16,38 @@
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
                 <RowDefinition />
                 <RowDefinition
                     Height="Auto" />
             </Grid.RowDefinitions>
-            <xlabs:CheckBox
-                DefaultText="Play ringtone when a new message posted."
-                Checked="{Binding PlayRingtone}" />
+
+            <TableView>
+                <TableView.Root>
+                    <TableRoot>
+                        <TableSection
+                            Title="General Settings">
+                            <SwitchCell
+                                Text="Play ringtone when a new message posted."
+                                On="{Binding PlayRingtone}" />
+                        </TableSection>
+                        <TableSection
+                            Title="Visual Studio Mobile Center">
+                            <SwitchCell
+                                Text="Analytics"
+                                On="{Binding MobileCenterAnalyticsEnabled}" />
+                            <SwitchCell
+                                Text="Crashes"
+                                On="{Binding MobileCenterCrashesEnabled}" />
+                            <SwitchCell
+                                Text="Distribute"
+                                On="{Binding MobileCenterDistributeEnabled}" />
+                        </TableSection>
+                    </TableRoot>
+                </TableView.Root>
+            </TableView>
+
             <Grid
-                Grid.Row="2">
+                Grid.Row="1">
                 <Button
                     HorizontalOptions="End"
                     Text="Back"

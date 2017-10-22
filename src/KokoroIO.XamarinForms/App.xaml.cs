@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.ViewModels;
@@ -95,7 +98,26 @@ namespace KokoroIO.XamarinForms
         {
             base.OnStart();
 
-            MobileCenter.Start("android=2bf93410-91e9-48a0-ac2a-b7cd2b2b62c1;ios=05892c61-9669-4090-83d3-0fe8f350d408;uwp=574a9213-3122-4c61-bb98-ada1a02e7f9d", typeof(Analytics), typeof(Crashes), typeof(Distribute));
+            var types = new List<Type>();
+            if (UserSettings.MobileCenterAnalyticsEnabled)
+            {
+                types.Add(typeof(Analytics));
+            }
+            if (UserSettings.MobileCenterCrashesEnabled)
+            {
+                types.Add(typeof(Crashes));
+            }
+            if (UserSettings.MobileCenterDistributeEnabled)
+            {
+                types.Add(typeof(Distribute));
+            }
+
+            if (types.Any())
+            {
+                MobileCenter.Start("android=2bf93410-91e9-48a0-ac2a-b7cd2b2b62c1;"
+                                + "ios=05892c61-9669-4090-83d3-0fe8f350d408;"
+                                + "uwp=574a9213-3122-4c61-bb98-ada1a02e7f9d", types.ToArray());
+            }
         }
 
         protected override async void OnSleep()

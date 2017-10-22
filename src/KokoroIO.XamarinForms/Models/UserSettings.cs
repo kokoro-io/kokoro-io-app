@@ -48,6 +48,31 @@ namespace KokoroIO.XamarinForms.Models
             set => SetValue(value);
         }
 
+        public static bool MobileCenterAnalyticsEnabled
+        {
+            get => GetBoolean() ?? true;
+            set => SetValue(value);
+        }
+        
+        public static bool MobileCenterCrashesEnabled
+        {
+            get => GetBoolean() ?? true;
+            set => SetValue(value);
+        }
+
+        public static bool MobileCenterDistributeEnabled
+        {
+            get => GetBoolean() ?? true;
+            set => SetValue(value);
+        }
+
+        private static bool? GetBoolean([CallerMemberName]string property = null)
+            => App.Current.Properties.TryGetValue(property, out var obj)
+                ? obj is bool b ? b
+                    : obj is string s ? (bool.TryParse(s, out b) ? b : (bool?)null)
+                    : (obj is System.IConvertible c ? c.ToDouble(null) != 0 : (bool?)null)
+                : null;
+
         private static string GetString([CallerMemberName]string property = null)
             => App.Current.Properties.TryGetValue(property, out var obj)
                 ? obj?.ToString() : null;
