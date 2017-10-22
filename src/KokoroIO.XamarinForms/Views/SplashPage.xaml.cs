@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -16,6 +17,7 @@ namespace KokoroIO.XamarinForms.Views
 
         protected override async void OnAppearing()
         {
+            string httpMessage = null;
             try
             {
                 var vm = BindingContext as SplashViewModel;
@@ -42,6 +44,7 @@ namespace KokoroIO.XamarinForms.Views
             }
             catch (Exception ex)
             {
+                httpMessage = (ex.GetBaseException() as HttpRequestException)?.Message;
                 ex.Trace("LoginFailed");
             }
 
@@ -59,7 +62,7 @@ namespace KokoroIO.XamarinForms.Views
             }
             catch { }
 
-            MessagingCenter.Send(this, "LoginFailed");
+            MessagingCenter.Send(this, "LoginFailed", httpMessage);
         }
     }
 }

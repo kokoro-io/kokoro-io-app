@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -16,10 +12,32 @@ namespace KokoroIO.XamarinForms.Views
         {
             InitializeComponent();
 
-            MessagingCenter.Subscribe<SplashViewModel>(this, "LoginFailed", lvm =>
+            MessagingCenter.Subscribe<SplashPage, string>(this, "LoginFailed", (lvm, err) =>
             {
-                DisplayAlert("kokoro.io", "Failed to login", "OK");
+                DisplayAlert("kokoro.io", string.IsNullOrEmpty(err) ? "Failed to login" : "Failed to login: " + err, "OK");
             });
+        }
+
+        private void MailAddress_Completed(object sender, EventArgs e)
+        {
+            password.Focus();
+        }
+
+        private void Password_Completed(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(mailAddress.Text))
+            {
+                mailAddress.Focus();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(password.Text))
+            {
+                password.Focus();
+                return;
+            }
+
+            loginButton.Command?.Execute(null);
         }
     }
 }

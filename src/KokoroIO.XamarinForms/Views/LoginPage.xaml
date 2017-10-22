@@ -16,18 +16,22 @@
                 Text="Mail Address"
                 FontSize="Medium" />
             <Entry
+                x:Name="mailAddress"
                 FontSize="Medium"
                 Keyboard="Email"
                 Text="{Binding MailAddress}"
-                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}" />
+                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
+                Completed="MailAddress_Completed" />
             <Label
                 Text="Password"
                 FontSize="Medium" />
             <Entry
+                x:Name="password"
                 FontSize="Medium"
                 IsPassword="True"
                 Text="{Binding Password}"
-                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}" />
+                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
+                Completed="Password_Completed" />
 
             <Label
                 Text="Server"
@@ -36,9 +40,11 @@
                 FontSize="Medium"
                 Keyboard="Url"
                 Text="{Binding EndPoint}"
-                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}" />
+                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
+                Completed="Password_Completed" />
 
             <Button
+                x:Name="loginButton"
                 FontSize="Medium"
                 Command="{Binding LoginCommand}">
                 <Button.Style>
