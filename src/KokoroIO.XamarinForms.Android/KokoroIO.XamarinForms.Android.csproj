@@ -38,6 +38,8 @@
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidSupportedAbis>armeabi-v7a;x86;x86_64;arm64-v8a</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions>.mp3</AndroidStoreUncompressedFileExtensions>
+    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
+    <AndroidTlsProvider>btls</AndroidTlsProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,8 +64,8 @@
     <Reference Include="GCM.Client">
       <HintPath>..\Components\GCMClient-1.0\lib\android\GCM.Client.dll</HintPath>
     </Reference>
-    <Reference Include="KokoroIO.Client, Version=0.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\KokoroIO.Client.0.0.9-pre\lib\netstandard1.3\KokoroIO.Client.dll</HintPath>
+    <Reference Include="KokoroIO.Client, Version=0.0.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\KokoroIO.Client.0.0.10-pre\lib\netstandard1.3\KokoroIO.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.dll</HintPath>
@@ -90,9 +92,15 @@
       <HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.Android.Bindings.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="ModernHttpClient, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\modernhttpclient.2.4.2\lib\MonoAndroid\ModernHttpClient.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Android.Export" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OkHttp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\modernhttpclient.2.4.2\lib\MonoAndroid\OkHttp.dll</HintPath>
     </Reference>
     <Reference Include="Realm, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Realm.Database.1.6.0\lib\netstandard1.4\Realm.dll</HintPath>

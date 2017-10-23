@@ -64,7 +64,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             var svm = new SplashViewModel(async () =>
             {
                 var preserve = false;
-                var c = new Client();
+                var c = SH.GetClient();
                 try
                 {
                     var hasEndPoint = !string.IsNullOrWhiteSpace(ep) && c.EndPoint != ep;

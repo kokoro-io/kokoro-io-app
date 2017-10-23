@@ -50,13 +50,11 @@ namespace KokoroIO.XamarinForms
         private async Task<ApplicationViewModel> LoginAsync(string accessToken, string endPoint, string channelId)
         {
             var preserve = false;
-            var c = new Client();
+            Client c = null;
             try
             {
-                c = new Client()
-                {
-                    AccessToken = accessToken
-                };
+                c = SH.GetClient();
+                c.AccessToken = accessToken;
 
                 var ds = SH.Device;
                 var ns = SH.Notification;

@@ -26,5 +26,8 @@ namespace KokoroIO.XamarinForms
         public static IDeviceService Device { get; }
         public static IAudioService Audio { get; }
         public static INotificationService Notification { get; }
+
+        public static Client GetClient()
+            => new Client();
     }
 }

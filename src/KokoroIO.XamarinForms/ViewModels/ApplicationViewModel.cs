@@ -791,12 +791,12 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 UpdateIsDisconnected();
 
-                Client = new Client()
-                {
-                    AccessToken = Client.AccessToken,
-                    EndPoint = Client.EndPoint,
-                    WebSocketEndPoint = Client.WebSocketEndPoint
-                };
+                var c = SH.GetClient();
+                c.AccessToken = Client.AccessToken;
+                c.EndPoint = Client.EndPoint;
+                c.WebSocketEndPoint = Client.WebSocketEndPoint;
+
+                Client = c;
 
                 UpdateIsDisconnected();
 

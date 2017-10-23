@@ -42,6 +42,7 @@ namespace KokoroIO.XamarinForms.Droid
 			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_postpone = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_postpone;
 			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_title = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_title;
 			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_view_release_notes = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_view_release_notes;
+			global::ModernHttpClient.Resource.String.library_name = global::KokoroIO.XamarinForms.Droid.Resource.String.library_name;
 			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::KokoroIO.XamarinForms.Droid.Resource.Attribute.actionBarSize;
 			global::XLabs.Forms.Droid.Resource.Animation.abc_fade_in = global::KokoroIO.XamarinForms.Droid.Resource.Animation.abc_fade_in;
 			global::XLabs.Forms.Droid.Resource.Animation.abc_fade_out = global::KokoroIO.XamarinForms.Droid.Resource.Animation.abc_fade_out;
