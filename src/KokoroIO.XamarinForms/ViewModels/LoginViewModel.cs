@@ -3,6 +3,7 @@ using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
+using System.Text.RegularExpressions;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -71,6 +72,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     if (hasEndPoint)
                     {
                         c.EndPoint = ep;
+                        c.WebSocketEndPoint = Regex.Replace(Regex.Replace(ep, "^http", "ws"), "/api$", "/cable");
                     }
 
                     var ds = SH.Device;

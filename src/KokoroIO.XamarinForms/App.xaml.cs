@@ -12,6 +12,7 @@ using Microsoft.Azure.Mobile.Crashes;
 using Microsoft.Azure.Mobile.Distribute;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using System.Text.RegularExpressions;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 
@@ -63,7 +64,11 @@ namespace KokoroIO.XamarinForms
 
                 var pnsTaskTimeout = Task.WhenAny(pnsTask, Task.Delay(15000));
 
-                c.EndPoint = !string.IsNullOrWhiteSpace(endPoint) ? endPoint : c.EndPoint;
+                if (!string.IsNullOrWhiteSpace(endPoint))
+                {
+                    c.EndPoint = endPoint;
+                    c.WebSocketEndPoint = Regex.Replace(Regex.Replace(endPoint, "^http", "ws"), "(/api)?$", "/cable");
+                }
 
                 var me = await c.GetProfileAsync().ConfigureAwait(false);
 
