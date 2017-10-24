@@ -817,10 +817,39 @@ body {
 .talk:last-child {
   margin-bottom: 10px;
 }
+.talk {
+  position: relative;
+}
 .talk .embed_content .nsfw-mark.fa.fa-exclamation-triangle {
   width: 14px;
   height: 14px;
   background-image: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%2214%22%20width%3D%2214%22%20version%3D%221.1%22%3E%0D%0A%20%3Cpath%20stroke-linejoin%3D%22round%22%20d%3D%22m7%201.486%206.3%2010.908h-12.6z%22%20stroke%3D%22%23fff%22%20stroke-linecap%3D%22round%22%20fill%3D%22%23f39c12%22%2F%3E%0D%0A%20%3Cpath%20stroke-linejoin%3D%22round%22%20d%3D%22m7%205v4%22%20stroke%3D%22%23fff%22%20stroke-linecap%3D%22round%22%20stroke-width%3D%221px%22%2F%3E%0D%0A%20%3Ccircle%20r%3D%220.5%22%20cx%3D%227%22%20cy%3D%2210.5%22%20fill%3D%22%23fff%22%2F%3E%0D%0A%3C%2Fsvg%3E%0D%0A);
+}
+.talk > .message-menu {
+  display: none;
+}
+.talk.message-hover,
+.talk:hover {
+  background-color: #eee;
+}
+.talk.message-hover > .message-menu,
+.talk:hover > .message-menu {
+  display: block;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: -8px;
+  right: 32px;
+  font-size: 16px;
+  line-height: 16px;
+  z-index: 100;
+  font-weight: bold;
+  color: #ccc;
+  text-align: center;
+  background-color: #fff;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }</style>
         <script>(function () {
     var IS_BOTTOM_MARGIN = 15;
@@ -1018,6 +1047,11 @@ body {
         if (id) {
             talk.id = "talk" + id;
             talk.setAttribute("data-message-id", id.toString());
+            var control = document.createElement("a");
+            control.classList.add("message-menu");
+            control.innerHTML = "&times;";
+            control.href = "http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id;
+            talk.appendChild(control);
         }
         var idempotentKey = m.IdempotentKey;
         if (idempotentKey) {
@@ -1391,8 +1425,19 @@ body {
             }
         });
         var mouseDownStart = null;
+        var hovered;
         document.body.addEventListener("mousedown", function (e) {
             if (e.button === 0) {
+                if (hovered) {
+                    hovered.classList.remove("message-hover");
+                }
+                hovered = e.currentTarget;
+                while (hovered && !hovered.classList.contains("talk")) {
+                    hovered = hovered.parentElement;
+                }
+                if (hovered) {
+                    hovered.classList.add("message-hover");
+                }
                 var b = document.body;
                 if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
                     mouseDownStart = new Date().getTime();
@@ -1411,6 +1456,12 @@ body {
         });
         document.body.addEventListener("mouseup", function (e) {
             mouseDownStart = null;
+        });
+        document.body.addEventListener("mousemove", function (e) {
+            if (hovered) {
+                hovered.classList.remove("message-hover");
+                hovered = null;
+            }
         });
         document.body.addEventListener("wheel", function (e) {
             if (e.ctrlKey) {

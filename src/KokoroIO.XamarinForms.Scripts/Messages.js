@@ -194,6 +194,11 @@
         if (id) {
             talk.id = "talk" + id;
             talk.setAttribute("data-message-id", id.toString());
+            var control = document.createElement("a");
+            control.classList.add("message-menu");
+            control.innerHTML = "&times;";
+            control.href = "http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id;
+            talk.appendChild(control);
         }
         var idempotentKey = m.IdempotentKey;
         if (idempotentKey) {
@@ -567,8 +572,19 @@
             }
         });
         var mouseDownStart = null;
+        var hovered;
         document.body.addEventListener("mousedown", function (e) {
             if (e.button === 0) {
+                if (hovered) {
+                    hovered.classList.remove("message-hover");
+                }
+                hovered = e.currentTarget;
+                while (hovered && !hovered.classList.contains("talk")) {
+                    hovered = hovered.parentElement;
+                }
+                if (hovered) {
+                    hovered.classList.add("message-hover");
+                }
                 var b = document.body;
                 if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
                     mouseDownStart = new Date().getTime();
@@ -587,6 +603,12 @@
         });
         document.body.addEventListener("mouseup", function (e) {
             mouseDownStart = null;
+        });
+        document.body.addEventListener("mousemove", function (e) {
+            if (hovered) {
+                hovered.classList.remove("message-hover");
+                hovered = null;
+            }
         });
         document.body.addEventListener("wheel", function (e) {
             if (e.ctrlKey) {

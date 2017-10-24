@@ -1,7 +1,7 @@
+using KokoroIO.XamarinForms.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using KokoroIO.XamarinForms.Models;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -178,5 +178,21 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion IsShown
+
+        public async void BeginDelete()
+        {
+            if (Id == null)
+            {
+                return;
+            }
+            try
+            {
+                await Page.Application.DeleteMessageAsync(Id.Value);
+            }
+            catch (Exception ex)
+            {
+                ex.Trace("DeleteMessageFailed");
+            }
+        }
     }
 }

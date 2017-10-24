@@ -31,8 +31,37 @@ body {
 .talk:last-child {
   margin-bottom: 10px;
 }
+.talk {
+  position: relative;
+}
 .talk .embed_content .nsfw-mark.fa.fa-exclamation-triangle {
   width: 14px;
   height: 14px;
   background-image: url(exclamation-triangle.svg);
+}
+.talk > .message-menu {
+  display: none;
+}
+.talk.message-hover,
+.talk:hover {
+  background-color: #eee;
+}
+.talk.message-hover > .message-menu,
+.talk:hover > .message-menu {
+  display: block;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: -8px;
+  right: 32px;
+  font-size: 16px;
+  line-height: 16px;
+  z-index: 100;
+  font-weight: bold;
+  color: #ccc;
+  text-align: center;
+  background-color: #fff;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }

@@ -275,12 +275,18 @@ interface Window {
     function createTaklElement(m: MessageInfo): HTMLDivElement {
         var id = m.Id;
 
-        var talk = document.createElement("div");
+        let talk = document.createElement("div");
         talk.classList.add("talk");
         talk.classList.add(m.IsMerged ? "continued" : "not-continued");
         if (id) {
             talk.id = "talk" + id;
             talk.setAttribute("data-message-id", id.toString());
+
+            let control = document.createElement("a");
+            control.classList.add("message-menu");
+            control.innerHTML = "&times;";
+            control.href = `http://kokoro.io/client/control?event=deleteMessage&id=${m.Id}`;
+            talk.appendChild(control);
         }
 
         var idempotentKey = m.IdempotentKey;
@@ -726,8 +732,24 @@ interface Window {
 
         var mouseDownStart = null;
 
+        let hovered: HTMLElement;
+
         document.body.addEventListener("mousedown", function (e) {
             if (e.button === 0) {
+                if (hovered) {
+                    hovered.classList.remove("message-hover");
+                }
+
+                hovered = e.currentTarget as HTMLElement;
+
+                while (hovered && !hovered.classList.contains("talk")) {
+                    hovered = hovered.parentElement;
+                }
+
+                if (hovered) {
+                    hovered.classList.add("message-hover");
+                }
+
                 var b = document.body;
                 if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
                     mouseDownStart = new Date().getTime();
@@ -748,6 +770,12 @@ interface Window {
         });
         document.body.addEventListener("mouseup", function (e) {
             mouseDownStart = null;
+        });
+        document.body.addEventListener("mousemove", function (e) {
+            if (hovered) {
+                hovered.classList.remove("message-hover");
+                hovered = null;
+            }
         });
         document.body.addEventListener("wheel", function (e: WheelEvent) {
             if (e.ctrlKey) {

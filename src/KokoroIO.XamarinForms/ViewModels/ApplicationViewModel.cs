@@ -1,13 +1,13 @@
+using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.Models.Data;
+using KokoroIO.XamarinForms.Services;
+using KokoroIO.XamarinForms.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using KokoroIO.XamarinForms.Models;
-using KokoroIO.XamarinForms.Models.Data;
-using KokoroIO.XamarinForms.Services;
-using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -276,6 +276,14 @@ namespace KokoroIO.XamarinForms.ViewModels
             GetProfileViewModel(r.Profile);
 
             return r;
+        }
+
+        public async Task DeleteMessageAsync(int messageId)
+        {
+            using (TH.BeginScope("Executing DELETE /messages"))
+            {
+                await EnqueueClientTask(() => Client.DeleteMessageAsync(messageId)).ConfigureAwait(false);
+            }
         }
 
         public async Task<ChannelViewModel> PostDirectMessageChannelAsync(string targetUserProfileId)

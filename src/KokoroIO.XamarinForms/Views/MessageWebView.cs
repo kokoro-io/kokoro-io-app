@@ -1,12 +1,12 @@
-﻿using System;
+﻿using KokoroIO.XamarinForms.ViewModels;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using KokoroIO.XamarinForms.ViewModels;
-using Newtonsoft.Json;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 
@@ -494,6 +494,18 @@ namespace KokoroIO.XamarinForms.Views
                     }
                 }
 
+                return;
+            }
+
+            const string DELETEURL = "http://kokoro.io/client/control?event=deleteMessage&id=";
+            if (e.Url.StartsWith(DELETEURL))
+            {
+                e.Cancel = true;
+                if (int.TryParse(e.Url.Substring(DELETEURL.Length), out var id))
+                {
+                    var msg = Messages.FirstOrDefault(m => m.Id == id);
+                    msg?.BeginDelete();
+                }
                 return;
             }
 

@@ -39,9 +39,38 @@ body {
 }
 
 .talk {
+    position: relative;
+
     .embed_content .nsfw-mark.fa.fa-exclamation-triangle {
         width: 14px;
         height: 14px;
         background-image: url(exclamation-triangle.svg);
+    }
+
+    > .message-menu {
+        display: none;
+    }
+
+    &.message-hover, &:hover {
+        background-color: #eee;
+
+        > .message-menu {
+            display: block;
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: -8px;
+            right: 32px;
+            font-size: 16px;
+            line-height: 16px;
+            z-index: 100;
+            font-weight: bold;
+            color: #ccc;
+            text-align: center;
+            background-color: #fff;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
     }
 }
