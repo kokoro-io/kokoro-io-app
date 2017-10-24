@@ -314,6 +314,8 @@ namespace KokoroIO.XamarinForms.Views
                 Content = m.Content;
                 IsMerged = m.IsMerged;
                 EmbedContents = m.EmbedContents;
+                IsDeleted = m.IsDeleted;
+                CanDelete = m.CanDelete;
             }
 
             public int? Id { get; }
@@ -329,6 +331,8 @@ namespace KokoroIO.XamarinForms.Views
             public string Content { get; }
             public bool IsMerged { get; }
             public IList<EmbedContent> EmbedContents { get; }
+            public bool CanDelete { get; }
+            public bool IsDeleted { get; }
         }
 
         private class JsonMerged

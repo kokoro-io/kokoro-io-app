@@ -194,11 +194,13 @@
         if (id) {
             talk.id = "talk" + id;
             talk.setAttribute("data-message-id", id.toString());
-            var control = document.createElement("a");
-            control.classList.add("message-menu");
-            control.innerHTML = "&times;";
-            control.href = "http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id;
-            talk.appendChild(control);
+            if (m.CanDelete) {
+                var control = document.createElement("a");
+                control.classList.add("message-menu");
+                control.innerHTML = "&times;";
+                control.href = "http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id;
+                talk.appendChild(control);
+            }
         }
         var idempotentKey = m.IdempotentKey;
         if (idempotentKey) {
@@ -257,7 +259,7 @@
             }
             speaker.appendChild(small);
             var filteredText = document.createElement("div");
-            filteredText.classList.add("filtered_text");
+            filteredText.classList.add(m.IsDeleted ? "deleted_text" : "filtered_text");
             filteredText.innerHTML = m.Content;
             message.appendChild(filteredText);
             if (m.EmbedContents && m.EmbedContents.length > 0) {

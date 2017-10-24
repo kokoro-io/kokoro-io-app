@@ -21,6 +21,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             _EmbedContents = message.EmbedContents?.Count > 1
                             ? message.EmbedContents.OrderBy(c => c.Position).ToArray()
                             : message.EmbedContents;
+            _Status = message.Status;
         }
 
         internal MessageInfo(MessagesViewModel page, string content)
@@ -40,6 +41,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             IsNsfw = message.IsNsfw;
             Content = message.Content;
             EmbedContents = message.EmbedContents;
+            _Status = message.Status;
         }
 
         private MessagesViewModel Page { get; }
@@ -178,6 +180,12 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion IsShown
+
+        private MessageStatus _Status;
+
+        public bool CanDelete => !IsDeleted && Profile.Id == Page.Application.LoginUser.Id;
+
+        public bool IsDeleted => _Status != MessageStatus.Active;
 
         public async void BeginDelete()
         {
