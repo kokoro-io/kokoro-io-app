@@ -82,5 +82,23 @@ namespace KokoroIO.XamarinForms.Views
         //        };
         //    }
         //}
+
+        private async void RefreshViewToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var nav = Navigation;
+
+                var np = new MessagesPage()
+                {
+                    BindingContext = BindingContext
+                };
+                nav.InsertPageBefore(np, this);
+                await nav.PopAsync();
+
+                np.editor?.InvalidateMeasure();
+            }
+            catch { }
+        }
     }
 }
