@@ -512,10 +512,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async Task ClearUnreadAsync()
         {
-            if (_Unreads?.Count > 0)
+            if (_Unreads?.Count > 0 || _HasUnread)
             {
-                _Unreads.Clear();
-                OnPropertyChanged(nameof(UnreadCount));
+                if (_Unreads?.Count > 0)
+                {
+                    _Unreads.Clear();
+                    OnPropertyChanged(nameof(UnreadCount));
+                }
+
                 HasUnread = _Unreads?.Count > 0;
 
                 try
