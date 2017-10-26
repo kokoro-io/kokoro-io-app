@@ -67,9 +67,9 @@
             </Style>
             <DataTemplate
                 x:Key="channelListViewItemTemplate">
-                <ViewCell> 
-                    <Grid 
-                        Padding="10"> 
+                <ViewCell>
+                    <Grid
+                        Padding="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition
                                 Width="{Binding ConcatenationDepth, Converter={StaticResource gridLengthConverter}}" />
@@ -159,13 +159,15 @@
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
-                        <Label
+                        <views:RoundLabel
                             Grid.Column="4"
                             Margin="4,0"
+                            CornerRadius="8"
+                            MinimumWidthRequest="12"
                             VerticalOptions="Center"
                             VerticalTextAlignment="Center"
                             TextColor="#fff"
-                            BackgroundColor="#f66"
+                            BackgroundColor="#2C3E50"
                             Font="Monospace,Bold"
                             FontSize="Small"
                             Text="{Binding UnreadCount, Converter={StaticResource targetNullValueConverter}}"
@@ -180,7 +182,7 @@
             x:Name="tableView"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
-            Intent="Menu"> 
+            Intent="Menu">
         </TableView>
     </ContentView.Content>
 </ContentView>

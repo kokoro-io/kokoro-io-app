@@ -186,6 +186,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RoundLabelRenderer.cs" />
     <Compile Include="Services\AudioService.cs" />
     <Compile Include="CustomListViewRenderer.cs" />
     <Compile Include="Services\DeviceService.cs" />
