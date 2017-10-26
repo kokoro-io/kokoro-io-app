@@ -26,12 +26,20 @@ namespace KokoroIO.XamarinForms.Views
 
         #region UnreadCount
 
-        private int _UnreadCount;
+        private int? _UnreadCount;
 
-        public override int UnreadCount => _UnreadCount;
+        public override int? UnreadCount => _UnreadCount;
 
         private void SetUnreadCount()
-            => SetProperty(ref _UnreadCount, _Children.Sum(c => c.UnreadCount), nameof(UnreadCount), onChanged: () => SetIsUnreadCountVisible());
+            => SetProperty(
+                ref _UnreadCount,
+                _Children.Any(c => c.UnreadCount == null) ? (int?)null
+                : _Children.Where(c => c.UnreadCount > 0).Sum(c => c.UnreadCount),
+                nameof(UnreadCount),
+                onChanged: () => SetIsUnreadCountVisible());
+
+        protected override void SetIsUnreadCountVisible()
+            => IsUnreadCountVisible = !IsExpanded && UnreadCount != 0;
 
         #endregion UnreadCount
 
@@ -68,7 +76,6 @@ namespace KokoroIO.XamarinForms.Views
         }
 
         #endregion IsExpanded
-
 
         internal bool HasSingleChild => _Children.Count == 1;
 

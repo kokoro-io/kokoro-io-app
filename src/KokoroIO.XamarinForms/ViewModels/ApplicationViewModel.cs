@@ -336,29 +336,41 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 string channelId;
                 using (var realm = await RealmServices.GetInstanceAsync())
+                using (var trx = realm.BeginWrite())
                 {
-                    var up = realm.All<ChannelUserProperties>().OrderByDescending(r => r.LastVisited).FirstOrDefault();
+                    var rups = realm.All<ChannelUserProperties>().ToList();
+                    var notifs = realm.All<MessageNotification>().ToList();
 
-                    if (up != null)
+                    var nf = SH.Notification;
+
+                    foreach (var cvm in _Channels)
                     {
-                        if (up.UserId != _LoginUser.Id)
+                        var rup = rups.FirstOrDefault(r => r.ChannelId == cvm.Id);
+
+                        var lastId = rup?.LastReadId;
+
+                        var cnt = notifs.Count(n => n.ChannelId == cvm.Id && !(n.MessageId <= lastId));
+                        cvm.HasUnread = cnt > 0;
+
+                        for (var i = notifs.Count - 1; i >= 0; i--)
                         {
-                            using (var trx = realm.BeginWrite())
+                            var n = notifs[i];
+                            if (n.ChannelId == cvm.Id)
                             {
-                                realm.RemoveAll<ChannelUserProperties>();
-                                trx.Commit();
+                                if (n.MessageId <= lastId)
+                                {
+                                    nf.CancelNotification(cvm.Id, n.NotificationId, cnt);
+                                    realm.Remove(n);
+                                    notifs.RemoveAt(i);
+                                }
                             }
-                            channelId = _SelectedChannelId;
-                        }
-                        else
-                        {
-                            channelId = _SelectedChannelId ?? up.ChannelId;
                         }
                     }
-                    else
-                    {
-                        channelId = _SelectedChannelId;
-                    }
+
+                    var lv = rups.Max(r => r?.LastVisited);
+                    var up = rups.FirstOrDefault(r => r.LastVisited == lv);
+                    channelId = _SelectedChannelId ?? up?.ChannelId;
+                    trx.Commit();
                 }
 
                 SelectedChannel = _Channels.FirstOrDefault(c => c.Id == channelId);

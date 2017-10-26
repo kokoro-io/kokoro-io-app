@@ -464,7 +464,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public bool HasUnread
         {
             get => _HasUnread;
-            private set => SetProperty(ref _HasUnread, value);
+            internal set => SetProperty(ref _HasUnread, value);
         }
 
         #endregion HasUnread

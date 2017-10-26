@@ -28,7 +28,7 @@ namespace KokoroIO.XamarinForms.Views
 
         public abstract bool IsArchived { get; }
 
-        public abstract int UnreadCount { get; }
+        public abstract int? UnreadCount { get; }
 
         private bool _IsVisible = true;
 
@@ -42,10 +42,13 @@ namespace KokoroIO.XamarinForms.Views
 
         private bool _IsUnreadCountVisible;
 
-        public bool IsUnreadCountVisible => _IsUnreadCountVisible;
+        public bool IsUnreadCountVisible
+        {
+            get => _IsUnreadCountVisible;
+            protected set => SetProperty(ref _IsUnreadCountVisible, value);
+        }
 
-        protected void SetIsUnreadCountVisible()
-            => SetProperty(ref _IsUnreadCountVisible, UnreadCount > 0 && (!IsGroup || !IsExpanded), nameof(IsUnreadCountVisible));
+        protected abstract void SetIsUnreadCountVisible();
 
         public abstract bool IsExpanded { get; }
         public abstract string Discriminator { get; }

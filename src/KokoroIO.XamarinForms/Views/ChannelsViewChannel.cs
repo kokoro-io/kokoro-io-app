@@ -1,3 +1,4 @@
+using System;
 using KokoroIO.XamarinForms.ViewModels;
 
 namespace KokoroIO.XamarinForms.Views
@@ -11,6 +12,7 @@ namespace KokoroIO.XamarinForms.Views
         {
             Channel = channel;
             Channel.PropertyChanged += Channel_PropertyChanged;
+            SetIsUnreadCountVisible();
 
             Parent?.Add(this);
         }
@@ -21,7 +23,12 @@ namespace KokoroIO.XamarinForms.Views
         public override bool IsArchived => Channel.IsArchived;
         public override bool IsExpanded => true;
 
-        public override int UnreadCount => Channel.UnreadCount;
+        public override int? UnreadCount
+            => Channel.UnreadCount <= 0 && Channel.HasUnread ? (int?)null
+                : Math.Max(0, Channel.UnreadCount);
+
+        protected override void SetIsUnreadCountVisible()
+            => IsUnreadCountVisible = UnreadCount != 0;
 
         public override string FullName => Parent?.FullName + Name;
 
@@ -67,6 +74,10 @@ namespace KokoroIO.XamarinForms.Views
 
                 case nameof(Channel.UnreadCount):
                     OnPropertyChanged(e.PropertyName);
+                    SetIsUnreadCountVisible();
+                    break;
+
+                case nameof(Channel.HasUnread):
                     SetIsUnreadCountVisible();
                     break;
             }

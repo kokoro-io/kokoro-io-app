@@ -10,6 +10,9 @@
             <views:GridLengthConverter
                 x:Key="gridLengthConverter"
                 Coefficient="16" />
+            <views:TargetNullValueConverter
+                x:Key="targetNullValueConverter"
+                TargetNullValue="*" />
             <Style
                 x:Key="channelLabelStyle"
                 TargetType="Label">
@@ -64,9 +67,9 @@
             </Style>
             <DataTemplate
                 x:Key="channelListViewItemTemplate">
-                <ViewCell>
-                    <Grid
-                        Padding="10">
+                <ViewCell> 
+                    <Grid 
+                        Padding="10"> 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition
                                 Width="{Binding ConcatenationDepth, Converter={StaticResource gridLengthConverter}}" />
@@ -159,11 +162,13 @@
                         <Label
                             Grid.Column="4"
                             Margin="4,0"
-                            Text="{Binding UnreadCount}"
+                            VerticalOptions="Center"
+                            VerticalTextAlignment="Center"
                             TextColor="#fff"
                             BackgroundColor="#f66"
                             Font="Monospace,Bold"
                             FontSize="Small"
+                            Text="{Binding UnreadCount, Converter={StaticResource targetNullValueConverter}}"
                             IsVisible="{Binding IsUnreadCountVisible}" />
                     </Grid>
                 </ViewCell>
@@ -175,14 +180,7 @@
             x:Name="tableView"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
-            Intent="Menu">
-            <TableView.RowHeight>
-                <OnPlatform
-                    x:TypeArguments="sys:Int32"
-                    Android="40"
-                    iOS="40"
-                    WinPhone="32" />
-            </TableView.RowHeight>
+            Intent="Menu"> 
         </TableView>
     </ContentView.Content>
 </ContentView>
