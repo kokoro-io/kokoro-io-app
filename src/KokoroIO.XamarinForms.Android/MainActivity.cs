@@ -18,8 +18,6 @@ namespace KokoroIO.XamarinForms.Droid
 
         protected override void OnCreate(Bundle bundle)
         {
-            var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
-
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
@@ -31,7 +29,7 @@ namespace KokoroIO.XamarinForms.Droid
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
-            LoadApplication(new App(avm, Intent.Extras?.GetString("channelId")));
+            LoadApplication(new App(channelId: Intent.Extras?.GetString("channelId")));
 
             if (Intent.Action == Intent.ActionSend)
             {

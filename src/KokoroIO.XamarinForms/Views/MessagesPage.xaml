@@ -95,10 +95,6 @@
         <ToolbarItem
             Order="Secondary"
             Text="Leave channel [WIP]" />
-        <ToolbarItem
-            Order="Secondary"
-            Text="Refresh view [Experimental]"
-            Clicked="RefreshViewToolbarItem_Clicked"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <Grid>

@@ -54,51 +54,5 @@ namespace KokoroIO.XamarinForms.Views
                 e.VisualElement.Focus();
             }
         }
-
-        //private void PopupWebView_BindingContextChanged(object sender, EventArgs e)
-        //{
-        //    var mvm = BindingContext as MessagesViewModel;
-
-        //    if (mvm.PopupUrl != null)
-        //    {
-        //        var r = 9.0 / 16;
-
-        //        var w = Math.Min(480, Width);
-        //        popupWebView.WidthRequest = w;
-        //        popupWebView.HeightRequest = r * w;
-
-        //        popupWebView.Source = new UrlWebViewSource()
-        //        {
-        //            Url = mvm.PopupUrl
-        //        };
-        //        webViewPopup.IsVisible = true;
-        //    }
-        //    else
-        //    {
-        //        webViewPopup.IsVisible = false;
-        //        popupWebView.Source = new UrlWebViewSource()
-        //        {
-        //            Url = "about:blank"
-        //        };
-        //    }
-        //}
-
-        private async void RefreshViewToolbarItem_Clicked(object sender, EventArgs e)
-        {
-            try
-            {
-                var nav = Navigation;
-
-                var np = new MessagesPage()
-                {
-                    BindingContext = BindingContext
-                };
-                nav.InsertPageBefore(np, this);
-                await nav.PopAsync();
-
-                np.editor?.InvalidateMeasure();
-            }
-            catch { }
-        }
     }
 }
