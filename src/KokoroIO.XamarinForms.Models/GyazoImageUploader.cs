@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
+#if !MODEL_TESTS
+
 namespace KokoroIO.XamarinForms.Models
 {
     public sealed class GyazoImageUploader : IImageUploader
@@ -138,3 +140,5 @@ namespace KokoroIO.XamarinForms.Models
         }
     }
 }
+
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace KokoroIO.XamarinForms.Models
 {
@@ -36,15 +37,11 @@ namespace KokoroIO.XamarinForms.Models
 
         public static bool PlayRingtone
         {
-            get
-            {
-                if (App.Current.Properties.TryGetValue(nameof(PlayRingtone), out var obj)
-                    && obj is bool b)
-                {
-                    return b;
-                }
-                return Xamarin.Forms.Device.Idiom == Xamarin.Forms.TargetIdiom.Desktop;
-            }
+#if !MODEL_TESTS
+            get => GetBoolean() ?? Xamarin.Forms.Device.Idiom == Xamarin.Forms.TargetIdiom.Desktop;
+#else
+            get => GetBoolean() ?? true;
+#endif
             set => SetValue(value);
         }
 
@@ -53,7 +50,7 @@ namespace KokoroIO.XamarinForms.Models
             get => GetBoolean() ?? true;
             set => SetValue(value);
         }
-        
+
         public static bool MobileCenterCrashesEnabled
         {
             get => GetBoolean() ?? true;
@@ -65,6 +62,9 @@ namespace KokoroIO.XamarinForms.Models
             get => GetBoolean() ?? true;
             set => SetValue(value);
         }
+
+
+#if !MODEL_TESTS
 
         private static bool? GetBoolean([CallerMemberName]string property = null)
             => App.Current.Properties.TryGetValue(property, out var obj)
@@ -88,5 +88,21 @@ namespace KokoroIO.XamarinForms.Models
                 App.Current.Properties[property] = value;
             }
         }
+#else
+        private static bool? GetBoolean([CallerMemberName]string property = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        private static string GetString([CallerMemberName]string property = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        private static void SetValue(object value, [CallerMemberName]string property = null)
+        {
+            throw new NotSupportedException();
+        }
+#endif
     }
 }
