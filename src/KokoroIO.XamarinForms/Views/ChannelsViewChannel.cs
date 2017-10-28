@@ -1,5 +1,6 @@
 using System;
 using KokoroIO.XamarinForms.ViewModels;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
@@ -64,8 +65,13 @@ namespace KokoroIO.XamarinForms.Views
             {
                 case nameof(Channel.IsArchived):
                 case nameof(Channel.DisplayName):
-                    Control.Remove(Channel);
-                    Control.Add(Channel);
+                    XDevice.BeginInvokeOnMainThread(() =>
+                    {
+                        if (Control.Remove(Channel))
+                        {
+                            Control.Add(Channel);
+                        }
+                    });
                     break;
 
                 case nameof(Channel.IsSelected):

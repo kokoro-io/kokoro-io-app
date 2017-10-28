@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -254,28 +253,38 @@ namespace KokoroIO.XamarinForms.Views
             return nr != 0 || a.IsGroup ? nr : ((ChannelsViewChannel)a).Channel.Id.CompareTo(((ChannelsViewChannel)b).Channel.Id);
         }
 
-        internal void Remove(ChannelViewModel item)
+        internal bool Remove(ChannelViewModel item)
         {
             var root = tableView.Root;
             if (root == null)
             {
-                return;
+                return true;
             }
 
             var sec = root.FirstOrDefault(s => (s.BindingContext as ChannelsViewKind)?.Kind == item.Kind);
 
             if (sec == null)
             {
-                return;
+                return true;
             }
 
             var kn = (ChannelsViewKind)sec.BindingContext;
 
             ChannelsViewNode node = kn.Descendants.OfType<ChannelsViewChannel>().FirstOrDefault(c => c.Channel == item);
+
+            var removed = 0;
+
             while (node != null)
             {
+                removed++;
+
                 kn.Descendants.Remove(node);
+                if (node.HasCell)
+                {
+                    sec.Remove(node.Cell);
+                }
                 node.Dispose();
+                kn.Remove(node);
 
                 if (node.Parent == null || node.Parent.Any())
                 {
@@ -283,6 +292,8 @@ namespace KokoroIO.XamarinForms.Views
                 }
                 node = node.Parent;
             }
+
+            return removed > 0;
         }
 
         internal void Cell_Tapped(object sender, System.EventArgs e)
