@@ -43,19 +43,25 @@ namespace KokoroIO.XamarinForms.Models
                         switch (xr.NodeType)
                         {
                             case XmlNodeType.Element:
-                                if (!xr.IsEmptyElement)
+                                var empty = xr.IsEmptyElement;
+
+                                if (!empty)
                                 {
                                     inAnchor |= "a".Equals(xr.LocalName, StringComparison.OrdinalIgnoreCase);
-                                    xw.WriteStartElement(xr.Prefix, xr.LocalName, xr.NamespaceURI);
-
-                                    while (xr.MoveToNextAttribute())
-                                    {
-                                        xw.WriteAttributeString(xr.LocalName, xr.NamespaceURI, xr.Value);
-                                    }
-
-                                    continue;
                                 }
-                                break;
+                                xw.WriteStartElement(xr.Prefix, xr.LocalName, xr.NamespaceURI);
+
+                                while (xr.MoveToNextAttribute())
+                                {
+                                    xw.WriteAttributeString(xr.LocalName, xr.NamespaceURI, xr.Value);
+                                }
+
+                                if (empty)
+                                {
+                                    xw.WriteEndElement();
+                                }
+
+                                continue;
 
                             case XmlNodeType.Attribute:
                                 xw.WriteAttributeString(xr.LocalName, xr.NamespaceURI, xr.Value);
