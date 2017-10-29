@@ -68,7 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Application.css" />
-    <Content Include="exclamation-triangle.svg" />
     <Content Include="Icons\ic_account_circle_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -113,6 +112,7 @@
     <Content Include="Icons\kokoroio_icon_white.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Icons\variants\ic_warning_f39c12_24px.svg" />
     <Content Include="Messages.css">
       <DependentUpon>Messages.less</DependentUpon>
     </Content>

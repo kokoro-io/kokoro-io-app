@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,6 +22,8 @@ namespace KokoroIO.XamarinForms.Scripts
             Console.WriteLine("Input Directory: {0}", inDir);
             Console.WriteLine("Output Directory: {0}", outDir);
 
+            //OutputColorVariation(inDir, "ic_warning_black_24px.svg", 0xF39C12);
+
             Generate(inDir, outDir);
 
             //GenerateIcon(inDir, "kokoroio_icon_white.svg", "kokoro_white", baseSize: 48);
@@ -44,6 +45,29 @@ namespace KokoroIO.XamarinForms.Scripts
             //GenerateIcon(inDir, "ic_search_black_24px.svg", "search");
             //GenerateIcon(inDir, "ic_settings_black_24px.svg", "settings");
             //GenerateIcon(inDir, "ic_email_black_24px.svg", "email");
+        }
+
+        private static string GetTempFileName(string extension)
+        {
+            var tmp = Path.GetTempFileName();
+            File.Delete(tmp);
+            return Path.ChangeExtension(tmp, extension);
+        }
+
+        private static void OutputColorVariationCore(string src, string dest, int color)
+        {
+            var xd = XDocument.Load(src);
+            xd.Root.SetAttributeValue("fill", "#" + (color & 0xffffff).ToString("x6"));
+
+            xd.Save(dest);
+        }
+
+        private static void OutputColorVariation(string inDir, string src, int color)
+        {
+            var s = Path.Combine(inDir, "icons", src);
+            var d = Path.Combine(inDir, "icons", "variants", src.Replace("_black_24px.svg", $"_{color & 0xffffff:x6}_24px.svg"));
+
+            OutputColorVariationCore(s, d, color);
         }
 
         private static void Generate(string inDir, string outDir)
@@ -175,14 +199,9 @@ namespace KokoroIO.XamarinForms.Scripts
 
             if (color != 0)
             {
-                var xd = XDocument.Load(sf);
-                xd.Root.SetAttributeValue("fill", "#" + (color & 0xffffff).ToString("x6"));
-
-                var tmp = Path.GetTempFileName();
-                sf = Path.ChangeExtension(tmp, ".svg");
-                File.Delete(tmp);
-
-                xd.Save(sf);
+                var temp = GetTempFileName(".svg");
+                OutputColorVariationCore(sf, temp, color);
+                sf = temp;
             }
 
             {
