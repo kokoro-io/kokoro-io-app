@@ -18,6 +18,9 @@ body {
 .talk.continued .speaker {
   display: none;
 }
+.talk .avatar {
+  max-height: 40px;
+}
 .talk .avatar img {
   border-radius: 5px;
 }
@@ -85,6 +88,10 @@ body {
 .talk.message-hover > .message-menu > a.disabled .fa,
 .talk:hover > .message-menu > a.disabled .fa {
   opacity: 0.5;
+}
+.talk.message-hover:first-child > .message-menu,
+.talk:hover:first-child > .message-menu {
+  top: 0;
 }
 .fa {
   display: inline-block;

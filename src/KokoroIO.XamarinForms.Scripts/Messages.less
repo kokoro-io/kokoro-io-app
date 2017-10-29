@@ -22,6 +22,10 @@ body {
     display: none;
 }
 
+.talk .avatar {
+    max-height: 40px;
+}
+
 .talk .avatar img {
     border-radius: 5px;
 }
@@ -92,6 +96,12 @@ body {
                 &.disabled .fa {
                     opacity: 0.5;
                 }
+            }
+        }
+
+        &:first-child {
+            > .message-menu {
+                top: 0;
             }
         }
     }
