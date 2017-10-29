@@ -533,7 +533,7 @@ namespace KokoroIO.XamarinForms.Views
                     if (int.TryParse(e.Url.Substring(DELETEURL.Length), out var id))
                     {
                         var msg = Messages.FirstOrDefault(m => m.Id == id);
-                        msg?.BeginDelete();
+                        msg?.BeginConfirmDeletion();
                     }
                     return;
                 }

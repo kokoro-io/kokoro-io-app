@@ -30,6 +30,27 @@ namespace KokoroIO.XamarinForms.Views
             {
                 DisplayAlert("kokoro.io", "Failed to take a photo", "OK");
             });
+
+            MessagingCenter.Subscribe<MessageInfo>(this, "ConfirmMessageDeletion", async mi =>
+            {
+                if (mi?.IsDeleted != false
+                || (BindingContext as MessagesViewModel)?.Messages.Contains(mi) != true)
+                {
+                    return;
+                }
+                if (await DisplayAlert(mi.Page.Channel.DisplayName, "Are you sure to delete the message?.", "Delete", "Cancel"))
+                {
+                    mi.BeginDelete();
+                }
+            });
+
+            MessagingCenter.Subscribe<MessageInfo>(this, "MessageDeletionFailed", mi =>
+            {
+                if ((BindingContext as MessagesViewModel)?.Messages.Contains(mi) == true)
+                {
+                    DisplayAlert(mi.Page.Channel.DisplayName, "Failed to delete the message", "OK");
+                }
+            });
         }
 
         private void ExpandableEditor_FilePasted(object sender, EventArgs<Stream> e)

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using KokoroIO.XamarinForms.Models;
+using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -48,7 +49,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             _Status = message.Status;
         }
 
-        private MessagesViewModel Page { get; }
+        internal MessagesViewModel Page { get; }
 
         #region Id
 
@@ -234,6 +235,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             Page.SelectionLength = 0;
         }
 
+        public void BeginConfirmDeletion()
+            => MessagingCenter.Send(this, "ConfirmMessageDeletion");
+
         public async void BeginDelete()
         {
             if (Id == null)
@@ -247,6 +251,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             catch (Exception ex)
             {
                 ex.Trace("DeleteMessageFailed");
+                MessagingCenter.Send(this, "MessageDeletionFailed");
             }
         }
     }
