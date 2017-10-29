@@ -75,15 +75,19 @@
     <Content Include="Icons\ic_camera_alt_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Icons\ic_content_copy_black_24px.svg" />
     <Content Include="Icons\ic_email_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Icons\ic_expand_more_black_24px.svg" />
+    <Content Include="Icons\ic_format_quote_black_24px.svg" />
     <Content Include="Icons\ic_image_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Icons\ic_info_outline_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Icons\ic_more_horiz_black_24px.svg" />
     <Content Include="Icons\ic_notifications_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -105,6 +109,7 @@
     <Content Include="Icons\ic_visibility_off_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Icons\ic_warning_black_24px.svg" />
     <Content Include="Icons\kokoroio_icon_white.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
