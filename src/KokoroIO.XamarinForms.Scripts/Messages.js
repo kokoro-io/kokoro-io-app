@@ -186,6 +186,24 @@
         }
         return (i + offset).toFixed(0).substr(1, l);
     }
+    function FA_ANCHOR(url, faClass, disabled) {
+        var a = document.createElement("a");
+        if (disabled) {
+            a.href = "javascript:void(0)";
+            a.classList.add("disabled");
+        }
+        else {
+            a.href = url;
+        }
+        a.appendChild(FA(faClass));
+        return a;
+    }
+    function FA(className) {
+        var r = document.createElement("i");
+        r.classList.add("fa");
+        r.classList.add(className);
+        return r;
+    }
     function createTaklElement(m) {
         var id = m.Id;
         var talk = document.createElement("div");
@@ -194,13 +212,15 @@
         if (id) {
             talk.id = "talk" + id;
             talk.setAttribute("data-message-id", id.toString());
-            if (m.CanDelete) {
+            if (!m.IsDeleted) {
                 var control = document.createElement("a");
                 control.classList.add("message-menu");
-                control.href = "http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id;
-                var fa = document.createElement("i");
-                fa.className = "fa fa-trash";
-                control.appendChild(fa);
+                // reply
+                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=replyToMessage&id=" + m.Id, "fa-reply"));
+                // copy
+                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=copyMessage&id=" + m.Id, "fa-clipboard"));
+                // delete
+                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id, "fa-trash", !m.CanDelete));
                 talk.appendChild(control);
             }
         }

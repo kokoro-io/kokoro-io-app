@@ -94,6 +94,7 @@
     <Content Include="Icons\ic_notifications_off_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Icons\ic_reply_black_24px.svg" />
     <Content Include="Icons\ic_search_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

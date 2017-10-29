@@ -837,20 +837,46 @@ body {
 .talk:hover > .message-menu {
   display: block;
   position: absolute;
-  width: 24px;
-  height: 24px;
-  top: -8px;
-  right: 16px;
-  font-size: 16px;
-  line-height: 24px;
+  width: 96px;
+  height: 32px;
+  top: -32px;
+  right: 32px;
+  line-height: 32px;
   z-index: 100;
   font-weight: bold;
   color: #ccc;
   text-align: center;
-  background-color: #fff;
+  display: flex;
+  flex-flow: row nowrap;
+}
+.talk.message-hover > .message-menu > a,
+.talk:hover > .message-menu > a {
+  width: 32px;
+  height: 32px;
   box-sizing: border-box;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  background-color: #fff;
+  border-left-color: #fff;
+}
+.talk.message-hover > .message-menu > a:first-child,
+.talk:hover > .message-menu > a:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-left-color: #ccc;
+}
+.talk.message-hover > .message-menu > a:last-child,
+.talk:hover > .message-menu > a:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.talk.message-hover > .message-menu > a .fa,
+.talk:hover > .message-menu > a .fa {
+  width: 18px;
+  height: 18px;
+}
+.talk.message-hover > .message-menu > a.disabled .fa,
+.talk:hover > .message-menu > a.disabled .fa {
+  opacity: 0.5;
 }
 .fa {
   display: inline-block;
@@ -860,6 +886,12 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+}
+.fa-reply {
+  background-image: url(data:image/svg+xml,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M10%209V5l-7%207%207%207v-4.1c5%200%208.5%201.6%2011%205.1-1-5-4-10-11-11z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%0A%3C%2Fsvg%3E);
+}
+.fa-clipboard {
+  background-image: url(data:image/svg+xml,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16%201H4c-1.1%200-2%20.9-2%202v14h2V3h12V1zm3%204H8c-1.1%200-2%20.9-2%202v14c0%201.1.9%202%202%202h11c1.1%200%202-.9%202-2V7c0-1.1-.9-2-2-2zm0%2016H8V7h11v14z%22%2F%3E%0A%3C%2Fsvg%3E);
 }
 .fa-trash {
   background-image: url(data:image/svg+xml,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M6%2019c0%201.1.9%202%202%202h8c1.1%200%202-.9%202-2V7H6v12zM19%204h-3.5l-1-1h-5l-1%201H5v2h14V4z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%0A%3C%2Fsvg%3E);
@@ -1055,6 +1087,24 @@ body {
         }
         return (i + offset).toFixed(0).substr(1, l);
     }
+    function FA_ANCHOR(url, faClass, disabled) {
+        var a = document.createElement("a");
+        if (disabled) {
+            a.href = "javascript:void(0)";
+            a.classList.add("disabled");
+        }
+        else {
+            a.href = url;
+        }
+        a.appendChild(FA(faClass));
+        return a;
+    }
+    function FA(className) {
+        var r = document.createElement("i");
+        r.classList.add("fa");
+        r.classList.add(className);
+        return r;
+    }
     function createTaklElement(m) {
         var id = m.Id;
         var talk = document.createElement("div");
@@ -1063,13 +1113,15 @@ body {
         if (id) {
             talk.id = "talk" + id;
             talk.setAttribute("data-message-id", id.toString());
-            if (m.CanDelete) {
+            if (!m.IsDeleted) {
                 var control = document.createElement("a");
                 control.classList.add("message-menu");
-                control.href = "http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id;
-                var fa = document.createElement("i");
-                fa.className = "fa fa-trash";
-                control.appendChild(fa);
+                // reply
+                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=replyToMessage&id=" + m.Id, "fa-reply"));
+                // copy
+                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=copyMessage&id=" + m.Id, "fa-clipboard"));
+                // delete
+                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id, "fa-trash", !m.CanDelete));
                 talk.appendChild(control);
             }
         }

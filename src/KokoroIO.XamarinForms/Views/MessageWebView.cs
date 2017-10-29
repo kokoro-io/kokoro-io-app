@@ -1,12 +1,12 @@
-﻿using KokoroIO.XamarinForms.ViewModels;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using KokoroIO.XamarinForms.ViewModels;
+using Newtonsoft.Json;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 
@@ -498,6 +498,30 @@ namespace KokoroIO.XamarinForms.Views
                     }
                 }
 
+                return;
+            }
+
+            const string REPLY_URL = "http://kokoro.io/client/control?event=replyToMessage&id=";
+            if (e.Url.StartsWith(REPLY_URL))
+            {
+                e.Cancel = true;
+                if (int.TryParse(e.Url.Substring(REPLY_URL.Length), out var id))
+                {
+                    var msg = Messages.FirstOrDefault(m => m.Id == id);
+                    //msg?.BeginDelete();
+                }
+                return;
+            }
+
+            const string COPY_URL = "http://kokoro.io/client/control?event=copyMessage&id=";
+            if (e.Url.StartsWith(COPY_URL))
+            {
+                e.Cancel = true;
+                if (int.TryParse(e.Url.Substring(COPY_URL.Length), out var id))
+                {
+                    var msg = Messages.FirstOrDefault(m => m.Id == id);
+                    //msg?.BeginDelete();
+                }
                 return;
             }
 
