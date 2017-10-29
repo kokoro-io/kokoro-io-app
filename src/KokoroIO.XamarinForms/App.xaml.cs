@@ -67,7 +67,7 @@ namespace KokoroIO.XamarinForms
                 if (!string.IsNullOrWhiteSpace(endPoint))
                 {
                     c.EndPoint = endPoint;
-                    c.WebSocketEndPoint = Regex.Replace(Regex.Replace(endPoint, "^http", "ws"), "(/api)?$", "/cable");
+                    c.WebSocketEndPoint = Regex.Replace(Regex.Replace(endPoint, "^http", "ws"), "/api$", "/cable");
                 }
 
                 var me = await c.GetProfileAsync().ConfigureAwait(false);
