@@ -1,23 +1,21 @@
-﻿using System;
-using System.Threading.Tasks;
-using KokoroIO.XamarinForms.UWP;
+﻿using Foundation;
+using KokoroIO.XamarinForms.iOS.Renderers;
 using KokoroIO.XamarinForms.Views;
-using Xamarin.Forms.Platform.UWP;
-using WebView = Xamarin.Forms.WebView;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 
 [assembly: ExportRenderer(typeof(MessageWebView), typeof(MessageWebViewRenderer))]
 
-namespace KokoroIO.XamarinForms.UWP
+namespace KokoroIO.XamarinForms.iOS.Renderers
 {
     public sealed class MessageWebViewRenderer : WebViewRenderer
     {
-        protected override void OnElementChanged(ElementChangedEventArgs<WebView> e)
+        protected override void OnElementChanged(VisualElementChangedEventArgs e)
         {
             var mwv = e.OldElement as MessageWebView;
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = null;
                 mwv.NavigateToStringCore = null;
             }
 
@@ -27,17 +25,13 @@ namespace KokoroIO.XamarinForms.UWP
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = InvokeScriptAsyncCore;
                 mwv.NavigateToStringCore = NavigateToStringCore;
             }
         }
 
-        private Task InvokeScriptAsyncCore(string script)
-            => Control.InvokeScriptAsync("eval", new[] { script }).AsTask();
-
         private void NavigateToStringCore(string html)
         {
-            Control.NavigateToString(html);
+            LoadHtmlString(html, new NSUrl(NSBundle.MainBundle.BundlePath, true));
         }
     }
 }

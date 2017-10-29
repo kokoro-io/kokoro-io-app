@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using KokoroIO.XamarinForms.UWP;
+using KokoroIO.XamarinForms.UWP.Renderers;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -15,7 +15,7 @@ using Xamarin.Forms.Platform.UWP;
 
 [assembly: ExportRenderer(typeof(TableView), typeof(MatomonaTableViewRenderer))]
 
-namespace KokoroIO.XamarinForms.UWP
+namespace KokoroIO.XamarinForms.UWP.Renderers
 {
     public sealed class MatomonaTableViewRenderer : ViewRenderer<TableView, Windows.UI.Xaml.Controls.ListView>
     {

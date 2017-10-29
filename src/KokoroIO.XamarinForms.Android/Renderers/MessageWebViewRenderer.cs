@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Android.Webkit;
-using KokoroIO.XamarinForms.Droid;
+using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(MessageWebView), typeof(MessageWebViewRenderer))]
 
-namespace KokoroIO.XamarinForms.Droid
+namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public class MessageWebViewRenderer : WebViewRenderer
     {

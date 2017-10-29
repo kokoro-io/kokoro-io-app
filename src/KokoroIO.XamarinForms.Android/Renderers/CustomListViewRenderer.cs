@@ -1,11 +1,11 @@
 using Android.Views;
-using KokoroIO.XamarinForms.Droid;
+using KokoroIO.XamarinForms.Droid.Renderers;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(ListView), typeof(CustomListViewRenderer))]
 
-namespace KokoroIO.XamarinForms.Droid
+namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public sealed class CustomListViewRenderer : ListViewRenderer
     {

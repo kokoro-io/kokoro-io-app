@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 using Foundation;
-using KokoroIO.XamarinForms.iOS;
+using KokoroIO.XamarinForms.iOS.Renderers;
 using KokoroIO.XamarinForms.Views;
 using UIKit;
 using Xamarin.Forms;
@@ -9,7 +9,7 @@ using Xamarin.Forms.Platform.iOS;
 
 [assembly: ExportRenderer(typeof(ExpandableEditor), typeof(ExpandableEditorRenderer))]
 
-namespace KokoroIO.XamarinForms.iOS
+namespace KokoroIO.XamarinForms.iOS.Renderers
 {
     public sealed class ExpandableEditorRenderer : EditorRenderer
     {

@@ -1,14 +1,14 @@
 using System;
 using System.ComponentModel;
 using Android.Views;
-using KokoroIO.XamarinForms.Droid;
+using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(ExpandableEditor), typeof(ExpandableEditorRenderer))]
 
-namespace KokoroIO.XamarinForms.Droid
+namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public sealed class ExpandableEditorRenderer : EditorRenderer
     {

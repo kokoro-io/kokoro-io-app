@@ -145,16 +145,16 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MatomonaTableViewRenderer.cs" />
+    <Compile Include="Renderers\MatomonaTableViewRenderer.cs" />
     <Compile Include="Services\AudioService.cs" />
     <Compile Include="Services\DeviceService.cs" />
-    <Compile Include="ExpandableEditorRenderer.cs" />
+    <Compile Include="Renderers\ExpandableEditorRenderer.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MediaPicker.cs" />
-    <Compile Include="EntitiesLabelRenderer.cs" />
-    <Compile Include="MessageWebViewRenderer.cs" />
+    <Compile Include="Renderers\EntitiesLabelRenderer.cs" />
+    <Compile Include="Renderers\MessageWebViewRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\NotificationService.cs" />
   </ItemGroup>

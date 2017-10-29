@@ -192,15 +192,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RoundLabelRenderer.cs" />
+    <Compile Include="Renderers\RoundLabelRenderer.cs" />
     <Compile Include="Services\AudioService.cs" />
-    <Compile Include="CustomListViewRenderer.cs" />
+    <Compile Include="Renderers\CustomListViewRenderer.cs" />
     <Compile Include="Services\DeviceService.cs" />
-    <Compile Include="ExpandableEditorRenderer.cs" />
+    <Compile Include="Renderers\ExpandableEditorRenderer.cs" />
     <Compile Include="GcmBroadcastReceiver.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="EntitiesLabelRenderer.cs" />
-    <Compile Include="MessageWebViewRenderer.cs" />
+    <Compile Include="Renderers\EntitiesLabelRenderer.cs" />
+    <Compile Include="Renderers\MessageWebViewRenderer.cs" />
     <Compile Include="PushHandlerService.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

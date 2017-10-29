@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
-using KokoroIO.XamarinForms.iOS;
+using KokoroIO.XamarinForms.iOS.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly: ExportRenderer(typeof(RoundLabel), typeof(RoundLabelRenderer))]
 
-namespace KokoroIO.XamarinForms.iOS
+namespace KokoroIO.XamarinForms.iOS.Renderers
 {
     public class RoundLabelRenderer : LabelRenderer
     {

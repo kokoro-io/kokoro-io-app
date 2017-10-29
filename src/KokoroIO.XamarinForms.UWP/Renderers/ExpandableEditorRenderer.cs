@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using KokoroIO.XamarinForms.UWP;
+using KokoroIO.XamarinForms.UWP.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
@@ -17,7 +17,7 @@ using Xamarin.Forms.Platform.UWP;
 
 [assembly: ExportRenderer(typeof(ExpandableEditor), typeof(ExpandableEditorRenderer))]
 
-namespace KokoroIO.XamarinForms.UWP
+namespace KokoroIO.XamarinForms.UWP.Renderers
 {
     public sealed class ExpandableEditorRenderer : EditorRenderer
     {

@@ -1,18 +1,14 @@
-﻿using System;
-using System.Linq;
-using Android.Text;
+﻿using Android.Text;
 using Android.Text.Method;
 using Android.Text.Style;
-using Android.Views;
-using KokoroIO.XamarinForms.Droid;
-using KokoroIO.XamarinForms.ViewModels;
+using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(EntitiesLabel), typeof(EntitiesLabelRenderer))]
 
-namespace KokoroIO.XamarinForms.Droid
+namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public sealed class EntitiesLabelRenderer : LabelRenderer
     {
@@ -20,6 +16,7 @@ namespace KokoroIO.XamarinForms.Droid
         {
             private readonly EntitiesLabelRenderer _Renderer;
             private readonly object _Entity;
+
             public EntitySpan(EntitiesLabelRenderer r, object entity)
             {
                 _Renderer = r;

@@ -271,13 +271,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RoundLabelRenderer.cs" />
+    <Compile Include="Renderers\RoundLabelRenderer.cs" />
     <Compile Include="Services\AudioService.cs" />
     <Compile Include="Services\DeviceService.cs" />
-    <Compile Include="ExpandableEditorRenderer.cs" />
+    <Compile Include="Renderers\ExpandableEditorRenderer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="MessageWebViewRenderer.cs" />
+    <Compile Include="Renderers\MessageWebViewRenderer.cs" />
     <Compile Include="Services\NotificationService.cs" />
   </ItemGroup>
   <ItemGroup>

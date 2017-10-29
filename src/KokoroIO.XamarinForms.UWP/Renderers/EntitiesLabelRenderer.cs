@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using KokoroIO.XamarinForms.UWP;
+using KokoroIO.XamarinForms.UWP.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Windows.UI.Xaml.Documents;
 using Xamarin.Forms;
@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform.UWP;
 
 [assembly: ExportRenderer(typeof(EntitiesLabel), typeof(EntitiesLabelRenderer))]
 
-namespace KokoroIO.XamarinForms.UWP
+namespace KokoroIO.XamarinForms.UWP.Renderers
 {
     public class EntitiesLabelRenderer : LabelRenderer
     {
