@@ -41,19 +41,12 @@ body {
 .talk {
     position: relative;
 
-    .embed_content .nsfw-mark.fa.fa-exclamation-triangle {
-        width: 14px;
-        height: 14px;
-        background-image: url(icons/variants/ic_warning_f39c12_24px.svg);
-        background-size: cover;
-    }
-
     > .message-menu {
         display: none;
     }
 
     &.message-hover, &:hover {
-        background-color: #eee;
+        background-color: #f8f8f8;
 
         > .message-menu {
             display: block;
@@ -61,9 +54,9 @@ body {
             width: 24px;
             height: 24px;
             top: -8px;
-            right: 32px;
+            right: 16px;
             font-size: 16px;
-            line-height: 16px;
+            line-height: 24px;
             z-index: 100;
             font-weight: bold;
             color: #ccc;
@@ -74,4 +67,22 @@ body {
             border-radius: 4px;
         }
     }
+}
+
+.fa {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 14px;
+    height: 14px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.fa-trash {
+    background-image: url(icons/ic_delete_black_24px.svg);
+}
+
+.fa-exclamation-triangle {
+    background-image: url(icons/variants/ic_warning_f39c12_24px.svg);
 }

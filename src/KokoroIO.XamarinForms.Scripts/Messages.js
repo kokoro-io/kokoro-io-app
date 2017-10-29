@@ -197,8 +197,10 @@
             if (m.CanDelete) {
                 var control = document.createElement("a");
                 control.classList.add("message-menu");
-                control.innerHTML = "&times;";
                 control.href = "http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id;
+                var fa = document.createElement("i");
+                fa.className = "fa fa-trash";
+                control.appendChild(fa);
                 talk.appendChild(control);
             }
         }
