@@ -821,7 +821,7 @@ body {
   padding-top: 0;
 }
 .talk.hidden > div {
-  display: none;
+  display: none !important;
 }
 .talk:last-child {
   margin-bottom: 10px;
@@ -838,7 +838,8 @@ body {
 }
 .talk.message-hover > .message-menu,
 .talk:hover > .message-menu {
-  display: block;
+  display: flex;
+  flex-flow: row nowrap;
   position: absolute;
   width: 96px;
   height: 32px;
@@ -846,11 +847,7 @@ body {
   right: 32px;
   line-height: 32px;
   z-index: 100;
-  font-weight: bold;
-  color: #ccc;
   text-align: center;
-  display: flex;
-  flex-flow: row nowrap;
 }
 .talk.message-hover > .message-menu > a,
 .talk:hover > .message-menu > a {
@@ -885,6 +882,37 @@ body {
 .talk:hover:first-child > .message-menu {
   top: 0;
 }
+html.html-phone .talk > .message-menu {
+  display: block;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 0;
+  right: 0;
+  line-height: 24px;
+  text-align: center;
+  opacity: 0.1;
+}
+html.html-phone .talk > .message-menu > a {
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  border-width: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+html.html-phone .talk > .message-menu > a .fa {
+  width: 24px;
+  height: 24px;
+}
+html.html-phone .talk.message-hover,
+html.html-phone .talk:hover {
+  background-color: none;
+}
+html.html-phone .talk.message-hover > .message-menu,
+html.html-phone .talk:hover > .message-menu {
+  opacity: 0.8;
+}
 .fa {
   display: inline-block;
   box-sizing: border-box;
@@ -903,6 +931,9 @@ body {
 .fa-trash {
   background-image: url(data:image/svg+xml,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M6%2019c0%201.1.9%202%202%202h8c1.1%200%202-.9%202-2V7H6v12zM19%204h-3.5l-1-1h-5l-1%201H5v2h14V4z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%0A%3C%2Fsvg%3E);
 }
+.fa-chevron-down {
+  background-image: url(data:image/svg+xml,%3Csvg%20fill%3D%22%23000000%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M16.59%208.59L12%2013.17%207.41%208.59%206%2010l6%206%206-6z%22%2F%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%0A%3C%2Fsvg%3E);
+}
 .fa-exclamation-triangle {
   background-image: url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%0D%0A%3Csvg%20fill%3D%22%23f39c12%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0D%0A%20%20%3Cpath%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%20%2F%3E%0D%0A%20%20%3Cpath%20d%3D%22M1%2021h22L12%202%201%2021zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z%22%20%2F%3E%0D%0A%3C%2Fsvg%3E);
 }</style>
@@ -912,6 +943,11 @@ body {
     var LOAD_OLDER_MARGIN = 200;
     var LOAD_NEWER_MARGIN = 200;
     var HIDE_CONTENT_MARGIN = 60;
+    var isDesktop = document.documentElement.classList.contains("html-desktop");
+    var isTablet = document.documentElement.classList.contains("html-tablet");
+    if (!isDesktop && !isTablet) {
+        document.documentElement.classList.add("html-phone");
+    }
     var _hasUnread = false;
     window.setHasUnread = function (value) {
         _hasUnread = !!value;
@@ -1121,15 +1157,23 @@ body {
             talk.id = "talk" + id;
             talk.setAttribute("data-message-id", id.toString());
             if (!m.IsDeleted) {
-                var control = document.createElement("a");
-                control.classList.add("message-menu");
-                // reply
-                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=replyToMessage&id=" + m.Id, "fa-reply"));
-                // copy
-                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=copyMessage&id=" + m.Id, "fa-clipboard"));
-                // delete
-                control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id, "fa-trash", !m.CanDelete));
-                talk.appendChild(control);
+                if (isDesktop || isTablet) {
+                    var control = document.createElement("div");
+                    control.classList.add("message-menu");
+                    // reply
+                    control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=replyToMessage&id=" + m.Id, "fa-reply"));
+                    // copy
+                    control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=copyMessage&id=" + m.Id, "fa-clipboard"));
+                    // delete
+                    control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=deleteMessage&id=" + m.Id, "fa-trash", !m.CanDelete));
+                    talk.appendChild(control);
+                }
+                else {
+                    var control = document.createElement("div");
+                    control.classList.add("message-menu");
+                    control.appendChild(FA_ANCHOR("http://kokoro.io/client/control?event=messageMenu&id=" + m.Id, "fa-chevron-down"));
+                    talk.appendChild(control);
+                }
             }
         }
         var idempotentKey = m.IdempotentKey;

@@ -34,8 +34,10 @@ body {
     padding-top: 0;
 }
 
-.talk.hidden > div {
-    display: none;
+.talk.hidden {
+    > div {
+        display: none !important;
+    }
 }
 
 .talk:last-child {
@@ -55,7 +57,8 @@ body {
         @iconSize: 32px;
 
         > .message-menu {
-            display: block;
+            display: flex;
+            flex-flow: row nowrap;
             position: absolute;
             width: @iconSize * 3;
             height: @iconSize;
@@ -63,11 +66,7 @@ body {
             right: 32px;
             line-height: @iconSize;
             z-index: 100;
-            font-weight: bold;
-            color: #ccc;
             text-align: center;
-            display: flex;
-            flex-flow: row nowrap;
 
             > a {
                 width: @iconSize;
@@ -107,6 +106,46 @@ body {
     }
 }
 
+html.html-phone {
+    .talk {
+        @iconSize: 24px;
+
+        > .message-menu {
+            display: block;
+            position: absolute;
+            width: @iconSize;
+            height: @iconSize;
+            top: 0;
+            right: 0;
+            line-height: @iconSize;
+            text-align: center;
+            opacity: 0.1;
+
+            > a {
+                width: @iconSize;
+                height: @iconSize;
+                box-sizing: border-box;
+                border-width: 0;
+                border-radius: 0;
+                background-color: transparent;
+
+                .fa {
+                    width: @iconSize;
+                    height: @iconSize;
+                }
+            }
+        }
+
+        &.message-hover, &:hover {
+            background-color: none;
+
+            > .message-menu {
+                opacity: 0.8;
+            }
+        }
+    }
+}
+
 .fa {
     display: inline-block;
     box-sizing: border-box;
@@ -127,6 +166,10 @@ body {
 
 .fa-trash {
     background-image: url(icons/ic_delete_black_24px.svg);
+}
+
+.fa-chevron-down {
+    background-image: url(icons/ic_expand_more_black_24px.svg);
 }
 
 .fa-exclamation-triangle {

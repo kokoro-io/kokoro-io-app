@@ -29,7 +29,7 @@ body {
   padding-top: 0;
 }
 .talk.hidden > div {
-  display: none;
+  display: none !important;
 }
 .talk:last-child {
   margin-bottom: 10px;
@@ -46,7 +46,8 @@ body {
 }
 .talk.message-hover > .message-menu,
 .talk:hover > .message-menu {
-  display: block;
+  display: flex;
+  flex-flow: row nowrap;
   position: absolute;
   width: 96px;
   height: 32px;
@@ -54,11 +55,7 @@ body {
   right: 32px;
   line-height: 32px;
   z-index: 100;
-  font-weight: bold;
-  color: #ccc;
   text-align: center;
-  display: flex;
-  flex-flow: row nowrap;
 }
 .talk.message-hover > .message-menu > a,
 .talk:hover > .message-menu > a {
@@ -93,6 +90,37 @@ body {
 .talk:hover:first-child > .message-menu {
   top: 0;
 }
+html.html-phone .talk > .message-menu {
+  display: block;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 0;
+  right: 0;
+  line-height: 24px;
+  text-align: center;
+  opacity: 0.1;
+}
+html.html-phone .talk > .message-menu > a {
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  border-width: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+html.html-phone .talk > .message-menu > a .fa {
+  width: 24px;
+  height: 24px;
+}
+html.html-phone .talk.message-hover,
+html.html-phone .talk:hover {
+  background-color: none;
+}
+html.html-phone .talk.message-hover > .message-menu,
+html.html-phone .talk:hover > .message-menu {
+  opacity: 0.8;
+}
 .fa {
   display: inline-block;
   box-sizing: border-box;
@@ -110,6 +138,9 @@ body {
 }
 .fa-trash {
   background-image: url(icons/ic_delete_black_24px.svg);
+}
+.fa-chevron-down {
+  background-image: url(icons/ic_expand_more_black_24px.svg);
 }
 .fa-exclamation-triangle {
   background-image: url(icons/variants/ic_warning_f39c12_24px.svg);

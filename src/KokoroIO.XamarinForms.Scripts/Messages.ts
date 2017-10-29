@@ -63,6 +63,12 @@ interface Window {
     const LOAD_NEWER_MARGIN = 200;
     const HIDE_CONTENT_MARGIN = 60;
 
+    var isDesktop = document.documentElement.classList.contains("html-desktop");
+    var isTablet = document.documentElement.classList.contains("html-tablet");
+    if (!isDesktop && !isTablet) {
+        document.documentElement.classList.add("html-phone");
+    }
+
     var _hasUnread = false;
 
     window.setHasUnread = function (value: boolean) {
@@ -305,19 +311,26 @@ interface Window {
 
             if (!m.IsDeleted) {
 
-                let control = document.createElement("a");
-                control.classList.add("message-menu");
+                if (isDesktop || isTablet) {
+                    let control = document.createElement("div");
+                    control.classList.add("message-menu");
 
-                // reply
-                control.appendChild(FA_ANCHOR(`http://kokoro.io/client/control?event=replyToMessage&id=${m.Id}`, "fa-reply"));
+                    // reply
+                    control.appendChild(FA_ANCHOR(`http://kokoro.io/client/control?event=replyToMessage&id=${m.Id}`, "fa-reply"));
 
-                // copy
-                control.appendChild(FA_ANCHOR(`http://kokoro.io/client/control?event=copyMessage&id=${m.Id}`, "fa-clipboard"));
+                    // copy
+                    control.appendChild(FA_ANCHOR(`http://kokoro.io/client/control?event=copyMessage&id=${m.Id}`, "fa-clipboard"));
 
-                // delete
-                control.appendChild(FA_ANCHOR(`http://kokoro.io/client/control?event=deleteMessage&id=${m.Id}`, "fa-trash", !m.CanDelete));
+                    // delete
+                    control.appendChild(FA_ANCHOR(`http://kokoro.io/client/control?event=deleteMessage&id=${m.Id}`, "fa-trash", !m.CanDelete));
 
-                talk.appendChild(control);
+                    talk.appendChild(control);
+                } else {
+                    let control = document.createElement("div");
+                    control.classList.add("message-menu");
+                    control.appendChild(FA_ANCHOR(`http://kokoro.io/client/control?event=messageMenu&id=${m.Id}`, "fa-chevron-down"));
+                    talk.appendChild(control);
+                }
             }
         }
 

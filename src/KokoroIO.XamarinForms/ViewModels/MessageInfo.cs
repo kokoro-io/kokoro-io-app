@@ -239,6 +239,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             Page.SelectionLength = 0;
         }
 
+        public void ShowMenu()
+            => MessagingCenter.Send(this, "ShowMessageMenu");
+
         public void BeginConfirmDeletion()
             => MessagingCenter.Send(this, "ConfirmMessageDeletion");
 
