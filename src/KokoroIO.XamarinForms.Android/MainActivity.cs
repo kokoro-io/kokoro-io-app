@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.OS;
 using KokoroIO.XamarinForms.ViewModels;
+using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
 
@@ -18,18 +18,36 @@ namespace KokoroIO.XamarinForms.Droid
 
         protected override void OnCreate(Bundle bundle)
         {
+            var mp = App.Current?.MainPage;
+
+            var avm = mp?.BindingContext as ApplicationViewModel;
+
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
             _Current = new System.WeakReference<MainActivity>(this);
 
+            var cid = Intent.Extras?.GetString("channelId");
+
+            if (avm != null)
+            {
+                avm.SelectedChannelId = cid ?? avm.SelectedChannelId;
+
+                global::Xamarin.Forms.Forms.Init(this, bundle);
+                LoadApplication(new App(avm));
+
+                ResetBindingContext(mp);
+
+                return;
+            }
+
             var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
             Resolver.ResetResolver(resolver.GetResolver());
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
-            LoadApplication(new App(channelId: Intent.Extras?.GetString("channelId")));
+            LoadApplication(new App(channelId: cid));
 
             if (Intent.Action == Intent.ActionSend)
             {
@@ -74,6 +92,35 @@ namespace KokoroIO.XamarinForms.Droid
             builder.SetMessage(message);
             builder.SetTitle(title);
             builder.Create().Show();
+        }
+
+        private static void ResetBindingContext(Page p)
+        {
+            if (p == null)
+            {
+                return;
+            }
+            p.BindingContext = null;
+
+            if (p is MasterDetailPage mdp)
+            {
+                ResetBindingContext(mdp.Master);
+                ResetBindingContext(mdp.Detail);
+            }
+            else if (p is NavigationPage np)
+            {
+                foreach (var cp in np.Navigation.NavigationStack)
+                {
+                    ResetBindingContext(cp);
+                }
+            }
+            else if (p is MultiPage<Page> mp)
+            {
+                foreach (var cp in mp.Children)
+                {
+                    ResetBindingContext(cp);
+                }
+            }
         }
     }
 }

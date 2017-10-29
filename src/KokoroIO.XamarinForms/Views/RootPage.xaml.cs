@@ -10,6 +10,8 @@ namespace KokoroIO.XamarinForms.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class RootPage : MasterDetailPage
     {
+        private WeakReference<ApplicationViewModel> _ViewModel;
+
         public RootPage(ApplicationViewModel viewModel)
         {
             InitializeComponent();
@@ -43,6 +45,8 @@ namespace KokoroIO.XamarinForms.Views
             MasterBehavior = XDevice.Idiom == TargetIdiom.Phone ? MasterBehavior.Popover : MasterBehavior.Split;
 
             SetBinding(HasNotificationProperty, new Binding(nameof(viewModel.HasNotificationInMenu)));
+
+            _ViewModel = new WeakReference<ApplicationViewModel>(viewModel);
         }
 
         public static readonly BindableProperty HasNotificationProperty
@@ -70,6 +74,25 @@ namespace KokoroIO.XamarinForms.Views
             if (vm != null)
             {
                 vm.SelectedChannel = null;
+            }
+        }
+
+        protected override void OnBindingContextChanged()
+        {
+            {
+                if (_ViewModel != null && _ViewModel.TryGetTarget(out var vm))
+                {
+                    vm.PropertyChanged -= ViewModel_PropertyChanged;
+                }
+            }
+            base.OnBindingContextChanged();
+            {
+                var vm = BindingContext as ApplicationViewModel;
+                if (vm != null)
+                {
+                    vm.PropertyChanged += ViewModel_PropertyChanged;
+                }
+                _ViewModel = vm == null ? null : new WeakReference<ApplicationViewModel>(vm);
             }
         }
 
