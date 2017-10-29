@@ -21,6 +21,8 @@ namespace KokoroIO.XamarinForms.Droid
 
             if (Control != null)
             {
+                UpdateMinimumWidth();
+
                 Control.Invalidate();
             }
         }
@@ -38,7 +40,18 @@ namespace KokoroIO.XamarinForms.Droid
                 case nameof(RoundLabel.CornerRadius):
                     Control.Invalidate();
                     break;
+
+                case nameof(Label.MinimumHeightRequest):
+                    UpdateMinimumWidth();
+                    break;
             }
+        }
+
+        private void UpdateMinimumWidth()
+        {
+            var v = (int)System.Math.Round(Element.MinimumWidthRequest);
+            Control.SetMinWidth(v);
+            Control.SetMinimumWidth(v);
         }
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
