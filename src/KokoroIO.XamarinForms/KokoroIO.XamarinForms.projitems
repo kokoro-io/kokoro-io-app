@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ChannelDetailViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ChannelListViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\CustomTableView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\RoundLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ConditionalConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)viewmodels\EntityCandicates.cs" />

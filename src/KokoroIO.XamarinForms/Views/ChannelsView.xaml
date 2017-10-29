@@ -179,11 +179,12 @@
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
-        <TableView
+        <views:CustomTableView
             x:Name="tableView"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
-            Intent="Menu">
-        </TableView>
+            Intent="Menu"
+            IsSeparatorVisible="False">
+        </views:CustomTableView>
     </ContentView.Content>
 </ContentView>

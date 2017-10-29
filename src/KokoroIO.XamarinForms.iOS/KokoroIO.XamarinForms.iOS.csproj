@@ -271,6 +271,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Renderers\CustomTableViewRenderer.cs" />
     <Compile Include="Renderers\RoundLabelRenderer.cs" />
     <Compile Include="Services\AudioService.cs" />
     <Compile Include="Services\DeviceService.cs" />
