@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using KokoroIO.XamarinForms.ViewModels;
 using Newtonsoft.Json;
+using Plugin.Clipboard;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 
@@ -445,109 +446,108 @@ namespace KokoroIO.XamarinForms.Views
 
         private void MessageWebView_Navigating(object sender, WebNavigatingEventArgs e)
         {
-            if (e.Cancel)
+            try
             {
-                return;
-            }
-
-            if (e.Url == "http://kokoro.io/client/control?event=prepend")
-            {
-                e.Cancel = true;
-                LoadOlderCommand?.Execute(null);
-                return;
-            }
-            if (e.Url == "http://kokoro.io/client/control?event=append")
-            {
-                e.Cancel = true;
-                RefreshCommand?.Execute(null);
-                return;
-            }
-
-            const string IDURL = "http://kokoro.io/client/control?event=visibility&ids=";
-            if (e.Url.StartsWith(IDURL))
-            {
-                e.Cancel = true;
-
-                var messages = Messages;
-
-                if (messages.Any())
+                if (e.Cancel)
                 {
-                    int? max = null;
-                    int? min = null;
-                    List<Guid> keys = null;
+                    return;
+                }
+                e.Cancel = true;
 
-                    foreach (var id in e.Url.Substring(IDURL.Length).Split(','))
+                if (e.Url == "http://kokoro.io/client/control?event=prepend")
+                {
+                    LoadOlderCommand?.Execute(null);
+                    return;
+                }
+                if (e.Url == "http://kokoro.io/client/control?event=append")
+                {
+                    RefreshCommand?.Execute(null);
+                    return;
+                }
+
+                const string IDURL = "http://kokoro.io/client/control?event=visibility&ids=";
+                if (e.Url.StartsWith(IDURL))
+                {
+                    var messages = Messages;
+
+                    if (messages.Any())
                     {
-                        if (int.TryParse(id, out var i))
+                        int? max = null;
+                        int? min = null;
+                        List<Guid> keys = null;
+
+                        foreach (var id in e.Url.Substring(IDURL.Length).Split(','))
                         {
-                            min = Math.Min(min ?? int.MaxValue, i);
-                            max = Math.Max(max ?? int.MinValue, i);
+                            if (int.TryParse(id, out var i))
+                            {
+                                min = Math.Min(min ?? int.MaxValue, i);
+                                max = Math.Max(max ?? int.MinValue, i);
+                            }
+                            else if (Guid.TryParse(id, out var g))
+                            {
+                                (keys ?? (keys = new List<Guid>())).Add(g);
+                            }
                         }
-                        else if (Guid.TryParse(id, out var g))
+
+                        foreach (var m in messages)
                         {
-                            (keys ?? (keys = new List<Guid>())).Add(g);
+                            m.IsShown = (min <= m.Id && m.Id <= max)
+                                        || (m.Id == null
+                                            && m.IdempotentKey != null
+                                            && keys?.Contains(m.IdempotentKey.Value) == true);
                         }
                     }
 
-                    foreach (var m in messages)
+                    return;
+                }
+
+                const string REPLY_URL = "http://kokoro.io/client/control?event=replyToMessage&id=";
+                if (e.Url.StartsWith(REPLY_URL))
+                {
+                    if (int.TryParse(e.Url.Substring(REPLY_URL.Length), out var id))
                     {
-                        m.IsShown = (min <= m.Id && m.Id <= max)
-                                    || (m.Id == null
-                                        && m.IdempotentKey != null
-                                        && keys?.Contains(m.IdempotentKey.Value) == true);
+                        var msg = Messages.FirstOrDefault(m => m.Id == id);
+                        msg?.Reply();
                     }
+                    return;
                 }
 
-                return;
-            }
-
-            const string REPLY_URL = "http://kokoro.io/client/control?event=replyToMessage&id=";
-            if (e.Url.StartsWith(REPLY_URL))
-            {
-                e.Cancel = true;
-                if (int.TryParse(e.Url.Substring(REPLY_URL.Length), out var id))
+                const string COPY_URL = "http://kokoro.io/client/control?event=copyMessage&id=";
+                if (e.Url.StartsWith(COPY_URL))
                 {
-                    var msg = Messages.FirstOrDefault(m => m.Id == id);
-                    //msg?.BeginDelete();
+                    if (int.TryParse(e.Url.Substring(COPY_URL.Length), out var id))
+                    {
+                        var msg = Messages.FirstOrDefault(m => m.Id == id);
+
+                        if (msg != null)
+                        {
+                            CrossClipboard.Current.SetText(msg.RawContent);
+                        }
+                    }
+                    return;
                 }
-                return;
-            }
 
-            const string COPY_URL = "http://kokoro.io/client/control?event=copyMessage&id=";
-            if (e.Url.StartsWith(COPY_URL))
-            {
-                e.Cancel = true;
-                if (int.TryParse(e.Url.Substring(COPY_URL.Length), out var id))
+                const string DELETEURL = "http://kokoro.io/client/control?event=deleteMessage&id=";
+                if (e.Url.StartsWith(DELETEURL))
                 {
-                    var msg = Messages.FirstOrDefault(m => m.Id == id);
-                    //msg?.BeginDelete();
+                    if (int.TryParse(e.Url.Substring(DELETEURL.Length), out var id))
+                    {
+                        var msg = Messages.FirstOrDefault(m => m.Id == id);
+                        msg?.BeginDelete();
+                    }
+                    return;
                 }
-                return;
-            }
 
-            const string DELETEURL = "http://kokoro.io/client/control?event=deleteMessage&id=";
-            if (e.Url.StartsWith(DELETEURL))
-            {
-                e.Cancel = true;
-                if (int.TryParse(e.Url.Substring(DELETEURL.Length), out var id))
+                var c = NavigatingCommand;
+
+                if (c?.CanExecute(e.Url) == true)
                 {
-                    var msg = Messages.FirstOrDefault(m => m.Id == id);
-                    msg?.BeginDelete();
-                }
-                return;
-            }
+                    e.Cancel = true;
 
-            var c = NavigatingCommand;
-
-            if (c?.CanExecute(e.Url) == true)
-            {
-                e.Cancel = true;
-                try
-                {
                     c.Execute(e.Url);
                 }
-                catch { }
             }
+            catch { }
         }
     }
 }

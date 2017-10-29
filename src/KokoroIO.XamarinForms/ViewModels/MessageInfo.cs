@@ -1,7 +1,9 @@
-using KokoroIO.XamarinForms.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using KokoroIO.XamarinForms.Models;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -17,6 +19,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             _IsNsfw = message.IsNsfw;
 
             Content = message.Content;
+            _RawContent = message.RawContent;
 
             _EmbedContents = message.EmbedContents?.Count > 1
                             ? message.EmbedContents.OrderBy(c => c.Position).ToArray()
@@ -40,6 +43,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             PublishedAt = message.PublishedAt;
             IsNsfw = message.IsNsfw;
             Content = message.Content;
+            RawContent = message.RawContent;
             EmbedContents = message.EmbedContents;
             _Status = message.Status;
         }
@@ -129,6 +133,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Content
 
+        #region RawContent
+
+        private string _RawContent;
+
+        public string RawContent
+        {
+            get => _RawContent;
+            private set => SetProperty(ref _RawContent, value);
+        }
+
+        #endregion RawContent
+
         #region EmbedContents
 
         private IList<EmbedContent> _EmbedContents;
@@ -186,6 +202,37 @@ namespace KokoroIO.XamarinForms.ViewModels
         public bool CanDelete => !IsDeleted && Profile.Id == Page.Application.LoginUser.Id;
 
         public bool IsDeleted => _Status != MessageStatus.Active;
+
+        public void Reply()
+        {
+            if (Page.IsBusy)
+            {
+                return;
+            }
+
+            var sb = new StringBuilder();
+
+            if (!string.IsNullOrWhiteSpace(Page.NewMessage))
+            {
+                sb.AppendLine(Page.NewMessage);
+                sb.AppendLine();
+            }
+
+            using (var sr = new StringReader(RawContent))
+            {
+                string l;
+                while ((l = sr.ReadLine()) != null)
+                {
+                    sb.Append("> ").AppendLine(l);
+                }
+            }
+            sb.AppendLine();
+
+            Page.NewMessage = sb.ToString();
+            Page.NewMessageFocused = true;
+            Page.SelectionStart = sb.Length;
+            Page.SelectionLength = 0;
+        }
 
         public async void BeginDelete()
         {

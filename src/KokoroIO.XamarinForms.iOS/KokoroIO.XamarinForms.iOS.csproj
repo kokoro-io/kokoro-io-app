@@ -130,6 +130,12 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Plugin.Clipboard, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Plugins.Clipboard.1.2.0\lib\Xamarin.iOS10\Plugin.Clipboard.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Clipboard.Abstractions, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Plugins.Clipboard.1.2.0\lib\Xamarin.iOS10\Plugin.Clipboard.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="Realm, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Realm.Database.1.6.0\lib\netstandard1.4\Realm.dll</HintPath>
     </Reference>

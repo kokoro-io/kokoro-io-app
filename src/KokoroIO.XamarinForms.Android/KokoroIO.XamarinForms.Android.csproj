@@ -102,6 +102,12 @@
     <Reference Include="OkHttp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\modernhttpclient.2.4.2\lib\MonoAndroid\OkHttp.dll</HintPath>
     </Reference>
+    <Reference Include="Plugin.Clipboard, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Plugins.Clipboard.1.2.0\lib\MonoAndroid10\Plugin.Clipboard.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Clipboard.Abstractions, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Plugins.Clipboard.1.2.0\lib\MonoAndroid10\Plugin.Clipboard.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="Realm, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Realm.Database.1.6.0\lib\netstandard1.4\Realm.dll</HintPath>
     </Reference>

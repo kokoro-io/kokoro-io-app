@@ -8,6 +8,7 @@
     "Microsoft.Toolkit.Uwp.Notifications": "2.0.0",
     "Realm.Database": "1.6.0",
     "Xamarin.Forms": "2.4.0.282",
+    "Xamarin.Plugins.Clipboard": "1.2.0",
     "XLabs.Forms": "2.3.0-pre05",
     "XLabs.Platform": "2.3.0-pre05"
   },
