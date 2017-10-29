@@ -147,6 +147,18 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion MembershipId
 
+        #region Authority
+
+        private Authority? _Authority;
+
+        public Authority? Authority
+        {
+            get => _Authority;
+            private set => SetProperty(ref _Authority, value);
+        }
+
+        #endregion Authority
+
         #region NotificationDisabled
 
         private bool _NotificationDisabled;
@@ -172,6 +184,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         private void UpdateCore(Membership model)
         {
             MembershipId = model.Id;
+            Authority = model.Authority;
             NotificationDisabled = model.DisableNotification;
         }
 
@@ -302,7 +315,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     c.ReplaceRange(
                         channel.Memberships
-                                .Where(m => m.Authority != Authority.Invited)
+                                .Where(m => m.Authority != KokoroIO.Authority.Invited)
                                 .Select(m => Application.GetProfileViewModel(m.Profile))
                                 .OrderBy(m => m.ScreenName, StringComparer.OrdinalIgnoreCase)
                                 .ThenBy(m => m.Id));
@@ -371,7 +384,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var members = PeekMembers();
 
-            if (members != null && membership.Authority != Authority.Invited)
+            if (members != null && membership.Authority != KokoroIO.Authority.Invited)
             {
                 var p = Application.GetProfileViewModel(membership.Profile);
 

@@ -200,7 +200,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private MessageStatus _Status;
 
-        public bool CanDelete => !IsDeleted && Profile.Id == Page.Application.LoginUser.Id;
+        public bool CanDelete
+            => !IsDeleted
+                && (Profile.Id == Page.Application.LoginUser.Id
+                    || Page.Channel.Authority == Authority.Administrator
+                    || Page.Channel.Authority == Authority.Maintainer);
 
         public bool IsDeleted => _Status != MessageStatus.Active;
 
