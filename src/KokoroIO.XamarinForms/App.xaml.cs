@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
@@ -32,6 +33,11 @@ namespace KokoroIO.XamarinForms
                 return;
             }
 
+            InitMainPage(channelId);
+        }
+
+        private void InitMainPage(string channelId = null)
+        {
             var at = UserSettings.AccessToken;
             var ep = UserSettings.EndPoint;
 
@@ -99,6 +105,7 @@ namespace KokoroIO.XamarinForms
 
         protected override void OnStart()
         {
+            TH.Info("App.OnStart");
             base.OnStart();
 
             var types = new List<Type>();
@@ -125,6 +132,7 @@ namespace KokoroIO.XamarinForms
 
         protected override async void OnSleep()
         {
+            TH.Info("App.OnSleep");
             base.OnSleep();
 
             if (MainPage?.BindingContext is ApplicationViewModel avm)
@@ -139,6 +147,7 @@ namespace KokoroIO.XamarinForms
 
         protected override async void OnResume()
         {
+            TH.Info("App.OnResume");
             base.OnResume();
 
             var avm = MainPage?.BindingContext as ApplicationViewModel;
@@ -149,6 +158,11 @@ namespace KokoroIO.XamarinForms
                     await avm.ConnectAsync();
                 }
                 catch { }
+            }
+            else if (MainPage is RootPage)
+            {
+                TH.Info("Recreating ApplicationViewModel");
+                InitMainPage();
             }
         }
     }

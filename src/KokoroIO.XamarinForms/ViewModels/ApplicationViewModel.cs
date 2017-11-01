@@ -1,13 +1,13 @@
-using KokoroIO.XamarinForms.Models;
-using KokoroIO.XamarinForms.Models.Data;
-using KokoroIO.XamarinForms.Services;
-using KokoroIO.XamarinForms.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.Models.Data;
+using KokoroIO.XamarinForms.Services;
+using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -369,12 +369,17 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     var lv = rups.Max(r => r?.LastVisited);
                     var up = rups.FirstOrDefault(r => r.LastVisited == lv);
+
+                    TH.Info("Notified channel: {0}", _SelectedChannelId ?? "n/a");
+                    TH.Info("Last channel: {0}", up?.ChannelId ?? "n/a");
+
                     channelId = _SelectedChannelId ?? up?.ChannelId;
                     trx.Commit();
                 }
 
                 SelectedChannel = _Channels.FirstOrDefault(c => c.Id == channelId);
                 _SelectedChannelId = null;
+                TH.Info("Selected channel: {0}", SelectedChannelId ?? "n/a");
             }
             catch (Exception ex)
             {
