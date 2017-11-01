@@ -7,6 +7,48 @@ namespace KokoroIO.XamarinForms
 {
     internal static class TH
     {
+#if WINDOWS_UWP
+        public static void Error(string message)
+            => Debug.TraceError(message);
+
+        public static void Error(string format, params object[] args)
+            => Debug.TraceError(format, args);
+
+
+        public static void Warn(string message)
+            => Debug.TraceWarning(message);
+
+        public static void Warn(string format, params object[] args)
+            => Debug.TraceWarning(format, args);
+
+
+        public static void Info(string message)
+            => Debug.TraceInformation(message);
+
+        public static void Info(string format, params object[] args)
+            => Debug.TraceInformation(format, args);
+#else
+        public static void Error(string message)
+            => System.Diagnostics.Trace.TraceError(message);
+
+        public static void Error(string format, params object[] args)
+            => System.Diagnostics.Trace.TraceError(format, args);
+
+
+        public static void Warn(string message)
+            => System.Diagnostics.Trace.TraceWarning(message);
+
+        public static void Warn(string format, params object[] args)
+            => System.Diagnostics.Trace.TraceWarning(format, args);
+
+
+        public static void Info(string message)
+            => System.Diagnostics.Trace.TraceInformation(message);
+
+        public static void Info(string format, params object[] args)
+            => System.Diagnostics.Trace.TraceInformation(format, args);
+#endif
+
 #if DEBUG
         private sealed class ScopeDisposable : IDisposable
         {
@@ -16,7 +58,7 @@ namespace KokoroIO.XamarinForms
             public ScopeDisposable(string name)
             {
                 _Name = name;
-                Debug.WriteLine("Begin {0}", (object)_Name);
+                Info("Begin {0}", (object)_Name);
                 _Stopwatch = new Stopwatch();
                 _Stopwatch.Start();
             }
@@ -24,7 +66,7 @@ namespace KokoroIO.XamarinForms
             public void Dispose()
             {
                 _Stopwatch.Stop();
-                Debug.WriteLine("End {0} in {1:0}ms", _Name, _Stopwatch.Elapsed.TotalMilliseconds);
+                Info("End {0} in {1:0}ms", _Name, _Stopwatch.Elapsed.TotalMilliseconds);
             }
         }
 #endif
@@ -40,14 +82,14 @@ namespace KokoroIO.XamarinForms
 
         public static void TraceError(string message)
         {
-            Debug.WriteLine(message);
+            Warn(message);
 
             Analytics.TrackEvent(message);
         }
 
         public static void Trace(this Exception exception, string eventName)
         {
-            Debug.WriteLine("Exception catched at {0}: {1}", eventName, exception);
+            Warn("Exception catched at {0}: {1}", eventName, exception);
 
             var bex = exception.GetBaseException();
 
