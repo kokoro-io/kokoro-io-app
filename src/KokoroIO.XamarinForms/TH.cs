@@ -9,24 +9,24 @@ namespace KokoroIO.XamarinForms
     {
 #if WINDOWS_UWP
         public static void Error(string message)
-            => Debug.TraceError(message);
+            => Debug.WriteLine(message);
 
         public static void Error(string format, params object[] args)
-            => Debug.TraceError(format, args);
+            => Debug.WriteLine(format, args);
 
 
         public static void Warn(string message)
-            => Debug.TraceWarning(message);
+            => Debug.WriteLine(message);
 
         public static void Warn(string format, params object[] args)
-            => Debug.TraceWarning(format, args);
+            => Debug.WriteLine(format, args);
 
 
         public static void Info(string message)
-            => Debug.TraceInformation(message);
+            => Debug.WriteLine(message);
 
         public static void Info(string format, params object[] args)
-            => Debug.TraceInformation(format, args);
+            => Debug.WriteLine(format, args);
 #else
         public static void Error(string message)
             => System.Diagnostics.Trace.TraceError(message);
