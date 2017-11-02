@@ -16,7 +16,7 @@ namespace KokoroIO.XamarinForms.Views
         #region Placeholder
 
         public static readonly BindableProperty PlaceholderProperty
-            = BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(MessageWebView));
+            = BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(MessagesView));
 
         public string Placeholder
         {

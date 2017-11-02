@@ -279,7 +279,7 @@
     <Compile Include="Renderers\ExpandableEditorRenderer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Renderers\MessageWebViewRenderer.cs" />
+    <Compile Include="Renderers\MessagesViewRenderer.cs" />
     <Compile Include="Services\NotificationService.cs" />
   </ItemGroup>
   <ItemGroup>

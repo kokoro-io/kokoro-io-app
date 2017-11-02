@@ -79,7 +79,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\GridLengthConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\IChannelsViewNodeParent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MembersLabel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Views\MessageWebView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPage.xaml.cs">
       <DependentUpon>MessagesPage.xaml</DependentUpon>
       <SubType>Code</SubType>

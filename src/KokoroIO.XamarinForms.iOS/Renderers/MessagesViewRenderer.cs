@@ -4,15 +4,15 @@ using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly: ExportRenderer(typeof(MessageWebView), typeof(MessageWebViewRenderer))]
+[assembly: ExportRenderer(typeof(MessagesView), typeof(MessagesViewRenderer))]
 
 namespace KokoroIO.XamarinForms.iOS.Renderers
 {
-    public sealed class MessageWebViewRenderer : WebViewRenderer
+    public sealed class MessagesViewRenderer : WebViewRenderer
     {
         protected override void OnElementChanged(VisualElementChangedEventArgs e)
         {
-            var mwv = e.OldElement as MessageWebView;
+            var mwv = e.OldElement as MessagesView;
 
             if (mwv != null)
             {
@@ -21,7 +21,7 @@ namespace KokoroIO.XamarinForms.iOS.Renderers
 
             base.OnElementChanged(e);
 
-            mwv = e.NewElement as MessageWebView;
+            mwv = e.NewElement as MessagesView;
 
             if (mwv != null)
             {

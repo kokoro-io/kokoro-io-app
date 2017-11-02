@@ -13,19 +13,19 @@ using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
-    public class MessageWebView : WebView
+    public class MessagesView : WebView
     {
         private readonly HashSet<MessageInfo> _BindedMessages = new HashSet<MessageInfo>();
 
-        public MessageWebView()
+        public MessagesView()
         {
-            Navigating += MessageWebView_Navigating;
+            Navigating += MessagesView_Navigating;
         }
 
         #region Messages
 
         public static readonly BindableProperty MessagesProperty
-            = BindableProperty.Create(nameof(Messages), typeof(IEnumerable<MessageInfo>), typeof(MessageWebView), propertyChanged: MessagesChanged);
+            = BindableProperty.Create(nameof(Messages), typeof(IEnumerable<MessageInfo>), typeof(MessagesView), propertyChanged: MessagesChanged);
 
         public IEnumerable<MessageInfo> Messages
         {
@@ -35,7 +35,7 @@ namespace KokoroIO.XamarinForms.Views
 
         private static void MessagesChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            var mwv = (MessageWebView)bindable;
+            var mwv = (MessagesView)bindable;
 
             {
                 if (oldValue is INotifyCollectionChanged cc)
@@ -58,7 +58,7 @@ namespace KokoroIO.XamarinForms.Views
         #region SelectedMessage
 
         public static readonly BindableProperty SelectedMessageProperty
-            = BindableProperty.Create(nameof(SelectedMessage), typeof(MessageInfo), typeof(MessageWebView), propertyChanged: SelectedMessageChanged, defaultBindingMode: BindingMode.OneWay);
+            = BindableProperty.Create(nameof(SelectedMessage), typeof(MessageInfo), typeof(MessagesView), propertyChanged: SelectedMessageChanged, defaultBindingMode: BindingMode.OneWay);
 
         public MessageInfo SelectedMessage
         {
@@ -68,7 +68,7 @@ namespace KokoroIO.XamarinForms.Views
 
         private static async void SelectedMessageChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            var mwv = (MessageWebView)bindable;
+            var mwv = (MessagesView)bindable;
 
             var m = newValue as MessageInfo;
             if (m != null)
@@ -92,7 +92,7 @@ namespace KokoroIO.XamarinForms.Views
 
         private static async void OnHasUnreadChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            var mwv = bindable as MessageWebView;
+            var mwv = bindable as MessagesView;
             if (mwv != null)
             {
                 await mwv.InvokeScriptAsync($"window.setHasUnread({(false.Equals(newValue) ? "false" : "true")})");
@@ -104,7 +104,7 @@ namespace KokoroIO.XamarinForms.Views
         #region LoadOlderCommand
 
         public static readonly BindableProperty LoadOlderCommandProperty
-            = BindableProperty.Create(nameof(LoadOlderCommand), typeof(ICommand), typeof(MessageWebView));
+            = BindableProperty.Create(nameof(LoadOlderCommand), typeof(ICommand), typeof(MessagesView));
 
         public ICommand LoadOlderCommand
         {
@@ -117,7 +117,7 @@ namespace KokoroIO.XamarinForms.Views
         #region RefreshCommand
 
         public static readonly BindableProperty RefreshCommandProperty
-            = BindableProperty.Create(nameof(RefreshCommand), typeof(ICommand), typeof(MessageWebView));
+            = BindableProperty.Create(nameof(RefreshCommand), typeof(ICommand), typeof(MessagesView));
 
         public ICommand RefreshCommand
         {
@@ -130,7 +130,7 @@ namespace KokoroIO.XamarinForms.Views
         #region NavigatingCommand
 
         public static readonly BindableProperty NavigatingCommandProperty
-            = BindableProperty.Create(nameof(NavigatingCommand), typeof(ICommand), typeof(MessageWebView));
+            = BindableProperty.Create(nameof(NavigatingCommand), typeof(ICommand), typeof(MessagesView));
 
         public ICommand NavigatingCommand
         {
@@ -457,7 +457,7 @@ namespace KokoroIO.XamarinForms.Views
 
         #region Navigating
 
-        private void MessageWebView_Navigating(object sender, WebNavigatingEventArgs e)
+        private void MessagesView_Navigating(object sender, WebNavigatingEventArgs e)
         {
             try
             {
