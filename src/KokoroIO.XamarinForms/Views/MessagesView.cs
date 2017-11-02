@@ -166,7 +166,7 @@ namespace KokoroIO.XamarinForms.Views
                                 using (var sw = new StringWriter())
                                 {
                                     sw.Write("window.addMessages(");
-                                    js.Serialize(sw, newItems.Select(m => new JsonMessage(m)));
+                                    js.Serialize(sw, newItems.Select(m => new MessagesViewMessage(m)));
                                     sw.Write(",");
                                     IEnumerable<MessageInfo> merged;
                                     if (e.NewStartingIndex >= 0)
@@ -181,7 +181,7 @@ namespace KokoroIO.XamarinForms.Views
                                     {
                                         merged = Messages.Except(newItems);
                                     }
-                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new JsonMerged(m)));
+                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new MessagesViewMergeInfo(m)));
                                     sw.Write(")");
 
                                     await InvokeScriptAsync(sw.ToString());
@@ -226,7 +226,7 @@ namespace KokoroIO.XamarinForms.Views
                                     {
                                         merged = Messages.Except(oldItems);
                                     }
-                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new JsonMerged(m)));
+                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new MessagesViewMergeInfo(m)));
                                     sw.Write(")");
 
                                     await InvokeScriptAsync(sw.ToString());
@@ -277,7 +277,7 @@ namespace KokoroIO.XamarinForms.Views
                 using (var sw = new StringWriter())
                 {
                     sw.Write("window.addMessages(");
-                    js.Serialize(sw, ms.OrderBy(m => m.Id).Select(m => new JsonMessage(m)));
+                    js.Serialize(sw, ms.OrderBy(m => m.Id).Select(m => new MessagesViewMessage(m)));
                     sw.Write(")");
                     _RefreshMessagesRequested = false;
 
@@ -298,55 +298,6 @@ namespace KokoroIO.XamarinForms.Views
         internal Func<string, Task> InvokeScriptAsyncCore;
         internal Action<string> NavigateToStringCore;
 
-        private class JsonMessage
-        {
-            public JsonMessage(MessageInfo m)
-            {
-                Id = m.Id;
-                IdempotentKey = m.IdempotentKey;
-
-                ProfileId = m.Profile.Id;
-                Avatar = m.DisplayAvatar;
-                ScreenName = m.Profile.ScreenName;
-                DisplayName = m.Profile.DisplayName;
-                IsBot = m.Profile.Type == ProfileType.Bot;
-                PublishedAt = m.PublishedAt;
-                IsNsfw = m.IsNsfw;
-                Content = m.Content;
-                IsMerged = m.IsMerged;
-                EmbedContents = m.EmbedContents;
-                IsDeleted = m.IsDeleted;
-                CanDelete = m.CanDelete;
-            }
-
-            public int? Id { get; }
-            public Guid? IdempotentKey { get; }
-            public string ProfileId { get; }
-            public string Avatar { get; }
-            public string ScreenName { get; }
-            public string DisplayName { get; }
-            public bool IsBot { get; }
-            public DateTime? PublishedAt { get; }
-
-            public bool IsNsfw { get; }
-            public string Content { get; }
-            public bool IsMerged { get; }
-            public IList<EmbedContent> EmbedContents { get; }
-            public bool CanDelete { get; }
-            public bool IsDeleted { get; }
-        }
-
-        private class JsonMerged
-        {
-            public JsonMerged(MessageInfo m)
-            {
-                Id = m.Id;
-                IsMerged = m.IsMerged;
-            }
-
-            public int? Id { get; }
-            public bool IsMerged { get; }
-        }
 
         private async Task InvokeScriptAsync(string script)
         {
@@ -434,7 +385,7 @@ namespace KokoroIO.XamarinForms.Views
                     using (var sw = new StringWriter())
                     {
                         sw.Write("window.setMessages(");
-                        js.Serialize(sw, Messages.Select(m => new JsonMessage(m)));
+                        js.Serialize(sw, Messages.Select(m => new MessagesViewMessage(m)));
                         sw.Write(")");
                         _RefreshMessagesRequested = false;
 
