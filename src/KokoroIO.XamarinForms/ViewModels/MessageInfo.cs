@@ -257,7 +257,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("DeleteMessageFailed");
+                ex.Error("DeleteMessageFailed");
                 MessagingCenter.Send(this, "MessageDeletionFailed");
             }
         }

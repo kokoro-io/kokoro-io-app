@@ -45,7 +45,7 @@ namespace KokoroIO.XamarinForms.Views
             catch (Exception ex)
             {
                 httpMessage = (ex.GetBaseException() as HttpRequestException)?.Message;
-                ex.Trace("LoginFailed");
+                ex.Warn("LoginFailed");
             }
 
             if (!(App.Current.MainPage is LoginPage))

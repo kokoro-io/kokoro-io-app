@@ -63,7 +63,7 @@ namespace KokoroIO.XamarinForms.Views
                 }
                 catch (Exception ex)
                 {
-                    ex.Trace("Image Uploader Authentication failed");
+                    ex.Error("Image Uploader Authentication failed");
 
                     _Faulted?.Invoke(ex.Message);
                 }

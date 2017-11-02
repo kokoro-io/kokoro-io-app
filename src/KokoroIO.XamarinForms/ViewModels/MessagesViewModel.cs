@@ -193,7 +193,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("Load message failed");
+                ex.Error("Load message failed");
 
                 MessagingCenter.Send(this, "LoadMessageFailed");
             }
@@ -464,7 +464,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
                 }
 
-                ex.Trace("Post message failed");
+                ex.Error("Post message failed");
 
                 MessagingCenter.Send(this, "PostMessageFailed");
             }

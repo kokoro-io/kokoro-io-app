@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Azure.Mobile.Analytics;
 
 namespace KokoroIO.XamarinForms
@@ -8,48 +9,94 @@ namespace KokoroIO.XamarinForms
     internal static class TH
     {
 #if WINDOWS_UWP
-        public static void Error(string message)
+        private static void ErrorCore(string message)
             => Debug.WriteLine(message);
 
-        public static void Error(string format, params object[] args)
+        private static void ErrorCore(string format, params object[] args)
             => Debug.WriteLine(format, args);
 
-
-        public static void Warn(string message)
+        private static void WarnCore(string message)
             => Debug.WriteLine(message);
 
-        public static void Warn(string format, params object[] args)
+        private static void WarnCore(string format, params object[] args)
             => Debug.WriteLine(format, args);
 
-
-        public static void Info(string message)
+        private static void InfoCore(string message)
             => Debug.WriteLine(message);
 
-        public static void Info(string format, params object[] args)
+        private static void InfoCore(string format, params object[] args)
             => Debug.WriteLine(format, args);
 #else
-        public static void Error(string message)
+
+        private static void ErrorCore(string message)
             => System.Diagnostics.Trace.TraceError(message);
 
-        public static void Error(string format, params object[] args)
+        private static void ErrorCore(string format, params object[] args)
             => System.Diagnostics.Trace.TraceError(format, args);
 
-
-        public static void Warn(string message)
+        private static void WarnCore(string message)
             => System.Diagnostics.Trace.TraceWarning(message);
 
-        public static void Warn(string format, params object[] args)
+        private static void WarnCore(string format, params object[] args)
             => System.Diagnostics.Trace.TraceWarning(format, args);
 
-
-        public static void Info(string message)
+        private static void InfoCore(string message)
             => System.Diagnostics.Trace.TraceInformation(message);
 
-        public static void Info(string format, params object[] args)
+        private static void InfoCore(string format, params object[] args)
             => System.Diagnostics.Trace.TraceInformation(format, args);
+
 #endif
 
-#if DEBUG
+        public static void Error(string message)
+        {
+            ErrorCore(message);
+            Analytics.TrackEvent(message);
+        }
+
+        public static void Error(string format, params object[] args)
+        {
+            ErrorCore(format, args);
+            TrackFormat(format, args);
+        }
+
+        public static void Warn(string message)
+        {
+            WarnCore(message);
+            Analytics.TrackEvent(message);
+        }
+
+        public static void Warn(string format, params object[] args)
+        {
+            WarnCore(format, args);
+            TrackFormat(format, args);
+        }
+
+        public static void Info(string message)
+        {
+            InfoCore(message);
+            Analytics.TrackEvent(message);
+        }
+
+        public static void Info(string format, params object[] args)
+        {
+            InfoCore(format, args);
+            TrackFormat(format, args);
+        }
+
+        private static void TrackFormat(string format, object[] args)
+        {
+            Analytics.TrackEvent(format, new Dictionary<string, string>()
+            {
+                ["Message"] = string.Format(format, args),
+                ["arg0"] = args?.ElementAtOrDefault(0)?.ToString(),
+                ["arg1"] = args?.ElementAtOrDefault(1)?.ToString(),
+                ["arg2"] = args?.ElementAtOrDefault(2)?.ToString(),
+                ["arg3"] = args?.ElementAtOrDefault(3)?.ToString()
+            });
+        }
+
+
         private sealed class ScopeDisposable : IDisposable
         {
             private readonly string _Name;
@@ -58,7 +105,7 @@ namespace KokoroIO.XamarinForms
             public ScopeDisposable(string name)
             {
                 _Name = name;
-                Info("Begin {0}", (object)_Name);
+                InfoCore("Begin {0}", (object)_Name);
                 _Stopwatch = new Stopwatch();
                 _Stopwatch.Start();
             }
@@ -66,30 +113,35 @@ namespace KokoroIO.XamarinForms
             public void Dispose()
             {
                 _Stopwatch.Stop();
-                Info("End {0} in {1:0}ms", _Name, _Stopwatch.Elapsed.TotalMilliseconds);
+                InfoCore("End {0} in {1:0}ms", _Name, _Stopwatch.Elapsed.TotalMilliseconds);
+                Analytics.TrackEvent(_Name, new Dictionary<string, string>()
+                {
+                    ["Elapsed"] = _Stopwatch.ElapsedMilliseconds.ToString("0\"ms\"")
+                });
             }
         }
-#endif
 
         public static IDisposable BeginScope(string name)
+            => new ScopeDisposable(name);
+
+        public static void Warn(this Exception exception, string eventName)
         {
-#if DEBUG
-            return new ScopeDisposable(name);
-#else
-            return null;
-#endif
+            WarnCore("Exception catched at {0}: {1}", eventName, exception);
+
+            var bex = exception.GetBaseException();
+
+            Analytics.TrackEvent(eventName, new Dictionary<string, string>()
+            {
+                ["Exception Type"] = exception.GetType().FullName,
+                ["Exception Message"] = exception.Message,
+                ["Base Exception Type"] = bex?.GetType().FullName,
+                ["Base Exception Message"] = bex?.Message,
+                ["Base Exception StackTrace"] = bex?.StackTrace,
+            });
         }
-
-        public static void TraceError(string message)
+        public static void Error(this Exception exception, string eventName)
         {
-            Warn(message);
-
-            Analytics.TrackEvent(message);
-        }
-
-        public static void Trace(this Exception exception, string eventName)
-        {
-            Warn("Exception catched at {0}: {1}", eventName, exception);
+            ErrorCore("Exception catched at {0}: {1}", eventName, exception);
 
             var bex = exception.GetBaseException();
 

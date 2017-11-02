@@ -33,7 +33,7 @@ namespace KokoroIO.XamarinForms.Services
             }
             catch (Exception ex)
             {
-                ex.Trace("ReceiveInactiveNotificationFailed");
+                ex.Warn("ReceiveInactiveNotificationFailed");
             }
         }
     }

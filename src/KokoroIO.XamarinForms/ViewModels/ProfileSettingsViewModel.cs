@@ -77,7 +77,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("UpdateProfileFailed");
+                ex.Error("UpdateProfileFailed");
 
                 MessagingCenter.Send(this, "UpdateProfileFailed");
             }
@@ -119,7 +119,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("UpdateProfileFailed");
+                ex.Error("UpdateProfileFailed");
 
                 MessagingCenter.Send(this, "UpdateProfileFailed");
             }
@@ -157,7 +157,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("UpdateProfileFailed");
+                ex.Error("UpdateProfileFailed");
 
                 MessagingCenter.Send(this, "UpdateProfileFailed");
             }

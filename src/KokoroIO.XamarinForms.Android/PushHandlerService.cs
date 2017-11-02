@@ -154,7 +154,7 @@ namespace KokoroIO.XamarinForms.Droid
                         GcmClient.CheckManifest(ma);
 
                         // Register for push notifications
-                        System.Diagnostics.Debug.WriteLine("Registering...");
+                        TH.Info("Registering...");
                         GcmClient.Register(ma, Secrets.SenderID);
 
                         return RegistrationTask;

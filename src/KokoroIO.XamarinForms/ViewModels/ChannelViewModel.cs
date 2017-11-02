@@ -224,7 +224,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("PutMembershipFailed");
+                ex.Error("PutMembershipFailed");
             }
         }
 
@@ -322,7 +322,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    ex.Trace("LoadingChannelMemberFailed");
+                    ex.Error("LoadingChannelMemberFailed");
                 }
             }
         }
@@ -454,7 +454,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("SavingChannelUserPropertiesFailed");
+                ex.Error("SavingChannelUserPropertiesFailed");
             }
 
             if (lastReadId != null
@@ -556,7 +556,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    ex.Trace("SavingChannelUserPropertiesFailed");
+                    ex.Error("SavingChannelUserPropertiesFailed");
                 }
             }
         }

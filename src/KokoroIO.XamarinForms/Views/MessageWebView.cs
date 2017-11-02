@@ -287,7 +287,7 @@ namespace KokoroIO.XamarinForms.Views
                     }
                     catch (Exception ex)
                     {
-                        ex.Trace("Failed to update message");
+                        ex.Error("Failed to update message");
                     }
                 }
             }

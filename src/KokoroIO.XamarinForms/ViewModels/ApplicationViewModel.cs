@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,6 +51,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     _Client.ChannelsUpdated -= Client_ChannelsUpdated;
                     _Client.MemberJoined -= Client_MemberJoined;
                     _Client.MemberLeaved -= Client_MemberLeaved;
+                    _Client.SocketError -= _Client_SocketError;
 
                     _Client.Disconnected -= Client_Disconnected;
 
@@ -66,6 +66,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     _Client.ChannelsUpdated += Client_ChannelsUpdated;
                     _Client.MemberJoined += Client_MemberJoined;
                     _Client.MemberLeaved += Client_MemberLeaved;
+                    _Client.SocketError += _Client_SocketError;
 
                     _Client.Disconnected += Client_Disconnected;
                 }
@@ -383,7 +384,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("LoadingChannelUserPropertiesFailed");
+                ex.Warn("LoadingChannelUserPropertiesFailed");
             }
         }
 
@@ -629,7 +630,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("DeleteDeviceFailed");
+                ex.Error("DeleteDeviceFailed");
             }
 
             App.Current.MainPage = new LoginPage();
@@ -923,7 +924,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        ex.Trace("Connection failed");
+                        ex.Error("Connection failed");
                     }
                 }
             }));
@@ -938,7 +939,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
-            Debug.WriteLine("Profile updated: {0}", e.Data.Id);
+            TH.Info("Profile updated: {0}", e.Data.Id);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
@@ -962,7 +963,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return;
             }
 
-            Debug.WriteLine("Message updated: {0}", e.Data.Id);
+            TH.Info("Message updated: {0}", e.Data.Id);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
@@ -988,7 +989,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return;
             }
 
-            Debug.WriteLine("Channels updated: {0} channels", e.Data.Length);
+            TH.Info("Channels updated: {0} channels", e.Data.Length);
 
             XDevice.BeginInvokeOnMainThread(async () =>
             {
@@ -1013,7 +1014,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
-            Debug.WriteLine("Member joined: @{1} joined to {0} as {2}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName, e.Data.Authority);
+            TH.Info("Member joined: @{1} joined to {0} as {2}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName, e.Data.Authority);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
@@ -1031,7 +1032,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
-            Debug.WriteLine("Member leaved: @{1} leaved from {0}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName);
+            TH.Info("Member leaved: @{1} leaved from {0}", e.Data.Channel.ChannelName, e.Data.Profile.ScreenName);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {
@@ -1050,10 +1051,13 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             UpdateIsDisconnected();
 
-            TH.TraceError("Disconnected");
+            TH.Warn("Disconnected");
 
             ReconnectAsync().ConfigureAwait(false).GetHashCode();
         }
+
+        private void _Client_SocketError(object sender, EventArgs<Exception> e)
+            => TH.Warn("Handled WebSocket exception: {0}", e.Data);
 
         #endregion Client Events
 
@@ -1154,7 +1158,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Trace("Image Uploader failed");
+                ex.Error("Image Uploader failed");
 
                 parameter.OnFaulted?.Invoke(ex.Message);
             }
@@ -1241,7 +1245,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 return;
             }
-            Debug.WriteLine("Message created: {0}", message.Id);
+            TH.Info("Message created: {0}", message.Id);
 
             XDevice.BeginInvokeOnMainThread(() =>
             {

@@ -130,7 +130,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    ex.Trace("PostDirectMessageFailed");
+                    ex.Error("PostDirectMessageFailed");
                 }
             }));
 
