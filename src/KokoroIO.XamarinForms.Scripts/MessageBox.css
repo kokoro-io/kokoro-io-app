@@ -217,6 +217,12 @@ img.thumb {
             font-size: 1.1em;
         }
 
+            .talk .message .filtered_text img {
+                max-width: 30%;
+                max-height: 30%;
+                border-radius: 5px;
+            }
+
         .talk .message .deleted_text {
             font-size: 1.1em;
             color: #aaa;
