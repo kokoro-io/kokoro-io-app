@@ -50,7 +50,7 @@ namespace KokoroIO.XamarinForms.Views
                 }
             }
 
-            mwv.RefreshMessages();
+            mwv?.EnqueueReset();
         }
 
         #endregion Messages
@@ -66,14 +66,14 @@ namespace KokoroIO.XamarinForms.Views
             set => SetValue(SelectedMessageProperty, value);
         }
 
-        private static async void SelectedMessageChanged(BindableObject bindable, object oldValue, object newValue)
+        private static void SelectedMessageChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var mwv = (MessagesView)bindable;
 
             var m = newValue as MessageInfo;
             if (m != null)
             {
-                await mwv.InvokeScriptAsync($"window.showMessage({m.Id}, true)");
+                mwv?.EnqueueShow(m);
             }
         }
 
@@ -90,13 +90,10 @@ namespace KokoroIO.XamarinForms.Views
             set => SetValue(HasUnreadProperty, value);
         }
 
-        private static async void OnHasUnreadChanged(BindableObject bindable, object oldValue, object newValue)
+        private static void OnHasUnreadChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var mwv = bindable as MessagesView;
-            if (mwv != null)
-            {
-                await mwv.InvokeScriptAsync($"window.setHasUnread({(false.Equals(newValue) ? "false" : "true")})");
-            }
+            mwv?.EnqueueHasUnread(!false.Equals(newValue));
         }
 
         #endregion HasUnread
@@ -140,109 +137,44 @@ namespace KokoroIO.XamarinForms.Views
 
         #endregion NavigatingCommand
 
-        private async void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (_InitialMessagesLoaded)
+            switch (e.Action)
             {
-                // HTML and JavaScript has loaded.
-
-                switch (e.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        if (e.NewItems?.Count > 0)
+                case NotifyCollectionChangedAction.Add:
+                    if (e.NewItems?.Count > 0)
+                    {
+                        var newItems = e.NewItems.Cast<MessageInfo>();
+                        foreach (var item in newItems)
                         {
-                            var newItems = e.NewItems.Cast<MessageInfo>();
-                            foreach (var item in newItems)
-                            {
-                                item.PropertyChanged -= Item_PropertyChanged;
-                                item.PropertyChanged += Item_PropertyChanged;
-                                _BindedMessages.Add(item);
-                            }
-
-                            try
-                            {
-                                var js = new JsonSerializer();
-
-                                using (var sw = new StringWriter())
-                                {
-                                    sw.Write("window.addMessages(");
-                                    js.Serialize(sw, newItems.Select(m => new MessagesViewMessage(m)));
-                                    sw.Write(",");
-                                    IEnumerable<MessageInfo> merged;
-                                    if (e.NewStartingIndex >= 0)
-                                    {
-                                        merged = new[]
-                                        {
-                                            Messages.ElementAtOrDefault(e.NewStartingIndex - 1),
-                                            Messages.ElementAtOrDefault(e.NewStartingIndex + e.NewItems.Count)
-                                        };
-                                    }
-                                    else
-                                    {
-                                        merged = Messages.Except(newItems);
-                                    }
-                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new MessagesViewMergeInfo(m)));
-                                    sw.Write(")");
-
-                                    await InvokeScriptAsync(sw.ToString());
-                                }
-                                return;
-                            }
-                            catch { }
+                            item.PropertyChanged -= Item_PropertyChanged;
+                            item.PropertyChanged += Item_PropertyChanged;
+                            _BindedMessages.Add(item);
                         }
-                        break;
 
-                    case NotifyCollectionChangedAction.Remove:
-                        if (e.OldItems?.Count > 0)
+                        EnqueueAdd(newItems);
+                        return;
+                    }
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    if (e.OldItems?.Count > 0)
+                    {
+                        var oldItems = e.OldItems.Cast<MessageInfo>();
+                        foreach (var item in oldItems)
                         {
-                            var oldItems = e.OldItems.Cast<MessageInfo>();
-                            foreach (var item in oldItems)
-                            {
-                                item.PropertyChanged -= Item_PropertyChanged;
-                                _BindedMessages.Remove(item);
-                            }
-
-                            try
-                            {
-                                var js = new JsonSerializer();
-
-                                using (var sw = new StringWriter())
-                                {
-                                    sw.Write("window.removeMessages(");
-                                    js.Serialize(sw, oldItems.Select(m => m.Id).OfType<int>());
-                                    sw.Write(",");
-                                    js.Serialize(sw, oldItems.Select(m => m.IdempotentKey).OfType<Guid>());
-                                    sw.Write(",");
-                                    IEnumerable<MessageInfo> merged;
-                                    if (e.OldStartingIndex >= 0)
-                                    {
-                                        merged = new[]
-                                        {
-                                            Messages.ElementAtOrDefault(e.OldStartingIndex - 1),
-                                            Messages.ElementAtOrDefault(e.OldStartingIndex )
-                                        };
-                                    }
-                                    else
-                                    {
-                                        merged = Messages.Except(oldItems);
-                                    }
-                                    js.Serialize(sw, merged.OfType<MessageInfo>().Select(m => new MessagesViewMergeInfo(m)));
-                                    sw.Write(")");
-
-                                    await InvokeScriptAsync(sw.ToString());
-                                }
-                                return;
-                            }
-                            catch { }
+                            item.PropertyChanged -= Item_PropertyChanged;
+                            _BindedMessages.Remove(item);
                         }
-                        break;
-                }
+
+                        EnqueueRemove(oldItems);
+                        return;
+                    }
+                    break;
             }
 
-            RefreshMessages();
+            EnqueueReset();
         }
-
-        private HashSet<MessageInfo> _Updating;
 
         private void Item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -253,154 +185,339 @@ namespace KokoroIO.XamarinForms.Views
                 case nameof(MessageInfo.PublishedAt):
                 case nameof(MessageInfo.Content):
                 case nameof(MessageInfo.EmbedContents):
-                    if (_InitialMessagesLoaded == true)
-                    {
-                        var up = _Updating ?? (_Updating = new HashSet<MessageInfo>());
-                        if (up.Add((MessageInfo)sender) && up.Count == 1)
-                        {
-                            XDevice.BeginInvokeOnMainThread(BeginUpdateMessages);
-                        }
-                    }
+                    EnqueueAdd(new[] { (MessageInfo)sender });
                     break;
-            }
-        }
 
-        private async void BeginUpdateMessages()
-        {
-            var ms = _Updating?.ToArray();
-            _Updating?.Clear();
-
-            if (ms?.Length > 0)
-            {
-                var js = new JsonSerializer();
-
-                using (var sw = new StringWriter())
-                {
-                    sw.Write("window.addMessages(");
-                    js.Serialize(sw, ms.OrderBy(m => m.Id).Select(m => new MessagesViewMessage(m)));
-                    sw.Write(")");
-                    _RefreshMessagesRequested = false;
-
-                    try
-                    {
-                        await InvokeScriptAsync(sw.ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.Error("Failed to update message");
-                    }
-                }
+                case nameof(MessageInfo.IsMerged):
+                    EnqueueIsMergedChanged((MessageInfo)sender);
+                    break;
             }
         }
 
         #region HTML and JavaScript
 
+        #region View updating queue
+
+        private enum UpdateType
+        {
+            // Inbound events.
+            // 1. set_Messages.
+            // 2. Messages#CollectionChanged.
+            // 3. MessageInfo#PropertyChanged.
+            // 4. Show message
+            Added,
+
+            Removed,
+            IsMergedChanged,
+            Show,
+        }
+
+        private sealed class UpdateRequest
+        {
+            public UpdateRequest(UpdateType type, MessageInfo message)
+            {
+                Type = type;
+                Message = message;
+            }
+
+            public UpdateType Type { get; }
+            public MessageInfo Message { get; }
+        }
+
+        private readonly List<UpdateRequest> _Requests = new List<UpdateRequest>();
+        private bool _IsReset;
+        private bool? _HasUnread;
+        private bool _IsRequestProcessing;
+
+        private void EnqueueReset()
+        {
+            lock (_Requests)
+            {
+                if (_IsReset)
+                {
+                    return;
+                }
+
+                var rq = _Requests.LastOrDefault(r => r.Type == UpdateType.Show);
+                _Requests.Clear();
+                _IsReset = true;
+
+                if (rq?.Message != null
+                    && Messages?.Contains(rq.Message) == true)
+                {
+                    _Requests.Add(rq);
+                }
+                BeginProcessUpdates();
+            }
+        }
+
+        private void EnqueueAdd(IEnumerable<MessageInfo> items)
+        {
+            var es = items as IReadOnlyCollection<MessageInfo> ?? items.ToList();
+            lock (_Requests)
+            {
+                if (_IsReset)
+                {
+                    return;
+                }
+                _Requests.RemoveAll(r => r.Type != UpdateType.Show && es.Any(e => e == r.Message));
+                _Requests.AddRange(es.Distinct().Select(e => new UpdateRequest(UpdateType.Added, e)));
+                BeginProcessUpdates();
+            }
+        }
+
+        private void EnqueueRemove(IEnumerable<MessageInfo> items)
+        {
+            var es = items as IReadOnlyCollection<MessageInfo> ?? items.ToList();
+            lock (_Requests)
+            {
+                _Requests.RemoveAll(r => es.Any(e => e == r.Message));
+                if (_IsReset)
+                {
+                    return;
+                }
+                _Requests.AddRange(es.Distinct().Select(e => new UpdateRequest(UpdateType.Removed, e)));
+                BeginProcessUpdates();
+            }
+        }
+
+        private void EnqueueIsMergedChanged(MessageInfo message)
+        {
+            lock (_Requests)
+            {
+                if (_IsReset)
+                {
+                    return;
+                }
+
+                if (_Requests.Any(r => r.Type == UpdateType.Added && r.Message == message))
+                {
+                    return;
+                }
+                _Requests.Add(new UpdateRequest(UpdateType.IsMergedChanged, message));
+                BeginProcessUpdates();
+            }
+        }
+
+        private void EnqueueShow(MessageInfo message)
+        {
+            lock (_Requests)
+            {
+                _Requests.RemoveAll(r => r.Type == UpdateType.Show);
+                _Requests.Add(new UpdateRequest(UpdateType.Show, message));
+                BeginProcessUpdates();
+            }
+        }
+
+        private void EnqueueHasUnread(bool hasUnread)
+        {
+            lock (_Requests)
+            {
+                var hadValue = _HasUnread != null;
+                _HasUnread = hasUnread;
+                if (!hadValue)
+                {
+                    BeginProcessUpdates();
+                }
+            }
+        }
+
+        private void BeginProcessUpdates()
+            => XDevice.BeginInvokeOnMainThread(ProcessUpdates);
+
+        private async void ProcessUpdates()
+        {
+            bool reset;
+            UpdateRequest[] requests;
+            bool? hasUnread;
+
+            lock (_Requests)
+            {
+                if (_IsRequestProcessing)
+                {
+                    return;
+                }
+                reset = _IsReset;
+                requests = _Requests.ToArray();
+                hasUnread = _HasUnread;
+                _IsReset = false;
+                _Requests.Clear();
+                _HasUnread = null;
+
+                if (!(_IsRequestProcessing = reset || requests.Any()) || _HasUnread != null)
+                {
+                    return;
+                }
+            }
+
+            var sm = requests.LastOrDefault(r => r.Type == UpdateType.Show)?.Message;
+            try
+            {
+                using (var sw = new StringWriter())
+                {
+                    if (reset)
+                    {
+                        sw.Write("window.setMessages(");
+                        if (Messages == null)
+                        {
+                            sw.Write("null");
+                        }
+                        else
+                        {
+                            new JsonSerializer().Serialize(sw, Messages.Select(m => new MessagesViewMessage(m)));
+                        }
+
+                        sw.WriteLine(");");
+                    }
+                    else
+                    {
+                        List<MessageInfo> added = null, removed = null, merged = null;
+
+                        foreach (var g in requests.GroupBy(r => r.Message))
+                        {
+                            if (g.Any(r => r.Type == UpdateType.Added))
+                            {
+                                (added ?? (added = new List<MessageInfo>())).Add(g.Key);
+                            }
+                            else if (g.Any(r => r.Type == UpdateType.Removed))
+                            {
+                                (removed ?? (removed = new List<MessageInfo>())).Add(g.Key);
+                            }
+                            else if (g.Any(r => r.Type == UpdateType.IsMergedChanged))
+                            {
+                                (merged ?? (merged = new List<MessageInfo>())).Add(g.Key);
+                            }
+                        }
+
+                        var js = new JsonSerializer();
+
+                        if (removed != null)
+                        {
+                            sw.Write("window.removeMessages(");
+                            js.Serialize(sw, removed.Select(m => m.Id).OfType<int>());
+                            sw.Write(",");
+                            js.Serialize(sw, removed.Select(m => m.IdempotentKey).OfType<Guid>());
+                            sw.Write(",");
+                            if (merged != null && added == null)
+                            {
+                                js.Serialize(sw, merged.Select(m => new MessagesViewMergeInfo(m)));
+                            }
+                            else
+                            {
+                                sw.Write("null");
+                            }
+                            sw.WriteLine(");");
+                        }
+                        if (added != null || (merged != null && removed == null))
+                        {
+                            sw.Write("window.addMessages(");
+                            if (added != null)
+                            {
+                                js.Serialize(sw, added.Select(m => new MessagesViewMessage(m)));
+                            }
+                            else
+                            {
+                                sw.Write("[]");
+                            }
+                            sw.Write(",");
+                            if (merged != null)
+                            {
+                                js.Serialize(sw, merged.Select(m => new MessagesViewMergeInfo(m)));
+                            }
+                            else
+                            {
+                                sw.Write("[]");
+                            }
+                            sw.WriteLine(");");
+                        }
+                    }
+                    if (sm?.Id > 0)
+                    {
+                        sw.WriteLine("window.showMessage({0}, true);", sm.Id);
+                    }
+                    if (_HasUnread != null)
+                    {
+                        sw.WriteLine("window.setHasUnread({0});", hasUnread == true ? "true" : "false");
+                    }
+
+                    var script = sw.ToString();
+                    if (!string.IsNullOrEmpty(script))
+                    {
+                        await InvokeScriptAsync(script).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Error("FailedToUpdateMessagesView");
+
+                if (reset)
+                {
+                    EnqueueReset();
+                }
+                else
+                {
+                    // TODO: ちゃんと実装
+                    EnqueueReset();
+                }
+            }
+            finally
+            {
+                lock (_Requests)
+                {
+                    _IsRequestProcessing = false;
+                    if (_IsReset || _Requests.Any())
+                    {
+                        BeginProcessUpdates();
+                    }
+                }
+            }
+        }
+
+        #endregion View updating queue
+
         internal Func<string, Task> InvokeScriptAsyncCore;
         internal Action<string> NavigateToStringCore;
 
+        private bool _HtmlInitialized;
 
         private async Task InvokeScriptAsync(string script)
         {
             using (TH.BeginScope("Invoking script"))
             {
+                if (!_HtmlInitialized)
+                {
+                    while (NavigateToStringCore == null)
+                    {
+                        await Task.Delay(100).ConfigureAwait(false);
+                    }
+
+                    using (var rs = RH.GetManifestResourceStream("Messages.html"))
+                    using (var sr = new StreamReader(rs))
+                    {
+                        var html = sr.ReadToEnd();
+
+                        if (XDevice.Idiom == TargetIdiom.Desktop)
+                        {
+                            html = html.Replace("<html>", "<html class=\"html-desktop\">");
+                        }
+                        else if (XDevice.Idiom == TargetIdiom.Tablet)
+                        {
+                            html = html.Replace("<html>", "<html class=\"html-tablet\">");
+                        }
+
+                        NavigateToStringCore(html);
+                    }
+                    _HtmlInitialized = true;
+                }
                 if (InvokeScriptAsyncCore != null)
                 {
-                    await InvokeScriptAsyncCore(script);
+                    await InvokeScriptAsyncCore(script).ConfigureAwait(false);
                 }
                 else
                 {
                     Eval(script);
                 }
-            }
-        }
-
-        #region InitHtmlTask
-
-        private Task _InitHtmlTask;
-
-        private Task InitHtmlTask
-            => _InitHtmlTask ?? (_InitHtmlTask = InitHtmlCore());
-
-        private async Task InitHtmlCore()
-        {
-            while (NavigateToStringCore == null)
-            {
-                await Task.Delay(100);
-            }
-
-            using (var rs = RH.GetManifestResourceStream("Messages.html"))
-            using (var sr = new StreamReader(rs))
-            {
-                var html = sr.ReadToEnd();
-
-                if (XDevice.Idiom == TargetIdiom.Desktop)
-                {
-                    html = html.Replace("<html>", "<html class=\"html-desktop\">");
-                }
-                else if (XDevice.Idiom == TargetIdiom.Tablet)
-                {
-                    html = html.Replace("<html>", "<html class=\"html-tablet\">");
-                }
-
-                NavigateToStringCore(html);
-            }
-        }
-
-        #endregion InitHtmlTask
-
-        private bool _InitialMessagesLoaded;
-        private bool _RefreshMessagesRequested;
-
-        private async void RefreshMessages()
-        {
-            if (_RefreshMessagesRequested)
-            {
-                return;
-            }
-
-            _RefreshMessagesRequested = true;
-            await InitHtmlTask;
-            try
-            {
-                if (Messages == null)
-                {
-                    await InvokeScriptAsync("window.setMessages(null)");
-                }
-                else
-                {
-                    foreach (var item in _BindedMessages)
-                    {
-                        item.PropertyChanged -= Item_PropertyChanged;
-                    }
-                    _BindedMessages.Clear();
-                    foreach (var item in Messages)
-                    {
-                        item.PropertyChanged -= Item_PropertyChanged;
-                        item.PropertyChanged += Item_PropertyChanged;
-                        _BindedMessages.Add(item);
-                    }
-
-                    var js = new JsonSerializer();
-
-                    using (var sw = new StringWriter())
-                    {
-                        sw.Write("window.setMessages(");
-                        js.Serialize(sw, Messages.Select(m => new MessagesViewMessage(m)));
-                        sw.Write(")");
-                        _RefreshMessagesRequested = false;
-
-                        await InvokeScriptAsync(sw.ToString());
-                    }
-                }
-                _InitialMessagesLoaded = true;
-            }
-            catch
-            {
-                XDevice.StartTimer(TimeSpan.FromMilliseconds(100), () =>
-                {
-                    RefreshMessages();
-                    return false;
-                });
             }
         }
 
