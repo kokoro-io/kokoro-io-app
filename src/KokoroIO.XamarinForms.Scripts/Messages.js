@@ -10,24 +10,27 @@
         document.documentElement.classList.add("html-phone");
     }
     var _hasUnread = false;
+    function getTalksHost() {
+        return document.body;
+    }
     window.setHasUnread = function (value) {
         _hasUnread = !!value;
     };
     window.setMessages = function (messages) {
+        var b = getTalksHost();
         console.debug("Setting " + (messages ? messages.length : 0) + " messages");
-        document.body.innerHTML = "";
+        b.innerHTML = "";
         _addMessagessCore(messages, null, false);
-        var b = document.body;
         b.scrollTop = b.scrollHeight - b.clientHeight;
         _reportVisibilities();
     };
     window.addMessages = function (messages, merged, showNewMessage) {
+        var b = getTalksHost();
         console.debug("Adding " + (messages ? messages.length : 0) + " messages");
-        var isEmpty = document.body.children.length === 0;
+        var isEmpty = b.children.length === 0;
         showNewMessage = showNewMessage && !isEmpty;
         _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
         if (isEmpty) {
-            var b = document.body;
             b.scrollTop = b.scrollHeight - b.clientHeight;
         }
         else if (showNewMessage && messages && messages.length > 0) {
@@ -42,7 +45,7 @@
     };
     var removeMessages = window.removeMessages = function (ids, idempotentKeys, merged) {
         console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
-        var b = document.body;
+        var b = getTalksHost();
         if (ids) {
             for (var i = 0; i < ids.length; i++) {
                 var talk = document.getElementById('talk' + ids[i]);
@@ -54,13 +57,12 @@
             }
         }
         if (idempotentKeys) {
-            var b_1 = document.body;
             for (var i_1 = 0; i_1 < idempotentKeys.length; i_1++) {
                 var talk_1 = _talkByIdempotentKey(idempotentKeys[i_1]);
                 if (talk_1) {
-                    var nt = talk_1.offsetTop < b_1.scrollTop ? b_1.scrollTop - talk_1.clientHeight : b_1.scrollTop;
+                    var nt = talk_1.offsetTop < b.scrollTop ? b.scrollTop - talk_1.clientHeight : b.scrollTop;
                     talk_1.remove();
-                    b_1.scrollTop = nt;
+                    b.scrollTop = nt;
                 }
             }
         }
@@ -68,7 +70,7 @@
         _reportVisibilities();
     };
     function _addMessagessCore(messages, merged, scroll) {
-        var b = document.body;
+        var b = getTalksHost();
         var lastTalk = scroll && b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight ? b.lastElementChild : null;
         scroll = scroll && !lastTalk;
         if (messages) {
@@ -78,7 +80,7 @@
                 var id = m.Id;
                 if (!id) {
                     var talk = createTaklElement(m);
-                    document.body.appendChild(talk);
+                    b.appendChild(talk);
                     _afterTalkInserted(talk);
                     continue;
                 }
@@ -89,7 +91,7 @@
                         var shoudScroll = scroll && cur.offsetTop + cur.clientHeight - IS_TOP_MARGIN < b.scrollTop;
                         var st = b.scrollTop - cur.clientHeight;
                         var talk = createTaklElement(m);
-                        document.body.insertBefore(talk, cur);
+                        b.insertBefore(talk, cur);
                         _afterTalkInserted(talk, cur.clientHeight);
                         cur.remove();
                         if (scroll) {
@@ -106,7 +108,7 @@
                     if (!prev || (id != pid && !aft)) {
                         // console.debug("Appending message[" + id + "]");
                         var talk = createTaklElement(m);
-                        document.body.appendChild(talk);
+                        b.appendChild(talk);
                         _afterTalkInserted(talk);
                         j++;
                         break;
@@ -116,7 +118,7 @@
                         if (id == pid) {
                             var shoudScroll = scroll && aft && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
                             var st = b.scrollTop - prev.clientHeight;
-                            document.body.insertBefore(talk, prev);
+                            b.insertBefore(talk, prev);
                             _afterTalkInserted(talk, prev.clientHeight);
                             prev.remove();
                             if (scroll) {
@@ -151,7 +153,7 @@
         console.debug("showing message[" + id + "]");
         var talk = document.getElementById("talk" + id);
         if (talk) {
-            var b = document.body;
+            var b = getTalksHost();
             console.log("current scrollTo is " + b.scrollTop + ", and offsetTop is " + talk.offsetTop);
             if (talk.offsetTop < b.scrollTop || toTop) {
                 console.log("scrolling to " + talk.offsetTop);
@@ -165,7 +167,7 @@
     };
     function updateContinued(merged, scroll) {
         if (merged) {
-            var b = document.body;
+            var b = getTalksHost();
             for (var i = 0; i < merged.length; i++) {
                 var m = merged[i];
                 var id = m.Id;
@@ -446,7 +448,7 @@
         return em;
     }
     function _insertBefore(talk, aft, scroll) {
-        var b = document.body;
+        var b = getTalksHost();
         scroll = scroll && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
         var st = b.scrollTop;
         b.insertBefore(talk, aft);
@@ -460,22 +462,23 @@
             if (talk.offsetTop === 0) {
                 if (talk.previousElementSibling) {
                     setTimeout(function () {
-                        var b = document.body;
+                        var b = getTalksHost();
                         b.scrollTop = talk.offsetTop;
                     }, 1);
                 }
             }
             else {
-                var b = document.body;
+                var b = getTalksHost();
                 b.scrollTop = talk.offsetTop;
             }
         }
     }
     function _afterTalkInserted(talk, previousHeight) {
-        if (talk.offsetTop < document.body.scrollTop) {
+        var b = getTalksHost();
+        if (talk.offsetTop < b.scrollTop) {
             var delta = talk.clientHeight - (previousHeight || 0);
             if (delta != 0) {
-                document.body.scrollTop += delta;
+                b.scrollTop += delta;
                 console.log("scolled " + delta);
             }
         }
@@ -495,13 +498,13 @@
                     talk.setAttribute("data-loading-images", (Math.max(0, (parseInt(talk.getAttribute("data-loading-images"), 10) - 1) || 0)).toString());
                     var ph = parseInt(talk.getAttribute("data-height"), 10);
                     var delta = talk.clientHeight - ph;
-                    var b = document.body;
-                    if (b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight - delta) {
+                    var b_1 = getTalksHost();
+                    if (b_1.scrollTop + b_1.clientHeight + IS_BOTTOM_MARGIN > b_1.scrollHeight - delta) {
                         // previous viewport was bottom.
-                        b.scrollTop = b.scrollHeight - b.clientHeight;
+                        b_1.scrollTop = b_1.scrollHeight - b_1.clientHeight;
                     }
-                    else if (talk.offsetTop < document.body.scrollTop) {
-                        b.scrollTop += delta;
+                    else if (talk.offsetTop < b_1.scrollTop) {
+                        b_1.scrollTop += delta;
                     }
                     talk.setAttribute("data-height", talk.clientHeight.toString());
                     break;
@@ -533,8 +536,8 @@
     }
     var _visibleIds;
     function _reportVisibilities() {
-        var b = document.body;
-        var talks = document.body.children;
+        var b = getTalksHost();
+        var talks = b.children;
         var ids = "";
         for (var i = 0; i < talks.length; i++) {
             var talk = talks[i];
@@ -564,7 +567,8 @@
                 return;
             }
             windowWidth = window.innerWidth;
-            var talks = document.body.children;
+            var b = getTalksHost();
+            var talks = b.children;
             for (var i = 0; i < talks.length; i++) {
                 var talk = talks[i];
                 talk.setAttribute("data-height", talk.clientHeight.toString());
@@ -572,8 +576,8 @@
             _reportVisibilities();
         });
         document.addEventListener("scroll", function () {
-            var b = document.body;
-            var talks = document.body.children;
+            var b = getTalksHost();
+            var talks = b.children;
             for (var i = 0; i < talks.length; i++) {
                 var talk = talks[i];
                 var hidden = (talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < b.scrollTop
@@ -598,13 +602,13 @@
             }
             if (b.scrollTop < LOAD_OLDER_MARGIN) {
                 console.log("Loading older messages.");
-                location.href = "http://kokoro.io/client/control?event=prepend";
+                location.href = "http://kokoro.io/client/control?event=prepend&count=" + b.children.length;
             }
             else {
                 var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
                 if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
                     console.log("Loading newer messages.");
-                    location.href = "http://kokoro.io/client/control?event=append";
+                    location.href = "http://kokoro.io/client/control?event=append&count=" + b.children.length;
                 }
             }
         });
@@ -629,7 +633,7 @@
                         if (mouseDownStart !== null
                             && mouseDownStart + 800 < new Date().getTime()) {
                             console.log("Loading newer messages.");
-                            location.href = "http://kokoro.io/client/control?event=append";
+                            location.href = "http://kokoro.io/client/control?event=append&count=" + getTalksHost().children.length;
                         }
                         mouseDownStart = null;
                     }, 1000);

@@ -569,8 +569,14 @@ namespace KokoroIO.XamarinForms.Views
 
         private bool HandlePrepend(string url)
         {
-            if (url == "http://kokoro.io/client/control?event=prepend")
+            const string PREFIX = "http://kokoro.io/client/control?event=prepend&count=";
+            if (url.StartsWith(PREFIX))
             {
+                if (int.TryParse(url.Substring(PREFIX.Length), out var c)
+                    && c == 0)
+                {
+                    return true;
+                }
                 LoadOlderCommand?.Execute(null);
                 return true;
             }
@@ -579,8 +585,14 @@ namespace KokoroIO.XamarinForms.Views
 
         private bool HandleAppend(string url)
         {
-            if (url == "http://kokoro.io/client/control?event=append")
+            const string PREFIX = "http://kokoro.io/client/control?event=append&count=";
+            if (url.StartsWith(PREFIX))
             {
+                if (int.TryParse(url.Substring(PREFIX.Length), out var c)
+                    && c == 0)
+                {
+                    return true;
+                }
                 RefreshCommand?.Execute(null);
                 return true;
             }
