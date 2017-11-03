@@ -229,6 +229,7 @@ namespace KokoroIO.XamarinForms.Views
         private bool _IsReset;
         private bool? _HasUnread;
         private bool _IsRequestProcessing;
+        private bool _HtmlLoaded;
 
         private void EnqueueReset()
         {
@@ -366,7 +367,9 @@ namespace KokoroIO.XamarinForms.Views
                         }
                         else
                         {
-                            new JsonSerializer().Serialize(sw, Messages.Select(m => new MessagesViewMessage(m)));
+                            new JsonSerializer().Serialize(
+                                sw, Messages.Select(m => new MessagesViewMessage(m))
+                                            .OrderBy(m => m.PublishedAt ?? DateTime.MaxValue));
                             TH.Info("Setting {0} messages to MessagesView", Messages.Count());
                         }
 
@@ -375,7 +378,6 @@ namespace KokoroIO.XamarinForms.Views
                     else
                     {
                         List<MessageInfo> added = null, removed = null, merged = null;
-
                         foreach (var g in requests.GroupBy(r => r.Message))
                         {
                             if (g.Any(r => r.Type == UpdateType.Added))
@@ -417,7 +419,10 @@ namespace KokoroIO.XamarinForms.Views
                             sw.Write("window.addMessages(");
                             if (added != null)
                             {
-                                js.Serialize(sw, added.Select(m => new MessagesViewMessage(m)));
+                                js.Serialize(
+                                    sw,
+                                    added.Select(m => new MessagesViewMessage(m))
+                                            .OrderBy(m => m.PublishedAt ?? DateTime.MaxValue));
                                 TH.Info("Adding {0} messages to MessagesView", added.Count);
                             }
                             else
@@ -455,17 +460,12 @@ namespace KokoroIO.XamarinForms.Views
             }
             catch (Exception ex)
             {
-                ex.Error("FailedToUpdateMessagesView");
+                if (_HtmlLoaded)
+                {
+                    ex.Error("FailedToUpdateMessagesView");
+                }
 
-                if (reset)
-                {
-                    EnqueueReset();
-                }
-                else
-                {
-                    // TODO: ちゃんと実装
-                    EnqueueReset();
-                }
+                EnqueueFailedRequests(reset, requests, sm);
             }
             finally
             {
@@ -473,6 +473,62 @@ namespace KokoroIO.XamarinForms.Views
                 {
                     _IsRequestProcessing = false;
                     if (_IsReset || _Requests.Any())
+                    {
+                        BeginProcessUpdates();
+                    }
+                }
+            }
+        }
+
+        private void EnqueueFailedRequests(bool reset, UpdateRequest[] requests, MessageInfo showing)
+        {
+            if (reset)
+            {
+                EnqueueReset();
+            }
+            else
+            {
+                lock (_Requests)
+                {
+                    var valid = false;
+                    if (!_IsReset)
+                    {
+                        foreach (var m in requests)
+                        {
+                            if (m.Type == UpdateType.Show)
+                            {
+                                continue;
+                            }
+
+                            var cur = _Requests.FirstOrDefault(r => r.Type != UpdateType.Show && r.Message == m.Message);
+                            switch (m.Type)
+                            {
+                                case UpdateType.Added:
+                                    if (cur?.Type != UpdateType.Removed)
+                                    {
+                                        _Requests.Add(m);
+                                        valid = true;
+                                    }
+                                    break;
+
+                                case UpdateType.Removed:
+                                case UpdateType.IsMergedChanged:
+                                    if (cur == null)
+                                    {
+                                        _Requests.Add(m);
+                                        valid = true;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (showing != null && _Requests.Any(r => r.Type == UpdateType.Show))
+                    {
+                        _Requests.Add(new UpdateRequest(UpdateType.Show, showing));
+                        valid = true;
+                    }
+                    if (valid)
                     {
                         BeginProcessUpdates();
                     }
@@ -544,7 +600,8 @@ namespace KokoroIO.XamarinForms.Views
                 }
                 e.Cancel = true;
 
-                if (HandlePrepend(e.Url)
+                if (HandleLoaded(e.Url)
+                    || HandlePrepend(e.Url)
                     || HandleAppend(e.Url)
                     || HandleVisibility(e.Url)
                     || HandleReply(e.Url)
@@ -565,6 +622,17 @@ namespace KokoroIO.XamarinForms.Views
                 }
             }
             catch { }
+        }
+
+        private bool HandleLoaded(string url)
+        {
+            const string PREFIX = "http://kokoro.io/client/control?event=loaded";
+            if (url == PREFIX)
+            {
+                _HtmlLoaded = true;
+                return true;
+            }
+            return false;
         }
 
         private bool HandlePrepend(string url)

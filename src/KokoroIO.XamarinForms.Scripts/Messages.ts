@@ -858,5 +858,6 @@ interface Window {
                 return;
             }
         });
+        location.href = "http://kokoro.io/client/control?event=loaded";
     });
 })();
