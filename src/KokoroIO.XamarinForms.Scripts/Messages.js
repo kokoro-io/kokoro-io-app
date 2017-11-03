@@ -10,6 +10,7 @@
         document.documentElement.classList.add("html-phone");
     }
     var _hasUnread = false;
+    var _isUpdating = false;
     function getTalksHost() {
         return document.body;
     }
@@ -17,57 +18,75 @@
         _hasUnread = !!value;
     };
     window.setMessages = function (messages) {
-        var b = getTalksHost();
-        console.debug("Setting " + (messages ? messages.length : 0) + " messages");
-        b.innerHTML = "";
-        _addMessagessCore(messages, null, false);
-        b.scrollTop = b.scrollHeight - b.clientHeight;
-        _reportVisibilities();
+        _isUpdating = true;
+        try {
+            var b = getTalksHost();
+            console.debug("Setting " + (messages ? messages.length : 0) + " messages");
+            b.innerHTML = "";
+            _addMessagessCore(messages, null, false);
+            b.scrollTop = b.scrollHeight - b.clientHeight;
+            _reportVisibilities();
+        }
+        finally {
+            _isUpdating = false;
+        }
     };
     window.addMessages = function (messages, merged, showNewMessage) {
-        var b = getTalksHost();
-        console.debug("Adding " + (messages ? messages.length : 0) + " messages");
-        var isEmpty = b.children.length === 0;
-        showNewMessage = showNewMessage && !isEmpty;
-        _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
-        if (isEmpty) {
-            b.scrollTop = b.scrollHeight - b.clientHeight;
-        }
-        else if (showNewMessage && messages && messages.length > 0) {
-            var minId = Number.MAX_VALUE;
-            messages.forEach(function (v) { return minId = Math.min(minId, v.Id); });
-            var talk = document.getElementById("talk" + minId);
-            if (talk) {
-                _bringToTop(talk);
+        _isUpdating = true;
+        try {
+            var b = getTalksHost();
+            console.debug("Adding " + (messages ? messages.length : 0) + " messages");
+            var isEmpty = b.children.length === 0;
+            showNewMessage = showNewMessage && !isEmpty;
+            _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
+            if (isEmpty) {
+                b.scrollTop = b.scrollHeight - b.clientHeight;
             }
+            else if (showNewMessage && messages && messages.length > 0) {
+                var minId = Number.MAX_VALUE;
+                messages.forEach(function (v) { return minId = Math.min(minId, v.Id); });
+                var talk = document.getElementById("talk" + minId);
+                if (talk) {
+                    _bringToTop(talk);
+                }
+            }
+            _reportVisibilities();
         }
-        _reportVisibilities();
+        finally {
+            _isUpdating = false;
+        }
     };
     var removeMessages = window.removeMessages = function (ids, idempotentKeys, merged) {
-        console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
-        var b = getTalksHost();
-        if (ids) {
-            for (var i = 0; i < ids.length; i++) {
-                var talk = document.getElementById('talk' + ids[i]);
-                if (talk) {
-                    var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
-                    talk.remove();
-                    b.scrollTop = nt;
+        _isUpdating = true;
+        try {
+            console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
+            var b = getTalksHost();
+            if (ids) {
+                for (var i = 0; i < ids.length; i++) {
+                    var talk = document.getElementById('talk' + ids[i]);
+                    if (talk) {
+                        var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+                        talk.remove();
+                        b.scrollTop = nt;
+                    }
                 }
             }
-        }
-        if (idempotentKeys) {
-            for (var i_1 = 0; i_1 < idempotentKeys.length; i_1++) {
-                var talk_1 = _talkByIdempotentKey(idempotentKeys[i_1]);
-                if (talk_1) {
-                    var nt = talk_1.offsetTop < b.scrollTop ? b.scrollTop - talk_1.clientHeight : b.scrollTop;
-                    talk_1.remove();
-                    b.scrollTop = nt;
+            if (idempotentKeys) {
+                for (var i_1 = 0; i_1 < idempotentKeys.length; i_1++) {
+                    var talk_1 = _talkByIdempotentKey(idempotentKeys[i_1]);
+                    if (talk_1) {
+                        var nt = talk_1.offsetTop < b.scrollTop ? b.scrollTop - talk_1.clientHeight : b.scrollTop;
+                        talk_1.remove();
+                        b.scrollTop = nt;
+                    }
                 }
             }
+            updateContinued(merged, true);
+            _reportVisibilities();
         }
-        updateContinued(merged, true);
-        _reportVisibilities();
+        finally {
+            _isUpdating = false;
+        }
     };
     function _addMessagessCore(messages, merged, scroll) {
         var b = getTalksHost();
@@ -150,19 +169,25 @@
         }
     }
     window.showMessage = function (id, toTop) {
-        console.debug("showing message[" + id + "]");
-        var talk = document.getElementById("talk" + id);
-        if (talk) {
-            var b = getTalksHost();
-            console.log("current scrollTo is " + b.scrollTop + ", and offsetTop is " + talk.offsetTop);
-            if (talk.offsetTop < b.scrollTop || toTop) {
-                console.log("scrolling to " + talk.offsetTop);
-                b.scrollTop = talk.offsetTop;
+        _isUpdating = true;
+        try {
+            console.debug("showing message[" + id + "]");
+            var talk = document.getElementById("talk" + id);
+            if (talk) {
+                var b = getTalksHost();
+                console.log("current scrollTo is " + b.scrollTop + ", and offsetTop is " + talk.offsetTop);
+                if (talk.offsetTop < b.scrollTop || toTop) {
+                    console.log("scrolling to " + talk.offsetTop);
+                    b.scrollTop = talk.offsetTop;
+                }
+                else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
+                    console.log("scrolling to " + (talk.offsetTop - b.clientHeight));
+                    b.scrollTop = talk.offsetTop - b.clientHeight;
+                }
             }
-            else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
-                console.log("scrolling to " + (talk.offsetTop - b.clientHeight));
-                b.scrollTop = talk.offsetTop - b.clientHeight;
-            }
+        }
+        finally {
+            _isUpdating = false;
         }
     };
     function updateContinued(merged, scroll) {
@@ -601,14 +626,18 @@
                 return;
             }
             if (b.scrollTop < LOAD_OLDER_MARGIN) {
-                console.log("Loading older messages.");
-                location.href = "http://kokoro.io/client/control?event=prepend&count=" + b.children.length;
+                if (!_isUpdating) {
+                    console.log("Loading older messages.");
+                    location.href = "http://kokoro.io/client/control?event=prepend&count=" + b.children.length;
+                }
             }
             else {
                 var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
                 if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
-                    console.log("Loading newer messages.");
-                    location.href = "http://kokoro.io/client/control?event=append&count=" + b.children.length;
+                    if (!_isUpdating) {
+                        console.log("Loading newer messages.");
+                        location.href = "http://kokoro.io/client/control?event=append&count=" + b.children.length;
+                    }
                 }
             }
         });
@@ -632,8 +661,10 @@
                     setTimeout(function () {
                         if (mouseDownStart !== null
                             && mouseDownStart + 800 < new Date().getTime()) {
-                            console.log("Loading newer messages.");
-                            location.href = "http://kokoro.io/client/control?event=append&count=" + getTalksHost().children.length;
+                            if (!_isUpdating) {
+                                console.log("Loading newer messages.");
+                                location.href = "http://kokoro.io/client/control?event=append&count=" + getTalksHost().children.length;
+                            }
                         }
                         mouseDownStart = null;
                     }, 1000);

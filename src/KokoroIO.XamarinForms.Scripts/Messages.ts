@@ -70,6 +70,7 @@ interface Window {
     }
 
     var _hasUnread = false;
+    var _isUpdating = false;
 
     function getTalksHost(): HTMLElement {
         return document.body;
@@ -80,68 +81,83 @@ interface Window {
     };
 
     window.setMessages = function (messages: MessageInfo[]) {
-        let b = getTalksHost();
-        console.debug("Setting " + (messages ? messages.length : 0) + " messages");
-        b.innerHTML = "";
-        _addMessagessCore(messages, null, false);
+        _isUpdating = true;
+        try {
+            let b = getTalksHost();
+            console.debug("Setting " + (messages ? messages.length : 0) + " messages");
+            b.innerHTML = "";
+            _addMessagessCore(messages, null, false);
 
-        b.scrollTop = b.scrollHeight - b.clientHeight;
-        _reportVisibilities();
+            b.scrollTop = b.scrollHeight - b.clientHeight;
+            _reportVisibilities();
+        } finally {
+            _isUpdating = false;
+        }
     }
 
     window.addMessages = function (messages: MessageInfo[], merged: MergeInfo[], showNewMessage?: boolean) {
-        let b = getTalksHost();
-        console.debug("Adding " + (messages ? messages.length : 0) + " messages");
+        _isUpdating = true;
+        try {
+            let b = getTalksHost();
+            console.debug("Adding " + (messages ? messages.length : 0) + " messages");
 
-        var isEmpty = b.children.length === 0;
-        showNewMessage = showNewMessage && !isEmpty;
+            var isEmpty = b.children.length === 0;
+            showNewMessage = showNewMessage && !isEmpty;
 
-        _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
+            _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
 
-        if (isEmpty) {
-            b.scrollTop = b.scrollHeight - b.clientHeight;
-        } else if (showNewMessage && messages && messages.length > 0) {
-            var minId = Number.MAX_VALUE;
-            messages.forEach(v => minId = Math.min(minId, v.Id));
+            if (isEmpty) {
+                b.scrollTop = b.scrollHeight - b.clientHeight;
+            } else if (showNewMessage && messages && messages.length > 0) {
+                var minId = Number.MAX_VALUE;
+                messages.forEach(v => minId = Math.min(minId, v.Id));
 
-            var talk = document.getElementById("talk" + minId);
-            if (talk) {
-                _bringToTop(talk);
+                var talk = document.getElementById("talk" + minId);
+                if (talk) {
+                    _bringToTop(talk);
+                }
             }
+            _reportVisibilities();
+        } finally {
+            _isUpdating = false;
         }
-        _reportVisibilities();
     }
 
     var removeMessages = window.removeMessages = function (ids: number[], idempotentKeys: string[], merged: MergeInfo[]) {
-        console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
-        let b = getTalksHost();
-        if (ids) {
-            for (var i = 0; i < ids.length; i++) {
-                var talk = document.getElementById('talk' + ids[i]);
+        _isUpdating = true;
+        try {
+            console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
+            let b = getTalksHost();
+            if (ids) {
+                for (var i = 0; i < ids.length; i++) {
+                    var talk = document.getElementById('talk' + ids[i]);
 
-                if (talk) {
-                    var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+                    if (talk) {
+                        var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
 
-                    talk.remove();
+                        talk.remove();
 
-                    b.scrollTop = nt;
+                        b.scrollTop = nt;
+                    }
                 }
             }
-        }
-        if (idempotentKeys) {
-            for (let i = 0; i < idempotentKeys.length; i++) {
-                let talk = _talkByIdempotentKey(idempotentKeys[i]);
-                if (talk) {
-                    var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+            if (idempotentKeys) {
+                for (let i = 0; i < idempotentKeys.length; i++) {
+                    let talk = _talkByIdempotentKey(idempotentKeys[i]);
+                    if (talk) {
+                        var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
 
-                    talk.remove();
+                        talk.remove();
 
-                    b.scrollTop = nt;
+                        b.scrollTop = nt;
+                    }
                 }
             }
+            updateContinued(merged, true);
+            _reportVisibilities();
+        } finally {
+            _isUpdating = false;
         }
-        updateContinued(merged, true);
-        _reportVisibilities();
     }
 
     function _addMessagessCore(messages: MessageInfo[], merged: MergeInfo[], scroll: boolean) {
@@ -234,18 +250,23 @@ interface Window {
     }
 
     window.showMessage = function (id: number, toTop: boolean) {
-        console.debug(`showing message[${id}]`);
-        var talk = document.getElementById("talk" + id);
-        if (talk) {
-            let b = getTalksHost();
-            console.log(`current scrollTo is ${b.scrollTop}, and offsetTop is ${talk.offsetTop}`);
-            if (talk.offsetTop < b.scrollTop || toTop) {
-                console.log(`scrolling to ${talk.offsetTop}`);
-                b.scrollTop = talk.offsetTop;
-            } else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
-                console.log(`scrolling to ${talk.offsetTop - b.clientHeight}`);
-                b.scrollTop = talk.offsetTop - b.clientHeight;
+        _isUpdating = true;
+        try {
+            console.debug(`showing message[${id}]`);
+            var talk = document.getElementById("talk" + id);
+            if (talk) {
+                let b = getTalksHost();
+                console.log(`current scrollTo is ${b.scrollTop}, and offsetTop is ${talk.offsetTop}`);
+                if (talk.offsetTop < b.scrollTop || toTop) {
+                    console.log(`scrolling to ${talk.offsetTop}`);
+                    b.scrollTop = talk.offsetTop;
+                } else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
+                    console.log(`scrolling to ${talk.offsetTop - b.clientHeight}`);
+                    b.scrollTop = talk.offsetTop - b.clientHeight;
+                }
             }
+        } finally {
+            _isUpdating = false;
         }
     };
 
@@ -767,13 +788,17 @@ interface Window {
             }
 
             if (b.scrollTop < LOAD_OLDER_MARGIN) {
-                console.log("Loading older messages.");
-                location.href = `http://kokoro.io/client/control?event=prepend&count=${b.children.length}`;
+                if (!_isUpdating) {
+                    console.log("Loading older messages.");
+                    location.href = `http://kokoro.io/client/control?event=prepend&count=${b.children.length}`;
+                }
             } else {
                 var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
                 if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
-                    console.log("Loading newer messages.");
-                    location.href = `http://kokoro.io/client/control?event=append&count=${b.children.length}`;
+                    if (!_isUpdating) {
+                        console.log("Loading newer messages.");
+                        location.href = `http://kokoro.io/client/control?event=append&count=${b.children.length}`;
+                    }
                 }
             }
         });
@@ -805,8 +830,10 @@ interface Window {
                     setTimeout(function () {
                         if (mouseDownStart !== null
                             && mouseDownStart + 800 < new Date().getTime()) {
-                            console.log("Loading newer messages.");
-                            location.href = `http://kokoro.io/client/control?event=append&count=${getTalksHost().children.length}`;
+                            if (!_isUpdating) {
+                                console.log("Loading newer messages.");
+                                location.href = `http://kokoro.io/client/control?event=append&count=${getTalksHost().children.length}`;
+                            }
                         }
                         mouseDownStart = null;
                     }, 1000);
