@@ -173,13 +173,17 @@ namespace KokoroIO.XamarinForms.UWP
 
                     if (qp.TryGetValue("channelId", out var cid))
                     {
-                        var ch = avm.Channels.FirstOrDefault(c => c.Id == cid);
+                        avm.SelectedChannelId = cid;
 
-                        if (ch != null)
+                        if (avm.SelectedChannel?.Id == cid
+                            && qp.TryGetValue("messageId", out var mid)
+                            && int.TryParse(mid, out var id))
                         {
-                            avm.SelectedChannel = ch;
-                            return;
+                            avm.SelectedChannel.GetOrCreateMessagesPage().SelectedMessageId = id;
                         }
+
+
+                        return;
                     }
                 }
             }
