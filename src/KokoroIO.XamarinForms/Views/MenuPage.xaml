@@ -32,7 +32,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition
-                    Height="32" />
+                    Height="Auto" />
                 <RowDefinition
                     Height="Auto" />
                 <RowDefinition />
@@ -40,9 +40,10 @@
                     Height="Auto" />
             </Grid.RowDefinitions>
             <Grid
-                BackgroundColor="#2C3E50">
+                x:Name="LogoImageGrid"
+                BackgroundColor="#2C3E50"
+                HeightRequest="32">
                 <Image
-                    x:Name="LogoImage"
                     Margin="8,4"
                     VerticalOptions="Center"
                     HorizontalOptions="Start"

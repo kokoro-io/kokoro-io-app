@@ -11,7 +11,7 @@ namespace KokoroIO.XamarinForms.Views
         public MenuPage()
         {
             InitializeComponent();
-            LogoImage.IsVisible = XDevice.Idiom != TargetIdiom.Phone;
+            LogoImageGrid.IsVisible = XDevice.Idiom != TargetIdiom.Phone;
         }
 
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs args)
