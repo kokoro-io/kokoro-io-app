@@ -145,3 +145,12 @@ html.html-phone .talk:hover > .message-menu {
 .fa-exclamation-triangle {
   background-image: url(icons/variants/ic_warning_f39c12_24px.svg);
 }
+.talk .message .filtered_text img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+@media (min-width: 600px) {
+  .talk .message .filtered_text img {
+    max-width: 540px;
+  }
+}

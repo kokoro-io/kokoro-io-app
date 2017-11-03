@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Foundation;
 using KokoroIO.XamarinForms.iOS.Services;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using UIKit;
 using Xamarin.Forms;
@@ -26,7 +27,7 @@ namespace KokoroIO.XamarinForms.iOS.Services
             n.FireDate = NSDate.Now;
             n.TimeZone = NSTimeZone.DefaultTimeZone;
             n.AlertTitle = "#" + message.Channel.ChannelName;
-            n.AlertBody = $"{message.Profile.DisplayName}: {message.RawContent}";
+            n.AlertBody = $"{message.Profile.DisplayName}: {message.AsPlainText()}";
             n.AlertAction = $"?channelId={message.Channel.Id}&messageId={message.Id}";
 
             var ui = new NSMutableDictionary();

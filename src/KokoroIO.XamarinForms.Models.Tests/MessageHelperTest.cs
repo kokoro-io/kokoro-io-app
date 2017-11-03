@@ -1,5 +1,4 @@
-﻿using System;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KokoroIO.XamarinForms.Models.Tests
@@ -8,13 +7,16 @@ namespace KokoroIO.XamarinForms.Models.Tests
     public class MessageHelperTest
     {
         [TestMethod]
+        public void AsPlainTextTest()
+        {
+            var md = "- `a`\r\n- b\r\n\r\n[`hoge`](#)";
+            var pt = MessageHelper.MarkdownToText(md);
+            Assert.IsNotNull(pt);
+        }
+
+        [TestMethod]
         public void InsertLinksTest()
         {
-//            var xml = @"<blockquote>
-//<p>status (string, optional):<br/>
-//発言の状態 = [&#39;active&#39;, &#39;deleted_by_publisher&#39;, &#39;deleted_by_another_member&#39;],</p>
-//</blockquote>
-//";
             var xml = @"<blockquote><p>#before<br/>#after</p></blockquote>";
 
             var r = MessageHelper.InsertLinks(xml, null, null);

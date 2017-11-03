@@ -2,6 +2,7 @@
 using Android.App;
 using Android.Content;
 using KokoroIO.XamarinForms.Droid.Services;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using Xamarin.Forms;
 
@@ -52,7 +53,7 @@ namespace KokoroIO.XamarinForms.Droid.Services
                 nm.Notify(message.Channel.Id, 0, nb.Build());
             }
             {
-                var txt = $"{message.Profile.ScreenName}: {message.RawContent}";
+                var txt = $"{message.Profile.ScreenName}: {message.AsPlainText()}";
 
                 var nb = new Notification.Builder(ctx)
                     .SetGroup(message.Channel.Id)
