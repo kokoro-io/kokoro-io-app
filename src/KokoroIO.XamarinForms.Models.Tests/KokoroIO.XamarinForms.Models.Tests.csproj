@@ -38,6 +38,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommonMark, Version=0.1.0.0, Culture=neutral, PublicKeyToken=001ef8810438905d, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonMark.NET.0.15.1\lib\net45\CommonMark.dll</HintPath>
+    </Reference>
     <Reference Include="KokoroIO.Client, Version=0.0.10.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\KokoroIO.Client.0.0.10-pre\lib\net45\KokoroIO.Client.dll</HintPath>
     </Reference>

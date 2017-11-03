@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.UWP.Services;
 using Microsoft.Toolkit.Uwp.Notifications;
@@ -36,7 +37,7 @@ namespace KokoroIO.XamarinForms.UWP.Services
             });
             bg.Children.Add(new AdaptiveText()
             {
-                Text = message.RawContent
+                Text = message.AsPlainText()
             });
             bg.Children.Add(new AdaptiveText()
             {
