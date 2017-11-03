@@ -82,7 +82,7 @@ namespace KokoroIO.XamarinForms.Views
         #region HasUnread
 
         public static readonly BindableProperty HasUnreadProperty
-            = BindableProperty.Create(nameof(HasUnread), typeof(bool), typeof(RootPage), defaultValue: false, propertyChanged: OnHasUnreadChanged);
+            = BindableProperty.Create(nameof(HasUnread), typeof(bool), typeof(MessagesView), defaultValue: false, propertyChanged: OnHasUnreadChanged);
 
         public bool HasUnread
         {
@@ -346,7 +346,7 @@ namespace KokoroIO.XamarinForms.Views
                 _Requests.Clear();
                 _HasUnread = null;
 
-                if (!(_IsRequestProcessing = reset || requests.Any()) || _HasUnread != null)
+                if (!(_IsRequestProcessing = (reset || requests.Any() || hasUnread != null)))
                 {
                     return;
                 }
@@ -446,9 +446,10 @@ namespace KokoroIO.XamarinForms.Views
                         sw.WriteLine("window.showMessage({0}, true);", sm.Id);
                         TH.Info("Showing message#{0} in MessagesView", sm.Id);
                     }
-                    if (_HasUnread != null)
+                    if (hasUnread != null)
                     {
                         sw.WriteLine("window.setHasUnread({0});", hasUnread == true ? "true" : "false");
+                        TH.Info("Setting HasUnread = {0}", hasUnread);
                     }
 
                     var script = sw.ToString();

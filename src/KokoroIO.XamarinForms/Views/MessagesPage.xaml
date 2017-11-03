@@ -110,7 +110,8 @@
                 RefreshCommand="{Binding RefreshCommand}"
                 NavigatingCommand="{Binding OpenUrlCommand}"
                 Messages="{Binding Messages}"
-                SelectedMessage="{Binding SelectedMessage}" />
+                SelectedMessage="{Binding SelectedMessage}"
+                HasUnread="{Binding Channel.HasUnread}" />
             <StackLayout
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="Start">
