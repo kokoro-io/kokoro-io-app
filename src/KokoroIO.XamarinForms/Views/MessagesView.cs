@@ -545,7 +545,7 @@ namespace KokoroIO.XamarinForms.Views
 
         private async Task InvokeScriptAsync(string script)
         {
-            await InitHtmlAsync().ConfigureAwait(false);
+            await InitHtmlAsync();
 
             if (InvokeScriptAsyncCore != null)
             {
