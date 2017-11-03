@@ -205,6 +205,7 @@ namespace KokoroIO.XamarinForms.Views
             // 2. Messages#CollectionChanged.
             // 3. MessageInfo#PropertyChanged.
             // 4. Show message
+            // 5. set_HasUnread
             Added,
 
             Removed,
@@ -361,10 +362,12 @@ namespace KokoroIO.XamarinForms.Views
                         if (Messages == null)
                         {
                             sw.Write("null");
+                            TH.Info("Clearing messages of MessagesView");
                         }
                         else
                         {
                             new JsonSerializer().Serialize(sw, Messages.Select(m => new MessagesViewMessage(m)));
+                            TH.Info("Setting {0} messages to MessagesView", Messages.Count());
                         }
 
                         sw.WriteLine(");");
@@ -407,6 +410,7 @@ namespace KokoroIO.XamarinForms.Views
                                 sw.Write("null");
                             }
                             sw.WriteLine(");");
+                            TH.Info("Removing {0} messages of MessagesView", removed.Count);
                         }
                         if (added != null || (merged != null && removed == null))
                         {
@@ -414,6 +418,7 @@ namespace KokoroIO.XamarinForms.Views
                             if (added != null)
                             {
                                 js.Serialize(sw, added.Select(m => new MessagesViewMessage(m)));
+                                TH.Info("Adding {0} messages to MessagesView", added.Count);
                             }
                             else
                             {
@@ -434,6 +439,7 @@ namespace KokoroIO.XamarinForms.Views
                     if (sm?.Id > 0)
                     {
                         sw.WriteLine("window.showMessage({0}, true);", sm.Id);
+                        TH.Info("Showing message#{0} in MessagesView", sm.Id);
                     }
                     if (_HasUnread != null)
                     {
@@ -483,41 +489,44 @@ namespace KokoroIO.XamarinForms.Views
 
         private async Task InvokeScriptAsync(string script)
         {
-            using (TH.BeginScope("Invoking script"))
+            await InitHtmlAsync().ConfigureAwait(false);
+
+            if (InvokeScriptAsyncCore != null)
             {
-                if (!_HtmlInitialized)
+                await InvokeScriptAsyncCore(script).ConfigureAwait(false);
+            }
+            else
+            {
+                Eval(script);
+            }
+        }
+
+        private async Task InitHtmlAsync()
+        {
+            if (!_HtmlInitialized)
+            {
+                while (NavigateToStringCore == null)
                 {
-                    while (NavigateToStringCore == null)
+                    await Task.Delay(100).ConfigureAwait(false);
+                }
+
+                using (var rs = RH.GetManifestResourceStream("Messages.html"))
+                using (var sr = new StreamReader(rs))
+                {
+                    var html = sr.ReadToEnd();
+
+                    if (XDevice.Idiom == TargetIdiom.Desktop)
                     {
-                        await Task.Delay(100).ConfigureAwait(false);
+                        html = html.Replace("<html>", "<html class=\"html-desktop\">");
+                    }
+                    else if (XDevice.Idiom == TargetIdiom.Tablet)
+                    {
+                        html = html.Replace("<html>", "<html class=\"html-tablet\">");
                     }
 
-                    using (var rs = RH.GetManifestResourceStream("Messages.html"))
-                    using (var sr = new StreamReader(rs))
-                    {
-                        var html = sr.ReadToEnd();
-
-                        if (XDevice.Idiom == TargetIdiom.Desktop)
-                        {
-                            html = html.Replace("<html>", "<html class=\"html-desktop\">");
-                        }
-                        else if (XDevice.Idiom == TargetIdiom.Tablet)
-                        {
-                            html = html.Replace("<html>", "<html class=\"html-tablet\">");
-                        }
-
-                        NavigateToStringCore(html);
-                    }
-                    _HtmlInitialized = true;
+                    NavigateToStringCore(html);
                 }
-                if (InvokeScriptAsyncCore != null)
-                {
-                    await InvokeScriptAsyncCore(script).ConfigureAwait(false);
-                }
-                else
-                {
-                    Eval(script);
-                }
+                _HtmlInitialized = true;
             }
         }
 
