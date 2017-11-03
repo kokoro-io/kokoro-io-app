@@ -86,14 +86,21 @@ namespace KokoroIO.XamarinForms
 
         private static void TrackFormat(string format, object[] args)
         {
-            Analytics.TrackEvent(format, new Dictionary<string, string>()
+            var dic = new Dictionary<string, string>()
             {
-                ["Message"] = string.Format(format, args),
-                ["arg0"] = args?.ElementAtOrDefault(0)?.ToString(),
-                ["arg1"] = args?.ElementAtOrDefault(1)?.ToString(),
-                ["arg2"] = args?.ElementAtOrDefault(2)?.ToString(),
-                ["arg3"] = args?.ElementAtOrDefault(3)?.ToString()
-            });
+                ["Message"] = string.Format(format, args)
+            };
+
+            for (var i = 0; i < 4; i++)
+            {
+                var v = args?.ElementAtOrDefault(i)?.ToString();
+                if (v != null)
+                {
+                    dic[i == 0 ? "arg0" : i == 1 ? "arg1" : i == 2 ? "arg2" : i == 3 ? "arg3" : ("arg" + i)] = v;
+                }
+            }
+
+            Analytics.TrackEvent(format, dic);
         }
 
 
