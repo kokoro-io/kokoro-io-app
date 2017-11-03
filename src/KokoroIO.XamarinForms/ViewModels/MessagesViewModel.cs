@@ -136,9 +136,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     // TODO: get first message id from argument
 
-                    if (Channel.LastReadId > 0)
+                    var tid = _SelectedMessageId ?? Channel.LastReadId;
+
+                    if (tid > 0)
                     {
-                        var afts = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, afterId: Channel.LastReadId);
+                        var afts = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, afterId: tid);
 
                         if (afts.Any())
                         {
@@ -182,7 +184,13 @@ namespace KokoroIO.XamarinForms.ViewModels
                     _MinId = Math.Min(messages.Min(m => m.Id), _MinId ?? int.MaxValue);
                     _MaxId = Math.Max(messages.Max(m => m.Id), _MaxId ?? int.MinValue);
                     InsertMessages(messages);
+
+                    if (_SelectedMessageId != null)
+                    {
+                        SelectedMessage = Messages.FirstOrDefault(m => m.Id == _SelectedMessageId) ?? _SelectedMessage;
+                    }
                 }
+                _SelectedMessageId = null;
 
                 if (!HasNext && _Messages?.LastOrDefault().IsShown != false)
                 {
@@ -304,7 +312,41 @@ namespace KokoroIO.XamarinForms.ViewModels
         public MessageInfo SelectedMessage
         {
             get => _SelectedMessage;
-            set => SetProperty(ref _SelectedMessage, value);
+            set => SetProperty(ref _SelectedMessage, value, onChanged: () => _SelectedMessageId = null);
+        }
+
+        private int? _SelectedMessageId;
+
+        internal int? SelectedMessageId
+        {
+            get => _SelectedMessageId ?? _SelectedMessage?.Id;
+            set
+            {
+                if (value == SelectedMessageId)
+                {
+                    return;
+                }
+
+                if (value == null)
+                {
+                    _SelectedMessageId = null;
+                    SelectedMessage = null;
+                }
+                else
+                {
+                    var m = _Messages.FirstOrDefault(e => e.Id == value);
+                    if (m == null)
+                    {
+                        _SelectedMessageId = value;
+                        BeginLoadMessages().GetHashCode();
+                    }
+                    else
+                    {
+                        _SelectedMessageId = null;
+                        SelectedMessage = m;
+                    }
+                }
+            }
         }
 
         #endregion SelectedMessage
@@ -587,7 +629,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var msg = _Messages?.OrderBy(m => m.Id).LastOrDefault();
             await BeginLoadMessages();
-            SelectedMessage = msg;
+            SelectedMessage = msg == null ? _Messages.FirstOrDefault()
+                            : (_Messages.SkipWhile(m => m != msg).Skip(1).FirstOrDefault() ?? msg);
         }
 
         #endregion ShowUnreadCommand

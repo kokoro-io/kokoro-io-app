@@ -204,7 +204,7 @@
     <Compile Include="GcmBroadcastReceiver.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Renderers\EntitiesLabelRenderer.cs" />
-    <Compile Include="Renderers\MessageWebViewRenderer.cs" />
+    <Compile Include="Renderers\MessagesViewRenderer.cs" />
     <Compile Include="PushHandlerService.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -70,79 +70,98 @@ interface Window {
     }
 
     var _hasUnread = false;
+    var _isUpdating = false;
+
+    function getTalksHost(): HTMLElement {
+        return document.body;
+    }
 
     window.setHasUnread = function (value: boolean) {
         _hasUnread = !!value;
     };
 
     window.setMessages = function (messages: MessageInfo[]) {
-        console.debug("Setting " + (messages ? messages.length : 0) + " messages");
-        document.body.innerHTML = "";
-        _addMessagessCore(messages, null, false);
+        _isUpdating = true;
+        try {
+            let b = getTalksHost();
+            console.debug("Setting " + (messages ? messages.length : 0) + " messages");
+            b.innerHTML = "";
+            _addMessagessCore(messages, null, false);
 
-        var b = document.body;
-        b.scrollTop = b.scrollHeight - b.clientHeight;
-        _reportVisibilities();
+            b.scrollTop = b.scrollHeight - b.clientHeight;
+            _reportVisibilities();
+        } finally {
+            _isUpdating = false;
+        }
     }
 
     window.addMessages = function (messages: MessageInfo[], merged: MergeInfo[], showNewMessage?: boolean) {
-        console.debug("Adding " + (messages ? messages.length : 0) + " messages");
+        _isUpdating = true;
+        try {
+            let b = getTalksHost();
+            console.debug("Adding " + (messages ? messages.length : 0) + " messages");
 
-        var isEmpty = document.body.children.length === 0;
-        showNewMessage = showNewMessage && !isEmpty;
+            var isEmpty = b.children.length === 0;
+            showNewMessage = showNewMessage && !isEmpty;
 
-        _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
+            _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
 
-        if (isEmpty) {
-            var b = document.body;
-            b.scrollTop = b.scrollHeight - b.clientHeight;
-        } else if (showNewMessage && messages && messages.length > 0) {
-            var minId = Number.MAX_VALUE;
-            messages.forEach(v => minId = Math.min(minId, v.Id));
+            if (isEmpty) {
+                b.scrollTop = b.scrollHeight - b.clientHeight;
+            } else if (showNewMessage && messages && messages.length > 0) {
+                var minId = Number.MAX_VALUE;
+                messages.forEach(v => minId = Math.min(minId, v.Id));
 
-            var talk = document.getElementById("talk" + minId);
-            if (talk) {
-                _bringToTop(talk);
+                var talk = document.getElementById("talk" + minId);
+                if (talk) {
+                    _bringToTop(talk);
+                }
             }
+            _reportVisibilities();
+        } finally {
+            _isUpdating = false;
         }
-        _reportVisibilities();
     }
 
     var removeMessages = window.removeMessages = function (ids: number[], idempotentKeys: string[], merged: MergeInfo[]) {
-        console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
-        let b = document.body;
-        if (ids) {
-            for (var i = 0; i < ids.length; i++) {
-                var talk = document.getElementById('talk' + ids[i]);
+        _isUpdating = true;
+        try {
+            console.debug("Removing " + ((ids ? ids.length : 0) + (idempotentKeys ? idempotentKeys.length : 0)) + " messages");
+            let b = getTalksHost();
+            if (ids) {
+                for (var i = 0; i < ids.length; i++) {
+                    var talk = document.getElementById('talk' + ids[i]);
 
-                if (talk) {
-                    var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+                    if (talk) {
+                        var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
 
-                    talk.remove();
+                        talk.remove();
 
-                    b.scrollTop = nt;
+                        b.scrollTop = nt;
+                    }
                 }
             }
-        }
-        if (idempotentKeys) {
-            let b = document.body;
-            for (let i = 0; i < idempotentKeys.length; i++) {
-                let talk = _talkByIdempotentKey(idempotentKeys[i]);
-                if (talk) {
-                    var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+            if (idempotentKeys) {
+                for (let i = 0; i < idempotentKeys.length; i++) {
+                    let talk = _talkByIdempotentKey(idempotentKeys[i]);
+                    if (talk) {
+                        var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
 
-                    talk.remove();
+                        talk.remove();
 
-                    b.scrollTop = nt;
+                        b.scrollTop = nt;
+                    }
                 }
             }
+            updateContinued(merged, true);
+            _reportVisibilities();
+        } finally {
+            _isUpdating = false;
         }
-        updateContinued(merged, true);
-        _reportVisibilities();
     }
 
     function _addMessagessCore(messages: MessageInfo[], merged: MergeInfo[], scroll: boolean) {
-        var b = document.body;
+        let b = getTalksHost();
         var lastTalk = scroll && b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight ? b.lastElementChild : null;
         scroll = scroll && !lastTalk;
         if (messages) {
@@ -154,7 +173,7 @@ interface Window {
 
                 if (!id) {
                     let talk = createTaklElement(m);
-                    document.body.appendChild(talk);
+                    b.appendChild(talk);
                     _afterTalkInserted(talk);
 
                     continue;
@@ -167,7 +186,7 @@ interface Window {
                         let st = b.scrollTop - cur.clientHeight;
 
                         let talk = createTaklElement(m);
-                        document.body.insertBefore(talk, cur);
+                        b.insertBefore(talk, cur);
                         _afterTalkInserted(talk, cur.clientHeight);
                         cur.remove();
 
@@ -187,7 +206,7 @@ interface Window {
                     if (!prev || (id != pid && !aft)) {
                         // console.debug("Appending message[" + id + "]");
                         let talk = createTaklElement(m);
-                        document.body.appendChild(talk);
+                        b.appendChild(talk);
                         _afterTalkInserted(talk);
                         j++;
                         break;
@@ -197,7 +216,7 @@ interface Window {
                             let shoudScroll = scroll && aft && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
                             let st = b.scrollTop - prev.clientHeight;
 
-                            document.body.insertBefore(talk, prev);
+                            b.insertBefore(talk, prev);
                             _afterTalkInserted(talk, prev.clientHeight);
                             prev.remove();
 
@@ -231,24 +250,29 @@ interface Window {
     }
 
     window.showMessage = function (id: number, toTop: boolean) {
-        console.debug(`showing message[${id}]`);
-        var talk = document.getElementById("talk" + id);
-        if (talk) {
-            var b = document.body;
-            console.log(`current scrollTo is ${b.scrollTop}, and offsetTop is ${talk.offsetTop}`);
-            if (talk.offsetTop < b.scrollTop || toTop) {
-                console.log(`scrolling to ${talk.offsetTop}`);
-                b.scrollTop = talk.offsetTop;
-            } else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
-                console.log(`scrolling to ${talk.offsetTop - b.clientHeight}`);
-                b.scrollTop = talk.offsetTop - b.clientHeight;
+        _isUpdating = true;
+        try {
+            console.debug(`showing message[${id}]`);
+            var talk = document.getElementById("talk" + id);
+            if (talk) {
+                let b = getTalksHost();
+                console.log(`current scrollTo is ${b.scrollTop}, and offsetTop is ${talk.offsetTop}`);
+                if (talk.offsetTop < b.scrollTop || toTop) {
+                    console.log(`scrolling to ${talk.offsetTop}`);
+                    b.scrollTop = talk.offsetTop;
+                } else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
+                    console.log(`scrolling to ${talk.offsetTop - b.clientHeight}`);
+                    b.scrollTop = talk.offsetTop - b.clientHeight;
+                }
             }
+        } finally {
+            _isUpdating = false;
         }
     };
 
     function updateContinued(merged: MergeInfo[], scroll: boolean) {
         if (merged) {
-            var b = document.body;
+            let b = getTalksHost();
             for (var i = 0; i < merged.length; i++) {
                 var m = merged[i];
                 var id = m.Id;
@@ -310,7 +334,6 @@ interface Window {
             talk.setAttribute("data-message-id", id.toString());
 
             if (!m.IsDeleted) {
-
                 if (isDesktop || isTablet) {
                     let control = document.createElement("div");
                     control.classList.add("message-menu");
@@ -583,7 +606,7 @@ interface Window {
     }
 
     function _insertBefore(talk: HTMLDivElement, aft: HTMLDivElement, scroll: boolean) {
-        var b = document.body;
+        let b = getTalksHost();
         scroll = scroll && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
         var st = b.scrollTop;
 
@@ -600,22 +623,23 @@ interface Window {
             if (talk.offsetTop === 0) {
                 if (talk.previousElementSibling) {
                     setTimeout(function () {
-                        var b = document.body;
+                        let b = getTalksHost();
                         b.scrollTop = talk.offsetTop;
                     }, 1);
                 }
             } else {
-                var b = document.body;
+                let b = getTalksHost();
                 b.scrollTop = talk.offsetTop;
             }
         }
     }
 
     function _afterTalkInserted(talk: HTMLDivElement, previousHeight?: number) {
-        if (talk.offsetTop < document.body.scrollTop) {
+        let b = getTalksHost();
+        if (talk.offsetTop < b.scrollTop) {
             let delta = talk.clientHeight - (previousHeight || 0);
             if (delta != 0) {
-                document.body.scrollTop += delta;
+                b.scrollTop += delta;
                 console.log("scolled " + delta);
             }
         }
@@ -642,11 +666,11 @@ interface Window {
 
                     let ph = parseInt(talk.getAttribute("data-height"), 10);
                     let delta = talk.clientHeight - ph;
-                    let b = document.body;
+                    let b = getTalksHost();
                     if (b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight - delta) {
                         // previous viewport was bottom.
                         b.scrollTop = b.scrollHeight - b.clientHeight;
-                    } else if (talk.offsetTop < document.body.scrollTop) {
+                    } else if (talk.offsetTop < b.scrollTop) {
                         b.scrollTop += delta;
                     }
                     talk.setAttribute("data-height", talk.clientHeight.toString());
@@ -686,8 +710,8 @@ interface Window {
     var _visibleIds: string;
 
     function _reportVisibilities() {
-        let b = document.body;
-        let talks = document.body.children;
+        let b = getTalksHost();
+        let talks = b.children;
 
         let ids = "";
 
@@ -723,8 +747,8 @@ interface Window {
             }
 
             windowWidth = window.innerWidth;
-
-            var talks = document.body.children;
+            let b = getTalksHost();
+            var talks = b.children;
             for (var i = 0; i < talks.length; i++) {
                 var talk = talks[i];
                 talk.setAttribute("data-height", talk.clientHeight.toString());
@@ -734,9 +758,9 @@ interface Window {
         });
 
         document.addEventListener("scroll", function () {
-            var b = document.body;
+            let b = getTalksHost();
 
-            var talks = document.body.children;
+            var talks = b.children;
             for (var i = 0; i < talks.length; i++) {
                 var talk = <HTMLDivElement>talks[i];
 
@@ -764,13 +788,17 @@ interface Window {
             }
 
             if (b.scrollTop < LOAD_OLDER_MARGIN) {
-                console.log("Loading older messages.");
-                location.href = "http://kokoro.io/client/control?event=prepend";
+                if (!_isUpdating) {
+                    console.log("Loading older messages.");
+                    location.href = `http://kokoro.io/client/control?event=prepend&count=${b.children.length}`;
+                }
             } else {
                 var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
                 if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
-                    console.log("Loading newer messages.");
-                    location.href = "http://kokoro.io/client/control?event=append";
+                    if (!_isUpdating) {
+                        console.log("Loading newer messages.");
+                        location.href = `http://kokoro.io/client/control?event=append&count=${b.children.length}`;
+                    }
                 }
             }
         });
@@ -802,8 +830,10 @@ interface Window {
                     setTimeout(function () {
                         if (mouseDownStart !== null
                             && mouseDownStart + 800 < new Date().getTime()) {
-                            console.log("Loading newer messages.");
-                            location.href = "http://kokoro.io/client/control?event=append";
+                            if (!_isUpdating) {
+                                console.log("Loading newer messages.");
+                                location.href = `http://kokoro.io/client/control?event=append&count=${getTalksHost().children.length}`;
+                            }
                         }
                         mouseDownStart = null;
                     }, 1000);
@@ -828,5 +858,6 @@ interface Window {
                 return;
             }
         });
+        location.href = "http://kokoro.io/client/control?event=loaded";
     });
 })();

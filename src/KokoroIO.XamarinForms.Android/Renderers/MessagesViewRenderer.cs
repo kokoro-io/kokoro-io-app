@@ -6,13 +6,13 @@ using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(MessageWebView), typeof(MessageWebViewRenderer))]
+[assembly: ExportRenderer(typeof(MessagesView), typeof(MessagesViewRenderer))]
 
 namespace KokoroIO.XamarinForms.Droid.Renderers
 {
-    public class MessageWebViewRenderer : WebViewRenderer
+    public class MessagesViewRenderer : WebViewRenderer
     {
-        static MessageWebViewRenderer()
+        static MessagesViewRenderer()
         {
 #if DEBUG
             if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Kitkat)
@@ -24,7 +24,7 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
         protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.WebView> e)
         {
-            var mwv = e.OldElement as MessageWebView;
+            var mwv = e.OldElement as MessagesView;
 
             if (mwv != null)
             {
@@ -34,7 +34,7 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
             base.OnElementChanged(e);
 
-            mwv = e.NewElement as MessageWebView;
+            mwv = e.NewElement as MessagesView;
 
             if (mwv != null)
             {

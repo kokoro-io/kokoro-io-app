@@ -29,10 +29,17 @@ namespace KokoroIO.XamarinForms.Droid
             _Current = new System.WeakReference<MainActivity>(this);
 
             var cid = Intent.Extras?.GetString("channelId");
+            var mid = Intent.Extras?.GetString("messageId");
 
             if (avm != null)
             {
                 avm.SelectedChannelId = cid ?? avm.SelectedChannelId;
+
+                if (avm.SelectedChannel?.Id == cid
+                    && int.TryParse(mid, out var id))
+                {
+                    avm.SelectedChannel.GetOrCreateMessagesPage().SelectedMessageId = id;
+                }
 
                 global::Xamarin.Forms.Forms.Init(this, bundle);
                 LoadApplication(new App(avm));
