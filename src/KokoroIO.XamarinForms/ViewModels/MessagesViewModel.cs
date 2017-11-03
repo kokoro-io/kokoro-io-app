@@ -587,7 +587,8 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var msg = _Messages?.OrderBy(m => m.Id).LastOrDefault();
             await BeginLoadMessages();
-            SelectedMessage = msg;
+            SelectedMessage = msg == null ? _Messages.FirstOrDefault()
+                            : (_Messages.SkipWhile(m => m != msg).Skip(1).FirstOrDefault() ?? msg);
         }
 
         #endregion ShowUnreadCommand
