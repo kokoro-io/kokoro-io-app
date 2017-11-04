@@ -734,7 +734,7 @@ namespace KokoroIO.XamarinForms.Views
 
                     if (msg != null)
                     {
-                        CrossClipboard.Current.SetText(msg.RawContent);
+                        CrossClipboard.Current.SetText(msg.PlainTextContent);
                     }
                 }
                 return true;
