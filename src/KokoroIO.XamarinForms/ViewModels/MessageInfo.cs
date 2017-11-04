@@ -35,7 +35,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             IdempotentKey = Guid.NewGuid();
             Profile = page.Application.LoginUser.ToProfile();
 
-            HtmlContent = content.Replace("<", "&lt;").Replace(">", "&gt;");
+            _HtmlContent = MessageHelper.MarkdownToHtml(content);
+            _PlainTextContent = content;
+            _RawContent = content;
         }
 
         internal void Update(Message message)
