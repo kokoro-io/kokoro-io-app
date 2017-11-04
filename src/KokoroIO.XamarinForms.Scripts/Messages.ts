@@ -355,11 +355,11 @@ interface Window {
                     talk.appendChild(control);
                 }
             }
-        }
-
-        var idempotentKey = m.IdempotentKey;
-        if (idempotentKey) {
-            talk.setAttribute("data-idempotent-key", idempotentKey);
+        } else {
+            var idempotentKey = m.IdempotentKey;
+            if (idempotentKey) {
+                talk.setAttribute("data-idempotent-key", idempotentKey);
+            }
         }
 
         try {

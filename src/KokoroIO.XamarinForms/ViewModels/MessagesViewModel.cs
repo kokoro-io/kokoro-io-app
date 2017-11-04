@@ -240,23 +240,19 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
             else
             {
+                foreach (var dm in Messages
+                                    .Where(e => e.Id == null
+                                        && e.IdempotentKey != null
+                                        && messages.Any(am => am.IdempotentKey == e.IdempotentKey))
+                                    .ToList())
+                {
+                    Messages.Remove(dm);
+                }
+
                 var i = 0;
 
                 foreach (var m in messages.OrderBy(e => e.Id))
                 {
-                    if (m.IdempotentKey != null)
-                    {
-                        var cur = Messages.FirstOrDefault(cm => cm.IdempotentKey == m.IdempotentKey);
-
-                        if (cur != null && (cur.Id == null || cur.Id == m.Id))
-                        {
-                            cur.Update(m);
-                            var p = Messages.IndexOf(cur);
-                            cur.SetIsMerged(Messages.ElementAtOrDefault(p - 1));
-
-                            continue;
-                        }
-                    }
                     var vm = new MessageInfo(this, m);
 
                     for (; ; i++)
