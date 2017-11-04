@@ -67,7 +67,9 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Application.css" />
+    <Content Include="Application.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icons\ic_account_circle_black_24px.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -117,17 +119,24 @@
     <Content Include="Icons\variants\ic_warning_f39c12_24px.svg" />
     <Content Include="Messages.css">
       <DependentUpon>Messages.less</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Messages.js">
       <DependentUpon>Messages.ts</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Messages.min.css">
       <DependentUpon>Messages.css</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Messages.template.html" />
+    <Content Include="Messages.template.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MessageBox.css" />
+    <EmbeddedResource Include="MessageBox.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="compilerconfig.json" />
@@ -140,7 +149,9 @@
     <TypeScriptCompile Include="Messages.ts" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Pygments.css" />
+    <EmbeddedResource Include="Pygments.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

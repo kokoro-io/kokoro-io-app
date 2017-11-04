@@ -368,7 +368,7 @@ namespace KokoroIO.XamarinForms.Views
                         else
                         {
                             new JsonSerializer().Serialize(
-                                sw, Messages.Select(m => new MessagesViewMessage(m))
+                                sw, Messages.Select(m => m.ToJson())
                                             .OrderBy(m => m.PublishedAt ?? DateTime.MaxValue));
                             TH.Info("Setting {0} messages to MessagesView", Messages.Count());
                         }
@@ -405,7 +405,7 @@ namespace KokoroIO.XamarinForms.Views
                             sw.Write(",");
                             if (merged != null && added == null)
                             {
-                                js.Serialize(sw, merged.Select(m => new MessagesViewMergeInfo(m)));
+                                js.Serialize(sw, merged.Select(m => m.ToMergeInfo()));
                             }
                             else
                             {
@@ -421,7 +421,7 @@ namespace KokoroIO.XamarinForms.Views
                             {
                                 js.Serialize(
                                     sw,
-                                    added.Select(m => new MessagesViewMessage(m))
+                                    added.Select(m => m.ToJson())
                                             .OrderBy(m => m.PublishedAt ?? DateTime.MaxValue));
                                 TH.Info("Adding {0} messages to MessagesView", added.Count);
                             }
@@ -432,7 +432,7 @@ namespace KokoroIO.XamarinForms.Views
                             sw.Write(",");
                             if (merged != null)
                             {
-                                js.Serialize(sw, merged.Select(m => new MessagesViewMergeInfo(m)));
+                                js.Serialize(sw, merged.Select(m => m.ToMergeInfo()));
                             }
                             else
                             {
