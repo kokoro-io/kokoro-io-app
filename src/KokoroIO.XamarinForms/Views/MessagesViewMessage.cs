@@ -1,44 +1,24 @@
 using System;
 using System.Collections.Generic;
-using KokoroIO.XamarinForms.ViewModels;
 
 namespace KokoroIO.XamarinForms.Views
 {
     internal sealed class MessagesViewMessage
     {
-        public MessagesViewMessage(MessageInfo message)
-        {
-            Id = message.Id;
-            IdempotentKey = message.IdempotentKey;
+        public int? Id { get; set; }
+        public Guid? IdempotentKey { get; set; }
+        public string ProfileId { get; set; }
+        public string Avatar { get; set; }
+        public string ScreenName { get; set; }
+        public string DisplayName { get; set; }
+        public bool IsBot { get; set; }
+        public DateTime? PublishedAt { get; set; }
 
-            ProfileId = message.Profile.Id;
-            Avatar = message.DisplayAvatar;
-            ScreenName = message.Profile.ScreenName;
-            DisplayName = message.Profile.DisplayName;
-            IsBot = message.Profile.Type == ProfileType.Bot;
-            PublishedAt = message.PublishedAt;
-            IsNsfw = message.IsNsfw;
-            HtmlContent = message.HtmlContent;
-            IsMerged = message.IsMerged;
-            EmbedContents = message.EmbedContents;
-            IsDeleted = message.IsDeleted;
-            CanDelete = message.CanDelete;
-        }
-
-        public int? Id { get; }
-        public Guid? IdempotentKey { get; }
-        public string ProfileId { get; }
-        public string Avatar { get; }
-        public string ScreenName { get; }
-        public string DisplayName { get; }
-        public bool IsBot { get; }
-        public DateTime? PublishedAt { get; }
-
-        public bool IsNsfw { get; }
-        public string HtmlContent { get; }
-        public bool IsMerged { get; }
-        public IList<EmbedContent> EmbedContents { get; }
-        public bool CanDelete { get; }
-        public bool IsDeleted { get; }
+        public bool IsNsfw { get; set; }
+        public string HtmlContent { get; set; }
+        public bool IsMerged { get; set; }
+        public IList<EmbedContent> EmbedContents { get; set; }
+        public bool CanDelete { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
