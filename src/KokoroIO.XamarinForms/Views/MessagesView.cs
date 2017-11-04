@@ -183,7 +183,7 @@ namespace KokoroIO.XamarinForms.Views
                 case nameof(MessageInfo.Id):
                 case nameof(MessageInfo.Profile):
                 case nameof(MessageInfo.PublishedAt):
-                case nameof(MessageInfo.Content):
+                case nameof(MessageInfo.HtmlContent):
                 case nameof(MessageInfo.EmbedContents):
                     EnqueueAdd(new[] { (MessageInfo)sender });
                     break;

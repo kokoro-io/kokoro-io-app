@@ -7,14 +7,6 @@ namespace KokoroIO.XamarinForms.Models.Tests
     public class MessageHelperTest
     {
         [TestMethod]
-        public void AsPlainTextTest()
-        {
-            var md = "- `a`\r\n- b\r\n\r\n[`hoge`](#)";
-            var pt = MessageHelper.MarkdownToText(md);
-            Assert.IsNotNull(pt);
-        }
-
-        [TestMethod]
         public void InsertLinksTest()
         {
             var xml = @"<blockquote><p>#before<br/>#after</p></blockquote>";

@@ -10,7 +10,7 @@ interface MessageInfo extends MergeInfo {
     DisplayName: string;
     PublishedAt: string;
     IsBot: boolean;
-    Content: string;
+    HtmlContent: string;
     EmbedContents: EmbedContent[];
     IsNsfw: boolean;
     CanDelete: boolean;
@@ -424,7 +424,7 @@ interface Window {
 
             var filteredText = document.createElement("div");
             filteredText.classList.add(m.IsDeleted ? "deleted_text" : "filtered_text");
-            filteredText.innerHTML = m.Content;
+            filteredText.innerHTML = m.HtmlContent;
             message.appendChild(filteredText);
 
             if (m.EmbedContents && m.EmbedContents.length > 0) {

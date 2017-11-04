@@ -18,7 +18,7 @@ namespace KokoroIO.XamarinForms.Views
             IsBot = message.Profile.Type == ProfileType.Bot;
             PublishedAt = message.PublishedAt;
             IsNsfw = message.IsNsfw;
-            Content = message.Content;
+            HtmlContent = message.HtmlContent;
             IsMerged = message.IsMerged;
             EmbedContents = message.EmbedContents;
             IsDeleted = message.IsDeleted;
@@ -35,7 +35,7 @@ namespace KokoroIO.XamarinForms.Views
         public DateTime? PublishedAt { get; }
 
         public bool IsNsfw { get; }
-        public string Content { get; }
+        public string HtmlContent { get; }
         public bool IsMerged { get; }
         public IList<EmbedContent> EmbedContents { get; }
         public bool CanDelete { get; }

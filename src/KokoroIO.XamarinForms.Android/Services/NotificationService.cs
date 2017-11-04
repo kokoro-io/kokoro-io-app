@@ -53,7 +53,7 @@ namespace KokoroIO.XamarinForms.Droid.Services
                 nm.Notify(message.Channel.Id, 0, nb.Build());
             }
             {
-                var txt = $"{message.Profile.ScreenName}: {message.AsPlainText()}";
+                var txt = $"{message.Profile.ScreenName}: {message.PlainTextContent}";
 
                 var nb = new Notification.Builder(ctx)
                     .SetGroup(message.Channel.Id)

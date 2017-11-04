@@ -322,7 +322,7 @@
             speaker.appendChild(small);
             var filteredText = document.createElement("div");
             filteredText.classList.add(m.IsDeleted ? "deleted_text" : "filtered_text");
-            filteredText.innerHTML = m.Content;
+            filteredText.innerHTML = m.HtmlContent;
             message.appendChild(filteredText);
             if (m.EmbedContents && m.EmbedContents.length > 0) {
                 var ecs = document.createElement("div");

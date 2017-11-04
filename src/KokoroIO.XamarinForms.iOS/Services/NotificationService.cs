@@ -27,7 +27,7 @@ namespace KokoroIO.XamarinForms.iOS.Services
             n.FireDate = NSDate.Now;
             n.TimeZone = NSTimeZone.DefaultTimeZone;
             n.AlertTitle = "#" + message.Channel.ChannelName;
-            n.AlertBody = $"{message.Profile.DisplayName}: {message.AsPlainText()}";
+            n.AlertBody = $"{message.Profile.DisplayName}: {message.PlainTextContent}";
             n.AlertAction = $"?channelId={message.Channel.Id}&messageId={message.Id}";
 
             var ui = new NSMutableDictionary();

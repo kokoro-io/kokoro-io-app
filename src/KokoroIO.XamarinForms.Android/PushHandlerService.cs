@@ -66,7 +66,6 @@ namespace KokoroIO.XamarinForms.Droid
 
             if (!string.IsNullOrEmpty(message))
             {
-                // TODO: plain text
                 var m = new Message()
                 {
                     Channel = new Channel()
@@ -74,7 +73,8 @@ namespace KokoroIO.XamarinForms.Droid
                         ChannelName = channelName
                     },
                     Profile = new Profile(),
-                    Content = message,
+                    HtmlContent = message,
+                    PlainTextContent = message,
                     RawContent = message,
                 };
                 m.Avatar = m.Profile.Avatar = intent.Extras.GetString("licon");

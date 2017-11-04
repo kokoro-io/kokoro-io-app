@@ -37,7 +37,7 @@ namespace KokoroIO.XamarinForms.UWP.Services
             });
             bg.Children.Add(new AdaptiveText()
             {
-                Text = message.AsPlainText()
+                Text = message.PlainTextContent
             });
             bg.Children.Add(new AdaptiveText()
             {

@@ -19,7 +19,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             _PublishedAt = message.PublishedAt;
             _IsNsfw = message.IsNsfw;
 
-            Content = message.Content;
+            HtmlContent = message.HtmlContent;
+            _PlainTextContent = message.PlainTextContent;
             _RawContent = message.RawContent;
 
             _EmbedContents = message.EmbedContents?.Count > 1
@@ -34,7 +35,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             IdempotentKey = Guid.NewGuid();
             Profile = page.Application.LoginUser.ToProfile();
 
-            Content = content.Replace("<", "&lt;").Replace(">", "&gt;");
+            HtmlContent = content.Replace("<", "&lt;").Replace(">", "&gt;");
         }
 
         internal void Update(Message message)
@@ -43,7 +44,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             Profile = Page.Application.GetProfile(message);
             PublishedAt = message.PublishedAt;
             IsNsfw = message.IsNsfw;
-            Content = message.Content;
+            HtmlContent = message.HtmlContent;
+            PlainTextContent = message.PlainTextContent;
             RawContent = message.RawContent;
             EmbedContents = message.EmbedContents;
             _Status = message.Status;
@@ -117,15 +119,15 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion IsNsfw
 
-        #region Content
+        #region HtmlContent
 
-        private string _Content;
+        private string _HtmlContent;
 
-        public string Content
+        public string HtmlContent
         {
-            get => _Content;
+            get => _HtmlContent;
             private set => SetProperty(
-                ref _Content,
+                ref _HtmlContent,
                 MessageHelper.InsertLinks(
                     value,
                     c => Page.Application.Channels.FirstOrDefault(v => v.ChannelName.Equals(c, StringComparison.OrdinalIgnoreCase))?.Id,
@@ -133,6 +135,18 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion Content
+
+        #region PlainTextContent
+
+        private string _PlainTextContent;
+
+        public string PlainTextContent
+        {
+            get => _PlainTextContent;
+            private set => SetProperty(ref _PlainTextContent, value);
+        }
+
+        #endregion RawContent
 
         #region RawContent
 
