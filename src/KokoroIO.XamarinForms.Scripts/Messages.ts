@@ -593,8 +593,9 @@ interface Window {
         img.src = tu;
         a.appendChild(img);
 
-        if (media.restriction_policy === "Restricted"
-            || (media.restriction_policy === "Unknown" && (message.IsNsfw || data.restriction_policy === "Restricted"))) {
+        var policies = [(message.IsNsfw ? "Restricted" : "Unknown"), media.restriction_policy, data.restriction_policy];
+
+        if (policies.filter(p => p !== "Unknown")[0] === "Restricted") {
             em.classList.add("nsfw");
 
             var i = document.createElement("i");

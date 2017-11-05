@@ -465,8 +465,8 @@
         img.classList.add("img-rounded");
         img.src = tu;
         a.appendChild(img);
-        if (media.restriction_policy === "Restricted"
-            || (media.restriction_policy === "Unknown" && (message.IsNsfw || data.restriction_policy === "Restricted"))) {
+        var policies = [(message.IsNsfw ? "Restricted" : "Unknown"), media.restriction_policy, data.restriction_policy];
+        if (policies.filter(function (p) { return p !== "Unknown"; })[0] === "Restricted") {
             em.classList.add("nsfw");
             var i = document.createElement("i");
             i.className = "nsfw-mark fa fa-exclamation-triangle";
