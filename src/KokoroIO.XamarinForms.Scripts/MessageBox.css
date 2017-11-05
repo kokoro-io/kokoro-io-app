@@ -217,6 +217,10 @@ img.thumb {
             font-size: 1.1em;
         }
 
+            .talk .message .filtered_text p {
+                white-space: pre-wrap;
+            }
+
         .talk .message .deleted_text {
             font-size: 1.1em;
             color: #aaa;
