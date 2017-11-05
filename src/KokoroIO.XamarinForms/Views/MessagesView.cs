@@ -231,6 +231,8 @@ namespace KokoroIO.XamarinForms.Views
         private bool _IsRequestProcessing;
         private bool _HtmlLoaded;
 
+        private int _UpdateRetryCount;
+
         private void EnqueueReset()
         {
             lock (_Requests)
@@ -348,6 +350,7 @@ namespace KokoroIO.XamarinForms.Views
 
                 if (!(_IsRequestProcessing = (reset || requests.Any() || hasUnread != null)))
                 {
+                    _UpdateRetryCount = 0;
                     return;
                 }
             }
@@ -457,6 +460,7 @@ namespace KokoroIO.XamarinForms.Views
                     {
                         await InvokeScriptAsync(script).ConfigureAwait(false);
                     }
+                    _UpdateRetryCount = 0;
                 }
             }
             catch (Exception ex)
@@ -464,6 +468,11 @@ namespace KokoroIO.XamarinForms.Views
                 if (_HtmlLoaded)
                 {
                     ex.Error("FailedToUpdateMessagesView");
+                }
+
+                if (_UpdateRetryCount++ > 10)
+                {
+                    return;
                 }
 
                 EnqueueFailedRequests(reset, requests, sm);
@@ -531,7 +540,11 @@ namespace KokoroIO.XamarinForms.Views
                     }
                     if (valid)
                     {
-                        BeginProcessUpdates();
+                        XDevice.StartTimer(TimeSpan.FromMilliseconds(250), () =>
+                        {
+                            BeginProcessUpdates();
+                            return false;
+                        });
                     }
                 }
             }
