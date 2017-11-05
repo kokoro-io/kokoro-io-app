@@ -186,3 +186,17 @@ html.html-phone {
         max-width: 540px;
     }
 }
+
+.html-phone, .html-tablet {
+    .embed_contents .embed_media.nsfw a,
+    .embed_contents .embed-thumbnail.nsfw a {
+        display: inline-block;
+        background-color: #000;
+    }
+
+    .embed_contents .embed_media.nsfw img,
+    .embed_contents .embed-thumbnail.nsfw img {
+        /*filter: grayscale(90%);*/
+        opacity: 0.07;
+    }
+}

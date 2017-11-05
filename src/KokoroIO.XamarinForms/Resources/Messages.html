@@ -507,6 +507,10 @@ img.thumb {
             font-size: 1.1em;
         }
 
+            .talk .message .filtered_text p {
+                white-space: pre-wrap;
+            }
+
         .talk .message .deleted_text {
             font-size: 1.1em;
             color: #aaa;
@@ -514,8 +518,7 @@ img.thumb {
 
         .talk .message .timeleft {
             padding-left: 5px;
-        }
-.highlight table td {
+        }.highlight table td {
     padding: 5px
 }
 
@@ -945,6 +948,20 @@ html.html-phone .talk:hover > .message-menu {
   .talk .message .filtered_text img {
     max-width: 540px;
   }
+}
+.html-phone .embed_contents .embed_media.nsfw a,
+.html-tablet .embed_contents .embed_media.nsfw a,
+.html-phone .embed_contents .embed-thumbnail.nsfw a,
+.html-tablet .embed_contents .embed-thumbnail.nsfw a {
+  display: inline-block;
+  background-color: #000;
+}
+.html-phone .embed_contents .embed_media.nsfw img,
+.html-tablet .embed_contents .embed_media.nsfw img,
+.html-phone .embed_contents .embed-thumbnail.nsfw img,
+.html-tablet .embed_contents .embed-thumbnail.nsfw img {
+  /*filter: grayscale(90%);*/
+  opacity: 0.07;
 }</style>
         <script>(function () {
     var IS_BOTTOM_MARGIN = 15;
