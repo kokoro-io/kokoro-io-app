@@ -207,7 +207,14 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 if (_IsShown && !(Page.Channel.LastReadId >= Id))
                 {
-                    Page.Channel.LastReadId = Id;
+                    if (Page.HasNext || Page.Messages.LastOrDefault() != this)
+                    {
+                        Page.Channel.LastReadId = Id;
+                    }
+                    else
+                    {
+                        Page.Channel.ClearUnreadAsync().ConfigureAwait(false);
+                    }
                 }
             });
         }

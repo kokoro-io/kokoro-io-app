@@ -192,7 +192,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
                 _SelectedMessageId = null;
 
-                if (!HasNext && _Messages?.LastOrDefault().IsShown != false)
+                if (!HasNext && _Messages?.LastOrDefault()?.IsShown != false)
                 {
                     await Channel.ClearUnreadAsync().ConfigureAwait(false);
                 }
