@@ -523,17 +523,21 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        public async Task ClearUnreadAsync()
+        public async Task ClearUnreadAsync(int? lastReadId = null)
         {
-            if (_Unreads?.Count > 0 || _HasUnread)
-            {
-                if (_Unreads?.Count > 0)
-                {
-                    _Unreads.Clear();
-                    OnPropertyChanged(nameof(UnreadCount));
-                }
+            var hasUnread = _Unreads?.Count > 0 || _HasUnread;
 
-                HasUnread = _Unreads?.Count > 0;
+            if (_Unreads?.Count > 0)
+            {
+                _Unreads.Clear();
+                OnPropertyChanged(nameof(UnreadCount));
+            }
+
+            HasUnread = _Unreads?.Count > 0;
+
+            if (hasUnread)
+            {
+                TH.Info("Clearing unreads in #{0} ({1})", DisplayName, Id);
 
                 try
                 {
@@ -547,7 +551,12 @@ namespace KokoroIO.XamarinForms.ViewModels
                             var notification = SH.Notification;
                             foreach (var n in ns)
                             {
-                                notification?.CancelNotification(n.ChannelId, n.NotificationId, 0);
+                                try
+                                {
+                                    notification?.CancelNotification(n.ChannelId, n.NotificationId, 0);
+                                }
+                                catch { }
+
                                 realm.Remove(n);
                             }
                             trx.Commit();

@@ -707,6 +707,8 @@ namespace KokoroIO.XamarinForms.Views
                         }
                     }
 
+                    TH.Info("Shown message: {0}-{1} of ({2}-{3})", min, max, messages.FirstOrDefault()?.Id, messages.LastOrDefault()?.Id);
+
                     foreach (var m in messages)
                     {
                         m.IsShown = (min <= m.Id && m.Id <= max)
