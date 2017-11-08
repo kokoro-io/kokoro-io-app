@@ -14,7 +14,8 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
     {
         static MessagesViewRenderer()
         {
-#if DEBUG
+            // TODO: Remove before publish
+#if TRUE
             if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Kitkat)
             {
                 Android.Webkit.WebView.SetWebContentsDebuggingEnabled(true);

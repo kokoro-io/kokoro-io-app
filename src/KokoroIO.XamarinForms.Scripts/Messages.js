@@ -1,9 +1,10 @@
 (function () {
     var IS_BOTTOM_MARGIN = 15;
     var IS_TOP_MARGIN = 4;
-    var LOAD_OLDER_MARGIN = 200;
-    var LOAD_NEWER_MARGIN = 200;
+    var LOAD_OLDER_MARGIN = 300;
+    var LOAD_NEWER_MARGIN = 300;
     var HIDE_CONTENT_MARGIN = 60;
+    var LOG_VIEWPORT = false;
     var isDesktop = document.documentElement.classList.contains("html-desktop");
     var isTablet = document.documentElement.classList.contains("html-tablet");
     if (!isDesktop && !isTablet) {
@@ -562,7 +563,28 @@
         return document.querySelector('div.talk[data-idempotent-key=\"' + idempotentKey + "\"]");
     }
     var _visibleIds;
+    var _lastTimer;
+    var _lastScrollHeight;
+    var _lastScrollTop;
     function _reportVisibilities() {
+        var b = getTalksHost();
+        _lastScrollTop = b.scrollTop;
+        _lastScrollHeight = b.scrollHeight;
+        if (_lastTimer) {
+            clearTimeout(_lastTimer);
+        }
+        _lastTimer = setTimeout(function () {
+            _lastTimer = null;
+            var b = getTalksHost();
+            if (_lastScrollTop != b.scrollTop || _lastScrollHeight != b.scrollHeight) {
+                _reportVisibilities();
+            }
+            else {
+                _reportVisibilitiesCore();
+            }
+        }, 250);
+    }
+    function _reportVisibilitiesCore() {
         var b = getTalksHost();
         var talks = b.children;
         var ids = "";
@@ -585,6 +607,12 @@
         if (_visibleIds !== ids) {
             location.href = "http://kokoro.io/client/control?event=visibility&ids=" + ids;
             _visibleIds = ids;
+            if (LOG_VIEWPORT) {
+                console.log("visibility changed: scrollTop: " + b.scrollTop
+                    + (", clientHeight: " + b.clientHeight)
+                    + (", lastElementChild.offsetTop: " + (b.lastElementChild ? b.lastElementChild.offsetTop : -1))
+                    + (", lastElementChild.clientHeight: " + (b.lastElementChild ? b.lastElementChild.clientHeight : -1)));
+            }
         }
     }
     document.addEventListener("DOMContentLoaded", function () {

@@ -59,9 +59,11 @@ interface Window {
 (function () {
     const IS_BOTTOM_MARGIN = 15;
     const IS_TOP_MARGIN = 4;
-    const LOAD_OLDER_MARGIN = 200;
-    const LOAD_NEWER_MARGIN = 200;
+    const LOAD_OLDER_MARGIN = 300;
+    const LOAD_NEWER_MARGIN = 300;
     const HIDE_CONTENT_MARGIN = 60;
+
+    const LOG_VIEWPORT = false;
 
     var isDesktop = document.documentElement.classList.contains("html-desktop");
     var isTablet = document.documentElement.classList.contains("html-tablet");
@@ -710,8 +712,34 @@ interface Window {
 
     var _visibleIds: string;
 
+    var _lastTimer;
+    var _lastScrollHeight;
+    var _lastScrollTop;
+
     function _reportVisibilities() {
         let b = getTalksHost();
+        _lastScrollTop = b.scrollTop;
+        _lastScrollHeight = b.scrollHeight;
+
+        if (_lastTimer) {
+            clearTimeout(_lastTimer);
+        }
+
+        _lastTimer = setTimeout(function () {
+            _lastTimer = null;
+
+            let b = getTalksHost();
+
+            if (_lastScrollTop != b.scrollTop || _lastScrollHeight != b.scrollHeight) {
+                _reportVisibilities();
+            } else {
+                _reportVisibilitiesCore();
+            }
+        }, 250);
+    }
+    function _reportVisibilitiesCore() {
+        let b = getTalksHost();
+
         let talks = b.children;
 
         let ids = "";
@@ -736,6 +764,12 @@ interface Window {
         if (_visibleIds !== ids) {
             location.href = "http://kokoro.io/client/control?event=visibility&ids=" + ids;
             _visibleIds = ids;
+            if (LOG_VIEWPORT) {
+                console.log(`visibility changed: scrollTop: ${b.scrollTop}`
+                    + `, clientHeight: ${b.clientHeight}`
+                    + `, lastElementChild.offsetTop: ${b.lastElementChild ? (b.lastElementChild as HTMLElement).offsetTop : -1}`
+                    + `, lastElementChild.clientHeight: ${b.lastElementChild ? (b.lastElementChild as HTMLElement).clientHeight : -1}`);
+            }
         }
     }
 

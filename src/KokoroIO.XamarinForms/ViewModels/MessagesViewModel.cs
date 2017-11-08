@@ -147,7 +147,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                             var befores = await Application.GetMessagesAsync(Channel.Id, PAGE_SIZE, beforeId: afts.Min(m => m.Id));
 
                             messages = befores.Any() ? befores.Concat(afts).ToArray() : afts;
-                            HasNext = befores.Length == PAGE_SIZE;
+                            HasNext = afts.Length == PAGE_SIZE;
                             HasPrevious = befores.Length == PAGE_SIZE;
                         }
                     }
