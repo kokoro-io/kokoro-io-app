@@ -3,10 +3,12 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.OS;
+using KokoroIO.XamarinForms.Droid.Services;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
+using XLabs.Platform.Services.Media;
 
 namespace KokoroIO.XamarinForms.Droid
 {
@@ -42,6 +44,7 @@ namespace KokoroIO.XamarinForms.Droid
                 }
 
                 global::Xamarin.Forms.Forms.Init(this, bundle);
+                DependencyService.Register<IMediaPicker, Services.MediaPicker>();
                 LoadApplication(new App(avm));
 
                 ResetBindingContext(mp);
@@ -53,6 +56,7 @@ namespace KokoroIO.XamarinForms.Droid
             Resolver.ResetResolver(resolver.GetResolver());
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
+            DependencyService.Register<IMediaPicker, Services.MediaPicker>();
 
             LoadApplication(new App(channelId: cid));
 
