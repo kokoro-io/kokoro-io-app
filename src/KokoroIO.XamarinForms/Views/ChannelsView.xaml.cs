@@ -86,10 +86,7 @@ namespace KokoroIO.XamarinForms.Views
                 Add(n);
             }
 
-            foreach (var s in tableView.Root)
-            {
-                SyncCells(s);
-            }
+            SyncCells();
 
             return true;
         }
@@ -309,10 +306,15 @@ namespace KokoroIO.XamarinForms.Views
             {
                 g.SetIsExpanded(!g.IsExpanded);
 
-                foreach (var s in tableView.Root)
-                {
-                    SyncCells(s);
-                }
+                SyncCells();
+            }
+        }
+
+        internal void SyncCells()
+        {
+            foreach (var s in tableView.Root)
+            {
+                SyncCells(s);
             }
         }
 

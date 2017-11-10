@@ -70,6 +70,7 @@ namespace KokoroIO.XamarinForms.Views
                         if (Control.Remove(Channel))
                         {
                             Control.Add(Channel);
+                            Control.SyncCells();
                         }
                     });
                     break;
