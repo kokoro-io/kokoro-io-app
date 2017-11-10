@@ -126,7 +126,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private void UpdateCore(Channel model)
         {
-            ChannelName = model.ChannelName;
+            // TODO: use Profile.ScreenName instead to avoid API bug
+            ChannelName = (model.Kind == ChannelKind.DirectMessage
+                                    && model.Memberships?.Length == 2
+                            ? model.Memberships
+                                    .FirstOrDefault(m => m.Profile.Id != Application.LoginUser.Id)
+                                    ?.Profile.ScreenName
+                            : null)
+                        ?? model.ChannelName;
             Description = model.Description;
             IsArchived = model.IsArchived;
         }
