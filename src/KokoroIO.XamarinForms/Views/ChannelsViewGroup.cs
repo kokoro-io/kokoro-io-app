@@ -66,11 +66,9 @@ namespace KokoroIO.XamarinForms.Views
                 _IsExpanded = value;
                 OnPropertyChanged(nameof(IsExpanded));
 
+                SetUnreadCount();
                 SetIsUnreadCountVisible();
-                if (value && IsVisible)
-                {
-                    SetUnreadCount();
-                }
+
                 foreach (var c in _Children)
                 {
                     c.SetIsVisible();
