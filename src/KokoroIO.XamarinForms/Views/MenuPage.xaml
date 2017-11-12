@@ -90,8 +90,17 @@
                 <xlabs:ImageButton
                     Style="{StaticResource footerButtonStyle}"
                     Image="search.png"
-                    Text="Channels"
-                    Command="{Binding Application.ChannelListCommand}" />
+                    Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='Channels[{0}]'}"
+                    Command="{Binding Application.ChannelListCommand}">
+                    <xlabs:ImageButton.Triggers>
+                        <DataTrigger 
+                            TargetType="xlabs:ImageButton"
+                            Binding="{Binding Application.LoginUser.InvitedChannelsCount}"
+                            Value="0">
+                            <Setter Property="Text" Value="Channels" />
+                        </DataTrigger>
+                    </xlabs:ImageButton.Triggers>
+                </xlabs:ImageButton>
                 <xlabs:ImageButton
                     Style="{StaticResource footerButtonStyle}"
                     Image="settings.png"

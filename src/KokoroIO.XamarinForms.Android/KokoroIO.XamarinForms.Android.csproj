@@ -71,8 +71,8 @@
     <Reference Include="GCM.Client">
       <HintPath>..\Components\GCMClient-1.0\lib\android\GCM.Client.dll</HintPath>
     </Reference>
-    <Reference Include="KokoroIO.Client, Version=0.0.11.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\KokoroIO.Client.0.0.11-pre\lib\netstandard1.3\KokoroIO.Client.dll</HintPath>
+    <Reference Include="KokoroIO.Client, Version=0.0.12.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\KokoroIO.Client.0.0.12-pre\lib\netstandard1.3\KokoroIO.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.dll</HintPath>
@@ -85,6 +85,9 @@
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile.Android.Bindings, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Android.Bindings.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Mobile.Client, Version=4.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Mobile.Client.4.0.2\lib\netstandard1.4\Microsoft.Azure.Mobile.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile.Crashes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Crashes.dll</HintPath>

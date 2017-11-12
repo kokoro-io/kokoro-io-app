@@ -14,7 +14,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Avatars = model.Avatars;
             _DisplayName = model.DisplayName;
             _ScreenName = model.ScreenName;
-            _InvitedChannelCount = model.InvitedChannelCount;
+            _InvitedChannelsCount = model.InvitedChannelsCount;
             IsBot = model.Type == ProfileType.Bot;
         }
 
@@ -86,17 +86,17 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string FullDisplayName
             => $"{DisplayName} (@{ScreenName})";
 
-        #region InvitedChannelCount
+        #region InvitedChannelsCount
 
-        private int _InvitedChannelCount;
+        private int _InvitedChannelsCount;
 
-        public int InvitedChannelCount
+        public int InvitedChannelsCount
         {
-            get => _InvitedChannelCount;
-            private set => SetProperty(ref _InvitedChannelCount, value);
+            get => _InvitedChannelsCount;
+            private set => SetProperty(ref _InvitedChannelsCount, value);
         }
 
-        #endregion InvitedChannelCount
+        #endregion InvitedChannelsCount
 
         internal void Update(Profile model)
         {
@@ -104,7 +104,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Avatar = model.Avatar ?? _Avatar;
             DisplayName = model.DisplayName ?? _DisplayName;
             ScreenName = model.ScreenName;
-            InvitedChannelCount = model.InvitedChannelCount;
+            InvitedChannelsCount = model.InvitedChannelsCount;
         }
 
         public bool IsBot { get; }

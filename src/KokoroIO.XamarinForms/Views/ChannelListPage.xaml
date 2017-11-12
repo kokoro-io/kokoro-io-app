@@ -65,7 +65,7 @@
                 </xlabs:ImageButton>
                 <xlabs:ImageButton
                     Image="email.png"
-                    Text="Invited"
+                    Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='Invited[{0}]'}"
                     Command="{Binding ShowInvitationsCommand}"
                     CommandParameter="True">
                     <xlabs:ImageButton.Style>
