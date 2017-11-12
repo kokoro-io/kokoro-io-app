@@ -198,6 +198,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal void ClearMembership()
         {
             MembershipId = null;
+            Authority = null;
             NotificationDisabled = false;
             Application.Channels.Remove(this);
 

@@ -55,9 +55,10 @@
                 HorizontalOptions="End"
                 Orientation="Horizontal">
 
-                <!--<Button
+                <Button
                     Text="Join"
-                    Command="{Binding JoinCommand}" />-->
+                    Command="{Binding JoinCommand}"
+                    IsVisible="{Binding CanJoin}" />
 
                 <Button
                     Text="Leave"
