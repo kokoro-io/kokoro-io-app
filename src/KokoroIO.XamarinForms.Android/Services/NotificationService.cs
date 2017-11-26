@@ -47,7 +47,7 @@ namespace KokoroIO.XamarinForms.Droid.Services
                     .SetContentText(txt)
                     .SetAutoCancel(true)
                     .SetContentIntent(pendingIntent)
-                    .SetVibrate(new long[] { 100, 0, 100, 0, 100, 0 })
+                    .SetVibrate(new long[] { 0, 250, 250, 250 })
                     .SetPriority((int)NotificationPriority.Max);
 
                 nm.Notify(message.Channel.Id, 0, nb.Build());
