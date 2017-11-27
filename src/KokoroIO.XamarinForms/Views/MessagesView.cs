@@ -688,7 +688,7 @@ namespace KokoroIO.XamarinForms.Views
             {
                 var messages = Messages;
 
-                if (messages.Any())
+                if (messages != null && messages.Any())
                 {
                     int? max = null;
                     int? min = null;
