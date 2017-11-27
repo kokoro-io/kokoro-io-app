@@ -15,6 +15,6 @@ namespace KokoroIO.XamarinForms.Models.Data
         /// <summary>
         /// Gets or sets the id of th most recente message.
         /// </summary>
-        public int? LastReadId { get; set; }
+        public long? LastReadId { get; set; }
     }
 }

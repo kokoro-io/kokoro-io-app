@@ -540,12 +540,14 @@ namespace KokoroIO.XamarinForms.ViewModels
             using (TH.BeginScope("Reading LastReadId of Channels"))
             using (var realm = await RealmServices.GetInstanceAsync())
             {
-                var d = realm.All<ChannelUserProperties>().ToDictionary(s => s.ChannelId, s => s.LastReadId);
+                var d = realm.All<ChannelUserProperties>()
+                                .ToList().Where(s => s.ChannelId != null && s.LastReadId > 0)
+                                .ToDictionary(s => s.ChannelId, s => s.LastReadId);
 
                 foreach (var c in _Channels)
                 {
                     d.TryGetValue(c.Id, out var lid);
-                    c._LastReadId = lid != null ? Math.Max(lid.Value, c.LastReadId ?? 0) : (c.LastReadId ?? 0);
+                    c._LastReadId = lid != null ? Math.Max((int)lid.Value, c.LastReadId ?? 0) : (c.LastReadId ?? 0);
                 }
             }
         }
