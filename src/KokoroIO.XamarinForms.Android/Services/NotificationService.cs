@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using KokoroIO.XamarinForms.Droid.Services;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
@@ -34,6 +35,7 @@ namespace KokoroIO.XamarinForms.Droid.Services
 
             var pendingIntent = PendingIntent.GetActivity(ctx, 0, showIntent, PendingIntentFlags.OneShot);
 
+            var ico = BitmapFactory.DecodeResource(ctx.Resources, Resource.Drawable.kokoro);
             var nm = (NotificationManager)ctx.GetSystemService(Context.NotificationService);
             {
                 var txt = $"{(string.IsNullOrEmpty(message.Channel.ChannelName) ? "A kokoro.io channel" : ("#" + message.Channel.ChannelName))} has unread messages.";
@@ -41,13 +43,14 @@ namespace KokoroIO.XamarinForms.Droid.Services
                 var nb = new Notification.Builder(ctx)
                     .SetGroup(message.Channel.Id)
                     .SetGroupSummary(true)
+                    .SetLargeIcon(ico)
                     .SetSmallIcon(Resource.Drawable.kokoro_white)
                     .SetContentTitle(!string.IsNullOrEmpty(message.Channel.ChannelName) ? "#" + message.Channel.ChannelName : "kokoro.io")
                     .SetStyle(new Notification.BigTextStyle().SetSummaryText(txt))
                     .SetContentText(txt)
                     .SetAutoCancel(true)
                     .SetContentIntent(pendingIntent)
-                    .SetVibrate(new long[] { 0, 250, 250, 250 })
+                    .SetDefaults(NotificationDefaults.Vibrate)
                     .SetPriority((int)NotificationPriority.Max);
 
                 nm.Notify(message.Channel.Id, 0, nb.Build());
@@ -58,13 +61,14 @@ namespace KokoroIO.XamarinForms.Droid.Services
                 var nb = new Notification.Builder(ctx)
                     .SetGroup(message.Channel.Id)
                     .SetGroupSummary(false)
+                    .SetLargeIcon(ico)
                     .SetSmallIcon(Resource.Drawable.kokoro_white)
                     .SetContentTitle(!string.IsNullOrEmpty(message.Channel.ChannelName) ? "#" + message.Channel.ChannelName : "kokoro.io")
                     .SetContentText(txt)
                     .SetAutoCancel(true)
                     .SetContentIntent(pendingIntent)
                     .SetStyle(new Notification.BigTextStyle().BigText(txt))
-                    .SetVibrate(new long[] { 100, 0, 100, 0, 100, 0 })
+                    .SetDefaults(NotificationDefaults.Vibrate)
                     .SetPriority((int)NotificationPriority.Max);
 
                 nm.Notify(message.Channel.Id, message.Id, nb.Build());
