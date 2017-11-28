@@ -117,21 +117,26 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var tcs = new TaskCompletionSource<object>();
 
-            EnqueueClientTaskCore(() => task().ContinueWith(t =>
+            EnqueueClientTaskCore(() =>
             {
-                if (t.Status == TaskStatus.RanToCompletion)
+                var tc = task();
+                tc.ConfigureAwait(false);
+                return tc.ContinueWith(t =>
                 {
-                    tcs.SetResult(null);
-                }
-                else if (t.IsFaulted)
-                {
-                    tcs.SetException(t.Exception);
-                }
-                else
-                {
-                    tcs.SetCanceled();
-                }
-            }));
+                    if (t.Status == TaskStatus.RanToCompletion)
+                    {
+                        tcs.SetResult(null);
+                    }
+                    else if (t.IsFaulted)
+                    {
+                        tcs.SetException(t.Exception);
+                    }
+                    else
+                    {
+                        tcs.SetCanceled();
+                    }
+                });
+            });
 
             return tcs.Task;
         }
@@ -140,21 +145,26 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var tcs = new TaskCompletionSource<T>();
 
-            EnqueueClientTaskCore(() => task().ContinueWith(t =>
+            EnqueueClientTaskCore(() =>
             {
-                if (t.Status == TaskStatus.RanToCompletion)
+                var tc = task();
+                tc.ConfigureAwait(false);
+                return tc.ContinueWith(t =>
                 {
-                    tcs.SetResult(t.Result);
-                }
-                else if (t.IsFaulted)
-                {
-                    tcs.SetException(t.Exception);
-                }
-                else
-                {
-                    tcs.SetCanceled();
-                }
-            }));
+                    if (t.Status == TaskStatus.RanToCompletion)
+                    {
+                        tcs.SetResult(t.Result);
+                    }
+                    else if (t.IsFaulted)
+                    {
+                        tcs.SetException(t.Exception);
+                    }
+                    else
+                    {
+                        tcs.SetCanceled();
+                    }
+                });
+            });
 
             return tcs.Task;
         }
