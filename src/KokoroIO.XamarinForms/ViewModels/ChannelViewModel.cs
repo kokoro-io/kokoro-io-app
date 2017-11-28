@@ -277,7 +277,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         mp.ClearPopupCommand.Execute(null);
 
-                        if (mp.MessagesLoaded && mp.Messages.Count == 0 && !mp.IsBusy)
+                        if (!mp.MessagesLoaded
+                            && mp.Messages.Count == 0
+                            && !mp.IsBusy)
                         {
                             mp.BeginAppend();
                         }
