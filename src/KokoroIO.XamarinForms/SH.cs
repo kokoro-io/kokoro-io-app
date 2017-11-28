@@ -1,4 +1,5 @@
 ﻿using KokoroIO.XamarinForms.Services;
+using System;
 
 #if WINDOWS_UWP
 using KokoroIO.XamarinForms.UWP.Services;
@@ -28,6 +29,9 @@ namespace KokoroIO.XamarinForms
         public static INotificationService Notification { get; }
 
         public static Client GetClient()
-            => new Client();
+            => new Client(new System.Net.Http.HttpClient()
+            {
+                Timeout = TimeSpan.FromSeconds(15)
+            });
     }
 }
