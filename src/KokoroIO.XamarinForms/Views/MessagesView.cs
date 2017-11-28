@@ -16,6 +16,7 @@ namespace KokoroIO.XamarinForms.Views
     public class MessagesView : WebView
     {
         private readonly HashSet<MessageInfo> _BindedMessages = new HashSet<MessageInfo>();
+        private bool _HasMessages;
 
         public MessagesView()
         {
@@ -348,6 +349,11 @@ namespace KokoroIO.XamarinForms.Views
                 _Requests.Clear();
                 _HasUnread = null;
 
+                if (!_HasMessages && Messages?.Any() != true)
+                {
+                    return;
+                }
+
                 if (!(_IsRequestProcessing = (reset || requests.Any() || hasUnread != null)))
                 {
                     _UpdateRetryCount = 0;
@@ -459,6 +465,7 @@ namespace KokoroIO.XamarinForms.Views
                     if (!string.IsNullOrEmpty(script))
                     {
                         await InvokeScriptAsync(script).ConfigureAwait(false);
+                        _HasMessages = Messages?.Any() == true;
                     }
                     _UpdateRetryCount = 0;
                 }
@@ -470,7 +477,7 @@ namespace KokoroIO.XamarinForms.Views
                     ex.Error("FailedToUpdateMessagesView");
                 }
 
-                if (_UpdateRetryCount++ > 10)
+                if (_UpdateRetryCount++ > 100)
                 {
                     return;
                 }
@@ -540,10 +547,13 @@ namespace KokoroIO.XamarinForms.Views
                     }
                     if (valid)
                     {
-                        XDevice.StartTimer(TimeSpan.FromMilliseconds(250), () =>
+                        XDevice.BeginInvokeOnMainThread(() =>
                         {
-                            BeginProcessUpdates();
-                            return false;
+                            XDevice.StartTimer(TimeSpan.FromMilliseconds(250), () =>
+                            {
+                                BeginProcessUpdates();
+                                return false;
+                            });
                         });
                     }
                 }
