@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
 using KokoroIO.XamarinForms.Droid.Services;
-using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using Xamarin.Forms;
 
@@ -13,6 +14,9 @@ namespace KokoroIO.XamarinForms.Droid.Services
 {
     public class NotificationService : INotificationService
     {
+        private static readonly Regex _Trim = new Regex(@"(^\s+|\s+$)");
+        private static readonly Regex _MultipleNewLine = new Regex(@"(\r\n?|\n)");
+
         public Task<string> GetPlatformNotificationServiceHandleAsync()
             => PushHandlerService.RegisterAsync();
 
@@ -56,7 +60,7 @@ namespace KokoroIO.XamarinForms.Droid.Services
                 nm.Notify(message.Channel.Id, 0, nb.Build());
             }
             {
-                var txt = $"{message.Profile.ScreenName}: {message.PlainTextContent}";
+                var txt = $"{message.Profile.ScreenName}: { _MultipleNewLine.Replace(_Trim.Replace(message.PlainTextContent, string.Empty), Environment.NewLine)}";
 
                 var nb = new Notification.Builder(ctx)
                     .SetGroup(message.Channel.Id)
