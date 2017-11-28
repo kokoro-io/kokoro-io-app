@@ -13,7 +13,6 @@ using Microsoft.Azure.Mobile.Crashes;
 using Microsoft.Azure.Mobile.Distribute;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.Text.RegularExpressions;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 
