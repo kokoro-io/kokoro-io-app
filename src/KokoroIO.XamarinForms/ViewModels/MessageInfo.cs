@@ -128,15 +128,10 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string HtmlContent
         {
             get => _HtmlContent;
-            private set => SetProperty(
-                ref _HtmlContent,
-                MessageHelper.InsertLinks(
-                    value,
-                    c => Page.Application.Channels.FirstOrDefault(v => v.ChannelName.Equals(c, StringComparison.OrdinalIgnoreCase))?.Id,
-                    s => Page.Members.FirstOrDefault(v => v.ScreenName.Equals(s, StringComparison.OrdinalIgnoreCase))?.Id));
+            private set => SetProperty(ref _HtmlContent, value);
         }
 
-        #endregion Content
+        #endregion HtmlContent
 
         #region PlainTextContent
 
@@ -148,7 +143,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             private set => SetProperty(ref _PlainTextContent, value);
         }
 
-        #endregion RawContent
+        #endregion PlainTextContent
 
         #region RawContent
 

@@ -178,9 +178,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 if (messages.Any())
                 {
-                    Channel.Members.GetHashCode();
-                    await Channel.LoadMembersTask;
-
                     _MinId = Math.Min(messages.Min(m => m.Id), _MinId ?? int.MaxValue);
                     _MaxId = Math.Max(messages.Max(m => m.Id), _MaxId ?? int.MinValue);
                     InsertMessages(messages);
