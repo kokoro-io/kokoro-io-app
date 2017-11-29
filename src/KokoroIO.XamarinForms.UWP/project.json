@@ -8,6 +8,7 @@
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "Microsoft.Toolkit.Uwp.Notifications": "2.0.0",
     "Realm.Database": "2.1.0",
+    "Realm.DataBinding": "1.2.0",
     "Xamarin.Forms": "2.4.0.282",
     "Xamarin.Plugins.Clipboard": "1.2.0",
     "XLabs.Forms": "2.3.0-pre05",
