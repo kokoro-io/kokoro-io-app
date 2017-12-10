@@ -15,7 +15,7 @@ namespace KokoroIO.XamarinForms.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             string channelId = null;
-            if (options[UIApplication.LaunchOptionsLocalNotificationKey] is UILocalNotification n)
+            if (options?[UIApplication.LaunchOptionsLocalNotificationKey] is UILocalNotification n)
             {
                 var qp = n.AlertAction.ParseQueryString();
 

@@ -618,7 +618,12 @@ namespace KokoroIO.XamarinForms.Views
         {
             try
             {
-                if (e.Cancel)
+                if (e.Cancel
+#if __IOS__
+                    || e.Url.StartsWith("file://", StringComparison.Ordinal)
+                    // for iOS, initial html mapped to be file scheme.
+#endif
+                   )
                 {
                     return;
                 }
