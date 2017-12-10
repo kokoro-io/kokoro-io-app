@@ -14,6 +14,8 @@ namespace KokoroIO.XamarinForms.iOS
     {
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            //KeyboardOverlap.Forms.Plugin.iOSUnified.KeyboardOverlapRenderer.Init();
+
             string channelId = null;
             if (options?[UIApplication.LaunchOptionsLocalNotificationKey] is UILocalNotification n)
             {
@@ -35,29 +37,6 @@ namespace KokoroIO.XamarinForms.iOS
             LoadApplication(new App(channelId: channelId));
 
             return base.FinishedLaunching(app, options);
-        }
-
-        public override void ReceivedLocalNotification(UIApplication application, UILocalNotification notification)
-        {
-            var avm = XamarinForms.App.Current?.MainPage?.BindingContext as ApplicationViewModel;
-
-            if (avm != null)
-            {
-                var qp = notification.AlertAction.ParseQueryString();
-
-                if (qp.TryGetValue("channelId", out var cid))
-                {
-                    var ch = avm.Channels.FirstOrDefault(c => c.Id == cid);
-
-                    if (ch != null)
-                    {
-                        avm.SelectedChannel = ch;
-                        return;
-                    }
-                }
-            }
-
-            base.ReceivedLocalNotification(application, notification);
         }
 
         public override bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
