@@ -304,7 +304,8 @@
             if (m.PublishedAt) {
                 try {
                     var d = new Date(Date.parse(m.PublishedAt));
-                    small.innerText = _padLeft(d.getMonth() + 1, 2)
+                    small.innerText = (d.getFullYear() == new Date().getFullYear() ? '' : _padLeft(d.getFullYear(), 4) + '/')
+                        + _padLeft(d.getMonth() + 1, 2)
                         + '/' + _padLeft(d.getDate(), 2)
                         + ' ' + _padLeft(d.getHours(), 2)
                         + ':' + _padLeft(d.getMinutes(), 2);
