@@ -121,6 +121,9 @@ html.html-phone .talk.message-hover > .message-menu,
 html.html-phone .talk:hover > .message-menu {
   opacity: 0.8;
 }
+html.html-phone .talk .embed_content > .embed-mixedcontent {
+  margin-left: -50px;
+}
 .fa {
   display: inline-block;
   box-sizing: border-box;
