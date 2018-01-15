@@ -124,6 +124,9 @@ html.html-phone .talk:hover > .message-menu {
 html.html-phone .talk .embed_content > .embed-mixedcontent {
   margin-left: -50px;
 }
+html.html-phone .talk .embed_content > .embed-mixedcontent .meta {
+  display: block;
+}
 .fa {
   display: inline-block;
   box-sizing: border-box;
