@@ -49,6 +49,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                     _Client.MessageCreated -= Client_MessageCreated;
                     _Client.MessageUpdated -= Client_MessageUpdated;
                     _Client.ChannelsUpdated -= Client_ChannelsUpdated;
+                    _Client.ChannelArchived -= _Client_ChannelUpdated;
+                    _Client.ChannelUnarchived -= _Client_ChannelUpdated;
                     _Client.MemberJoined -= Client_MemberJoined;
                     _Client.MemberLeaved -= Client_MemberLeaved;
                     _Client.SocketError -= _Client_SocketError;
@@ -64,6 +66,8 @@ namespace KokoroIO.XamarinForms.ViewModels
                     _Client.MessageCreated += Client_MessageCreated;
                     _Client.MessageUpdated += Client_MessageUpdated;
                     _Client.ChannelsUpdated += Client_ChannelsUpdated;
+                    _Client.ChannelArchived += _Client_ChannelUpdated;
+                    _Client.ChannelUnarchived += _Client_ChannelUpdated;
                     _Client.MemberJoined += Client_MemberJoined;
                     _Client.MemberLeaved += Client_MemberLeaved;
                     _Client.SocketError += _Client_SocketError;
@@ -1026,6 +1030,20 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                 await SubscribeAsync().ConfigureAwait(false);
             });
+        }
+
+        private void _Client_ChannelUpdated(object sender, EventArgs<Channel> e)
+        {
+            UpdateIsDisconnected();
+
+            if (e.Data == null)
+            {
+                return;
+            }
+
+            TH.Info("Channel#{0} updated", e.Data.Id);
+
+            XDevice.BeginInvokeOnMainThread(async () => GetOrCreateChannelViewModel(e.Data));
         }
 
         private void Client_MemberJoined(object sender, EventArgs<Membership> e)
