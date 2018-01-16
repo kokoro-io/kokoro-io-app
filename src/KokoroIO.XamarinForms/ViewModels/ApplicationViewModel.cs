@@ -210,7 +210,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Membership ms;
             using (TH.BeginScope("Executing POST /memberships"))
             {
-                ms = await EnqueueClientTask(() => Client.PostMembershipAsync(channelId, disableNotification));
+                ms = await EnqueueClientTask(() => Client.PostMembershipAsync(channelId, disableNotification == true ? NotificationPolicy.Nothing : NotificationPolicy.AllMessages));
             }
             return GetOrCreateJoinedChannelViewModel(ms);
         }
@@ -220,7 +220,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Membership ms;
             using (TH.BeginScope("Executing PUT /memberships"))
             {
-                ms = await EnqueueClientTask(() => Client.PutMembershipAsync(membershipId, disableNotification));
+                ms = await EnqueueClientTask(() => Client.PutMembershipAsync(membershipId, disableNotification == true ? NotificationPolicy.Nothing : NotificationPolicy.AllMessages));
             }
             return GetOrCreateJoinedChannelViewModel(ms);
         }
@@ -291,7 +291,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Message r;
             using (TH.BeginScope("Executing POST /channels/{id}/messages"))
             {
-                r = await EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey)).ConfigureAwait(false);
+                r = await EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey: idempotentKey)).ConfigureAwait(false);
             }
 
             GetProfileViewModel(r.Profile);
