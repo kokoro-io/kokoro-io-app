@@ -127,6 +127,15 @@ html.html-phone .talk .embed_content > .embed-mixedcontent {
 html.html-phone .talk .embed_content > .embed-mixedcontent .meta {
   display: block;
 }
+html.html-phone .talk .embed_content > .embed-mixedcontent .meta > .thumb {
+  float: left;
+}
+html.html-phone .talk .embed_content > .embed-mixedcontent .meta > *:last-child::after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: left;
+}
 .fa {
   display: inline-block;
   box-sizing: border-box;

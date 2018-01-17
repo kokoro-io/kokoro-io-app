@@ -149,6 +149,17 @@ html.html-phone {
 
             .meta {
                 display: block;
+
+                > .thumb {
+                    float: left;
+                }
+
+                > *:last-child::after {
+                    content: "";
+                    display: block;
+                    height: 0;
+                    clear: left;
+                }
             }
         }
     }
