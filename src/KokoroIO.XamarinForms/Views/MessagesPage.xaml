@@ -191,6 +191,11 @@
 
                     <xlabs:ImageButton
                         Style="{StaticResource footerButtonStyle}"
+                        Image="history.png"
+                        Command="{Binding ShowImageHistoryCommand}" />
+
+                    <xlabs:ImageButton
+                        Style="{StaticResource footerButtonStyle}"
                         Image="visibility.png"
                         Command="{Binding ToggleNsfwCommand}">
                         <xlabs:ImageButton.Triggers>
@@ -334,6 +339,66 @@
                                 Text="Send Direct Message"
                                 Command="{Binding BeginDirectMessageCommand}" />
                         </StackLayout>
+                    </Grid>
+                </xlabs:PopupLayout.Content>
+            </xlabs:PopupLayout>
+
+            <xlabs:PopupLayout
+                Grid.RowSpan="3"
+                BackgroundColor="#80000000"
+                IsVisible="{Binding IsImageHistoryVisible}">
+                <xlabs:PopupLayout.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding ClearPopupCommand}" />
+                </xlabs:PopupLayout.GestureRecognizers>
+                <xlabs:PopupLayout.Content>
+                    <Grid
+                        BindingContext="{Binding ImageHistory}"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Fill"
+                        BackgroundColor="White"
+                        Margin="32">
+                        <Grid.RowDefinitions>
+                            <RowDefinition
+                                Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid
+                            BackgroundColor="#2C3E50">
+                            <Label
+                                Margin="4"
+                                HorizontalOptions="Fill"
+                                HorizontalTextAlignment="Start"
+                                TextColor="#fff">Image History</Label>
+                        </Grid>
+                        <ListView
+                            Grid.Row="1"
+                            ItemsSource="{Binding Images}"
+                            ItemSelected="ListView_ItemSelected">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition
+                                                    Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Image
+                                                WidthRequest="96"
+                                                HeightRequest="72"
+                                                Margin="8"
+                                                Source="{Binding ThumbnailOrRawUrl}" />
+                                            <Label
+                                                Grid.Column="1"
+                                                HorizontalOptions="Fill"
+                                                HorizontalTextAlignment="Start"
+                                                Text="{Binding RawUrl}"></Label>
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </Grid>
                 </xlabs:PopupLayout.Content>
             </xlabs:PopupLayout>

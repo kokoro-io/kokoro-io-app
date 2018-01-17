@@ -510,6 +510,15 @@
   <ItemGroup>
     <BundleResource Include="Resources\skip_content%403x.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\history.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\history%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\history%403x.png" />
+  </ItemGroup>
   <Import Project="..\KokoroIO.XamarinForms\KokoroIO.XamarinForms.projitems" Label="Shared" Condition="Exists('..\KokoroIO.XamarinForms\KokoroIO.XamarinForms.projitems')" />
   <Import Project="..\KokoroIO.XamarinForms.Models\KokoroIO.XamarinForms.Models.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

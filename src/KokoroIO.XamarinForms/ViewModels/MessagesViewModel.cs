@@ -373,6 +373,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             => _ClearPopupCommand ?? (_ClearPopupCommand = new Command(() =>
             {
                 SelectedProfile = null;
+                IsImageHistoryVisible = false;
                 PopupUrl = null;
             }));
 
@@ -532,7 +533,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public void BeginUploadImage(Stream data = null)
         {
-            Application.BeginUpload(new UploadParameter(AppendUrl, error =>
+            Application.BeginUpload(new UploadParameter(AppendMessage, error =>
             {
                 IsBusy = false;
 
@@ -560,7 +561,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public void BeginTakePhoto()
         {
-            Application.BeginUpload(new UploadParameter(AppendUrl, error =>
+            Application.BeginUpload(new UploadParameter(AppendMessage, error =>
             {
                 IsBusy = false;
 
@@ -617,17 +618,17 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Post Message
 
-        private void AppendUrl(string url)
+        internal void AppendMessage(string content)
         {
             IsBusy = false;
 
             if (string.IsNullOrWhiteSpace(_NewMessage))
             {
-                NewMessage = url;
+                NewMessage = content;
             }
             else
             {
-                NewMessage += " " + url;
+                NewMessage += " " + content;
             }
         }
 
@@ -695,5 +696,29 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             return false;
         }
+
+        #region ImageHistory
+
+        private Command _ShowImageHistoryCommand;
+
+        public Command ShowImageHistoryCommand
+            => _ShowImageHistoryCommand ?? (_ShowImageHistoryCommand = new Command(() => IsImageHistoryVisible = true));
+
+        private ImageHistoryPopupViewModel _ImageHistory;
+        public ImageHistoryPopupViewModel ImageHistory => _ImageHistory;
+
+        private bool _IsImageHistoryVisible;
+
+        public bool IsImageHistoryVisible
+        {
+            get => _IsImageHistoryVisible;
+            set => SetProperty(ref _IsImageHistoryVisible, value, onChanged: () =>
+            {
+                _ImageHistory = _IsImageHistoryVisible ? new ImageHistoryPopupViewModel(this) : null;
+                OnPropertyChanged(nameof(ImageHistory));
+            });
+        }
+
+        #endregion ImageHistory
     }
 }

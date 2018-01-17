@@ -47,6 +47,7 @@ namespace KokoroIO.XamarinForms.Scripts
             //GenerateIcon(inDir, "ic_email_black_24px.svg", "email");
             //GenerateIcon(inDir, "ic_speaker_notes_black_24px.svg", "expand_content");
             //GenerateIcon(inDir, "ic_speaker_notes_off_black_24px.svg", "skip_content");
+            //GenerateIcon(inDir, "ic_history_black_24px.svg", "history");
         }
 
         private static string GetTempFileName(string extension)

@@ -554,6 +554,21 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\skip_content.png" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\history.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\history.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\history.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\history.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\history.png" />
+  </ItemGroup>
   <Import Project="..\KokoroIO.XamarinForms\KokoroIO.XamarinForms.projitems" Label="Shared" Condition="Exists('..\KokoroIO.XamarinForms\KokoroIO.XamarinForms.projitems')" />
   <Import Project="..\KokoroIO.XamarinForms.Models\KokoroIO.XamarinForms.Models.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
