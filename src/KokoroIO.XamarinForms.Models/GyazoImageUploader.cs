@@ -86,7 +86,7 @@ namespace KokoroIO.XamarinForms.Models
             }
         }
 
-        public async Task<string> UploadAsync(Stream data, string fileName)
+        public async Task<UploadedImageInfo> UploadAsync(Stream data, string fileName)
         {
             if (_AccessToken == null)
             {
@@ -122,7 +122,11 @@ namespace KokoroIO.XamarinForms.Models
 
                     var jo = JObject.Parse(json);
 
-                    return jo.Property("url")?.Value?.Value<string>();
+                    return new UploadedImageInfo
+                    {
+                        RawUrl = jo.Property("url")?.Value?.Value<string>(),
+                        ThumbnailUrl = jo.Property("thumb_url")?.Value?.Value<string>()
+                    };
                 }
             }
             catch

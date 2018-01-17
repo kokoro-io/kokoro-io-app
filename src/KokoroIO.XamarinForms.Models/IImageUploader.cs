@@ -16,6 +16,6 @@ namespace KokoroIO.XamarinForms.Models
 
         Task ReceiveCallbackAsync(string url);
 
-        Task<string> UploadAsync(Stream data, string fileName);
+        Task<UploadedImageInfo> UploadAsync(Stream data, string fileName);
     }
 }

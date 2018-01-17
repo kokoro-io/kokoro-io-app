@@ -17,4 +17,5 @@ namespace KokoroIO.XamarinForms.Models.Data
         /// </summary>
         public long? LastReadId { get; set; }
     }
+
 }

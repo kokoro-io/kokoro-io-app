@@ -1151,13 +1151,14 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             try
             {
-                string url;
+                UploadedImageInfo img;
+                string title = null;
                 if (parameter.Data != null)
                 {
                     parameter.OnUploading?.Invoke();
                     using (parameter.Data)
                     {
-                        url = await uploader.UploadAsync(parameter.Data, "pasted");
+                        img = await uploader.UploadAsync(parameter.Data, "pasted");
                     }
                 }
                 else
@@ -1180,9 +1181,10 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
 
                     parameter.OnUploading?.Invoke();
+                    title = Path.GetFileName(mf.Path);
                     using (var ms = mf.Source)
                     {
-                        url = await uploader.UploadAsync(ms, Path.GetFileName(mf.Path));
+                        img = await uploader.UploadAsync(ms, title);
                     }
                 }
 
@@ -1191,10 +1193,29 @@ namespace KokoroIO.XamarinForms.ViewModels
                 try
                 {
                     await App.Current.SavePropertiesAsync();
+
+                    using (var r = await RealmServices.GetInstanceAsync())
+                    using (var c = r.BeginWrite())
+                    {
+                        var ih = r.Find<ImageHistory>(img.RawUrl);
+                        if (ih == null)
+                        {
+                            ih = new ImageHistory()
+                            {
+                                RawUrl = img.RawUrl,
+                                Title = title,
+                                ThumbnailUrl = img.ThumbnailUrl
+                            };
+                            r.Add(ih);
+                        }
+                        ih.LastUsed = DateTimeOffset.Now;
+
+                        c.Commit();
+                    }
                 }
                 catch { }
 
-                parameter.OnCompleted(url);
+                parameter.OnCompleted(img.RawUrl);
             }
             catch (Exception ex)
             {

@@ -10,12 +10,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Data\ChannelUserProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\ImageHistory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\MessageNotification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\RealmServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GyazoImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImgurImageUploader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MessageHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UploadedImageInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserSettings.cs" />
   </ItemGroup>
 </Project>
