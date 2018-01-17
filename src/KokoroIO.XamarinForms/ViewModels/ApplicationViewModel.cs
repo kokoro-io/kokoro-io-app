@@ -290,12 +290,12 @@ namespace KokoroIO.XamarinForms.ViewModels
             return r;
         }
 
-        public async Task<Message> PostMessageAsync(string channelId, string message, bool isNsfw, Guid idempotentKey = default(Guid))
+        public async Task<Message> PostMessageAsync(string channelId, string message, bool isNsfw, bool expandEmbedContents = true, Guid idempotentKey = default(Guid))
         {
             Message r;
             using (TH.BeginScope("Executing POST /channels/{id}/messages"))
             {
-                r = await EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, idempotentKey: idempotentKey)).ConfigureAwait(false);
+                r = await EnqueueClientTask(() => Client.PostMessageAsync(channelId, message, isNsfw, expandEmbedContents: expandEmbedContents, idempotentKey: idempotentKey)).ConfigureAwait(false);
             }
 
             GetProfileViewModel(r.Profile);

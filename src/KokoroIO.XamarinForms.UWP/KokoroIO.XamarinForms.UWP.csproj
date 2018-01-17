@@ -127,6 +127,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="email.png" />
+    <Content Include="expand_content.png" />
     <Content Include="image_white.png" />
     <Content Include="info.png" />
     <Content Include="info_white.png" />
@@ -137,6 +138,7 @@
     <Content Include="search.png" />
     <Content Include="send.png" />
     <Content Include="settings.png" />
+    <Content Include="skip_content.png" />
     <Content Include="visibility_off.png" />
     <Content Include="visibility.png" />
     <None Include="project.json" />

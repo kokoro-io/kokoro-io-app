@@ -484,8 +484,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                 var prev = Messages.LastOrDefault();
                 tempMessage.SetIsMerged(prev);
                 Messages.Add(tempMessage);
-                await Application.PostMessageAsync(Channel.Id, m, _IsNsfw, idempotentKey: tempMessage.IdempotentKey.Value);
+                await Application.PostMessageAsync(Channel.Id, m, _IsNsfw, expandEmbedContents: _ExpandsContents, idempotentKey: tempMessage.IdempotentKey.Value);
                 succeeded = true;
+                ExpandsContents = true;
             }
             catch (Exception ex)
             {
@@ -590,6 +591,27 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public Command ToggleNsfwCommand
             => _ToggleNsfwCommand ?? (_ToggleNsfwCommand = new Command(() => IsNsfw = !_IsNsfw));
+
+        #endregion ToggleNsfwCommand
+
+        #region IsNsfw
+
+        private bool _ExpandsContents = true;
+
+        public bool ExpandsContents
+        {
+            get => _ExpandsContents;
+            set => SetProperty(ref _ExpandsContents, value);
+        }
+
+        #endregion IsNsfw
+
+        #region ToggleNsfwCommand
+
+        private Command _ToggleExpandsContentsCommand;
+
+        public Command ToggleExpandsContentsCommand
+            => _ToggleExpandsContentsCommand ?? (_ToggleExpandsContentsCommand = new Command(() => ExpandsContents = !ExpandsContents));
 
         #endregion ToggleNsfwCommand
 

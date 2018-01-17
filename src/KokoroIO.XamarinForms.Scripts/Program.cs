@@ -45,6 +45,8 @@ namespace KokoroIO.XamarinForms.Scripts
             //GenerateIcon(inDir, "ic_search_black_24px.svg", "search");
             //GenerateIcon(inDir, "ic_settings_black_24px.svg", "settings");
             //GenerateIcon(inDir, "ic_email_black_24px.svg", "email");
+            //GenerateIcon(inDir, "ic_speaker_notes_black_24px.svg", "expand_content");
+            //GenerateIcon(inDir, "ic_speaker_notes_off_black_24px.svg", "skip_content");
         }
 
         private static string GetTempFileName(string extension)
@@ -225,7 +227,6 @@ namespace KokoroIO.XamarinForms.Scripts
 
                     var p = Process.Start(psi);
                     p.WaitForExit();
-
                     //procs.Add(p);
                 }
 

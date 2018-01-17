@@ -204,6 +204,22 @@
                             </DataTrigger>
                         </xlabs:ImageButton.Triggers>
                     </xlabs:ImageButton>
+
+                    <xlabs:ImageButton
+                        Style="{StaticResource footerButtonStyle}"
+                        Image="expand_content.png"
+                        Command="{Binding ToggleExpandsContentsCommand}">
+                        <xlabs:ImageButton.Triggers>
+                            <DataTrigger
+                                TargetType="xlabs:ImageButton"
+                                Binding="{Binding ExpandsContents}"
+                                Value="False">
+                                <Setter
+                                    Property="Image"
+                                    Value="skip_content.png" />
+                            </DataTrigger>
+                        </xlabs:ImageButton.Triggers>
+                    </xlabs:ImageButton>
                 </StackLayout>
 
                 <view:MembersLabel
