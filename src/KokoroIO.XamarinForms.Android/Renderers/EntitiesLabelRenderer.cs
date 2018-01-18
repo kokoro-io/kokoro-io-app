@@ -1,4 +1,5 @@
-﻿using Android.Text;
+﻿using Android.Content;
+using Android.Text;
 using Android.Text.Method;
 using Android.Text.Style;
 using KokoroIO.XamarinForms.Droid.Renderers;
@@ -12,6 +13,9 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public sealed class EntitiesLabelRenderer : LabelRenderer
     {
+        public EntitiesLabelRenderer(Context context)
+            : base(context) { }
+
         private class EntitySpan : ClickableSpan
         {
             private readonly EntitiesLabelRenderer _Renderer;

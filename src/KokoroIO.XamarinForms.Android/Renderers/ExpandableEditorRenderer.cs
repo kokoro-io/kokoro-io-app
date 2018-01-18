@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Android.Content;
 using Android.Views;
 using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
@@ -12,6 +13,9 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public sealed class ExpandableEditorRenderer : EditorRenderer
     {
+        public ExpandableEditorRenderer(Context context)
+            : base(context) { }
+
         protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
         {
             base.OnElementChanged(e);

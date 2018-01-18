@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Android.Content;
 using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
@@ -10,6 +11,9 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public class RoundLabelRenderer : LabelRenderer
     {
+        public RoundLabelRenderer(Context context)
+            : base(context) { }
+
         protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
         {
             base.OnElementChanged(e);

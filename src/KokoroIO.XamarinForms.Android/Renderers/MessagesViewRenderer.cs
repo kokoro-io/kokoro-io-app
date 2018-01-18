@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Android.Content;
 using Android.Webkit;
 using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
@@ -12,6 +13,9 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public class MessagesViewRenderer : WebViewRenderer
     {
+        public MessagesViewRenderer(Context context)
+            : base(context) { }
+
         static MessagesViewRenderer()
         {
             // TODO: Remove before publish

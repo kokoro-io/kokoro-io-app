@@ -1,3 +1,4 @@
+using Android.Content;
 using Android.Views;
 using KokoroIO.XamarinForms.Droid.Renderers;
 using Xamarin.Forms;
@@ -9,6 +10,9 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public sealed class CustomListViewRenderer : ListViewRenderer
     {
+        public CustomListViewRenderer(Context context)
+            : base(context) { }
+
         public override bool DispatchDragEvent(DragEvent e)
         {
             if (Element.InputTransparent)
