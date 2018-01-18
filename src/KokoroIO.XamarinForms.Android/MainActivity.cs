@@ -3,7 +3,6 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.OS;
-using KokoroIO.XamarinForms.Droid.Services;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using XLabs.Ioc;
@@ -12,7 +11,7 @@ using XLabs.Platform.Services.Media;
 
 namespace KokoroIO.XamarinForms.Droid
 {
-    [Activity(Label = "kokoro.io", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "kokoro.io", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTask)]
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "image/*")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
@@ -48,8 +47,6 @@ namespace KokoroIO.XamarinForms.Droid
                 LoadApplication(new App(avm));
 
                 ResetBindingContext(mp);
-
-                return;
             }
 
             var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
@@ -75,6 +72,27 @@ namespace KokoroIO.XamarinForms.Droid
                     }
                 }
                 catch { }
+            }
+        }
+
+        protected override void OnNewIntent(Intent intent)
+        {
+            base.OnNewIntent(intent);
+            var mp = App.Current?.MainPage;
+
+            var avm = mp?.BindingContext as ApplicationViewModel;
+            var cid = intent.Extras?.GetString("channelId");
+            var mid = intent.Extras?.GetString("messageId");
+
+            if (avm != null)
+            {
+                avm.SelectedChannelId = cid ?? avm.SelectedChannelId;
+
+                if (avm.SelectedChannel?.Id == cid
+                    && int.TryParse(mid, out var id))
+                {
+                    avm.SelectedChannel.GetOrCreateMessagesPage().SelectedMessageId = id;
+                }
             }
         }
 
