@@ -38,6 +38,10 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
             }
 
             base.OnElementChanged(e);
+            if (Control != null)
+            {
+                Control.Settings.MixedContentMode = MixedContentHandling.AlwaysAllow;
+            }
 
             mwv = e.NewElement as MessagesView;
 
