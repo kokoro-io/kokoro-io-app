@@ -6,7 +6,6 @@ using Android.Util;
 using Gcm.Client;
 using KokoroIO.XamarinForms.ViewModels;
 using Newtonsoft.Json.Linq;
-using WindowsAzure.Messaging;
 
 namespace KokoroIO.XamarinForms.Droid
 {
@@ -41,7 +40,6 @@ namespace KokoroIO.XamarinForms.Droid
         }
 
         public static string RegistrationID { get; private set; }
-        private NotificationHub Hub { get; set; }
 
         public PushHandlerService() : base(Secrets.SenderID)
         {
