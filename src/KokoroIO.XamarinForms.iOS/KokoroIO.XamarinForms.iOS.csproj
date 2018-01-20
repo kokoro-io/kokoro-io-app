@@ -537,6 +537,7 @@
   <Import Project="..\packages\Fody.2.3.21\build\Fody.targets" Condition="Exists('..\packages\Fody.2.3.21\build\Fody.targets')" />
   <Import Project="..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>powershell -ExecutionPolicy RemoteSigned -File "$(SolutionDir)KokoroIO.XamarinForms.Models\ModelSecrets.ps1" &gt; "$(SolutionDir)KokoroIO.XamarinForms.Models\ModelSecrets.Generated.cs"</PreBuildEvent>
+    <PreBuildEvent>cd $(SolutionDir)KokoroIO.XamarinForms.Models
+powershell -ExecutionPolicy RemoteSigned -File ModelSecrets.ps1 &gt; ModelSecrets.Generated.cs</PreBuildEvent>
   </PropertyGroup>
 </Project>

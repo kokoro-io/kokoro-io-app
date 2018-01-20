@@ -199,7 +199,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>powershell -ExecutionPolicy RemoteSigned -File "$(SolutionDir)KokoroIO.XamarinForms.Models\ModelSecrets.ps1" &gt; "$(SolutionDir)KokoroIO.XamarinForms.Models\ModelSecrets.Generated.cs"</PreBuildEvent>
+    <PreBuildEvent>cd $(SolutionDir)KokoroIO.XamarinForms.Models
+powershell -ExecutionPolicy RemoteSigned -File ModelSecrets.ps1 &gt; ModelSecrets.Generated.cs</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
