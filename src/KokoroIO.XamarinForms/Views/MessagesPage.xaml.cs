@@ -117,11 +117,5 @@ namespace KokoroIO.XamarinForms.Views
                 e.VisualElement.Focus();
             }
         }
-
-        private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-        {
-            ((sender as ListView)).SelectedItem = null;
-            (e.SelectedItem as ImageHistoryViewModel)?.Select();
-        }
     }
 }

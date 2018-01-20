@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xlabs:PopupLayout
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
+    xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
+    x:Class="KokoroIO.XamarinForms.Views.MessagesPageProfile"
+    BackgroundColor="#80000000"
+    IsVisible="{Binding HasProfile}">
+    <xlabs:PopupLayout.GestureRecognizers>
+        <TapGestureRecognizer
+            Command="{Binding ClearPopupCommand}" />
+    </xlabs:PopupLayout.GestureRecognizers>
+    <xlabs:PopupLayout.Content>
+
+        <Grid
+            BindingContext="{Binding SelectedProfile}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            BackgroundColor="White"
+            Margin="8">
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="16" />
+                <RowDefinition
+                    Height="Auto" />
+                <!--<RowDefinition
+                                Height="Auto" />-->
+            </Grid.RowDefinitions>
+            <Grid
+                BackgroundColor="#2C3E50" />
+            <StackLayout
+                Grid.Row="1">
+                <Grid
+                    HorizontalOptions="Fill">
+                    <ActivityIndicator
+                        BindingContext="{x:Reference profileImage}"
+                        HorizontalOptions="Center"
+                        WidthRequest="120"
+                        HeightRequest="120"
+                        Margin="8"
+                        IsVisible="{Binding IsLoading}"
+                        IsRunning="{Binding IsLoading}" />
+                    <Image
+                        x:Name="profileImage"
+                        HorizontalOptions="Center"
+                        WidthRequest="120"
+                        HeightRequest="120"
+                        Margin="8"
+                        Source="{Binding Avatar120px}" />
+                </Grid>
+                <Label
+                    HorizontalOptions="Fill"
+                    HorizontalTextAlignment="Center"
+                    FontSize="Small"
+                    Text="{Binding DisplayName}"
+                    LineBreakMode="CharacterWrap"
+                    Margin="8,4" />
+                <Label
+                    HorizontalOptions="Fill"
+                    HorizontalTextAlignment="Center"
+                    FontSize="Small"
+                    Text="{Binding ScreenName, StringFormat='@{0}'}"
+                    LineBreakMode="CharacterWrap"
+                    Margin="8,0" />
+                <Button
+                    Margin="8,4"
+                    HorizontalOptions="End"
+                    IsVisible="{Binding IsOtherUser}"
+                    Text="Send Direct Message"
+                    Command="{Binding BeginDirectMessageCommand}" />
+            </StackLayout>
+        </Grid>
+    </xlabs:PopupLayout.Content>
+</xlabs:PopupLayout>
