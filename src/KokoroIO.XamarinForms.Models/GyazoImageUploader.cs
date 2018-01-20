@@ -10,14 +10,13 @@ using Newtonsoft.Json.Linq;
 
 namespace KokoroIO.XamarinForms.Models
 {
+    using static ModelSecrets;
+
     public sealed class GyazoImageUploader : IImageUploader
     {
         private const string ACCESS_TOKEN_KEY = nameof(GyazoImageUploader) + "." + nameof(_AccessToken);
 
         // TODO: TEMPORAL KEY. MUST BE REMOVED AND REVOKED.
-        private readonly string _ClientId = "1ddda67818dd339ff8fc80a9d03885ac1e3d32a44712d5775b7be2f67b39aa66";
-
-        private readonly string _ClientSecret = "d78f76bd6127e07fae0f46476ec42649d0eaba360e86dba4e4d3f7ee2b02d2e2";
 
         private string _AccessToken;
 
@@ -35,7 +34,7 @@ namespace KokoroIO.XamarinForms.Models
 
         public bool IsAuthorized => _AccessToken != null;
 
-        public string AuthorizationUrl => $"https://api.gyazo.com/oauth/authorize?client_id={_ClientId}&redirect_uri={Uri.EscapeDataString(CallbackUrl)}&response_type=code";
+        public string AuthorizationUrl => $"https://api.gyazo.com/oauth/authorize?client_id={GYAZO_CLIENT_ID}&redirect_uri={Uri.EscapeDataString(CallbackUrl)}&response_type=code";
 
         public string CallbackUrl => "http://kokoro.io/client/oauthcallback/gyazo";
 
@@ -55,8 +54,8 @@ namespace KokoroIO.XamarinForms.Models
 
                         req.Content = new FormUrlEncodedContent(new[]
                         {
-                        new KeyValuePair<string, string>("client_id", _ClientId),
-                        new KeyValuePair<string, string>("client_secret", _ClientSecret),
+                        new KeyValuePair<string, string>("client_id", GYAZO_CLIENT_ID),
+                        new KeyValuePair<string, string>("client_secret", GYAZO_CLIENT_SECRET),
                         new KeyValuePair<string, string>("redirect_uri", CallbackUrl),
                         new KeyValuePair<string, string>("code", code),
                         new KeyValuePair<string, string>("grant_type", "authorization_code")

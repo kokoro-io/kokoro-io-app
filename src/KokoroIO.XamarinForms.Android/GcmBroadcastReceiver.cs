@@ -21,8 +21,6 @@ namespace KokoroIO.XamarinForms.Droid
     Categories = new string[] { "@PACKAGE_NAME@" })]
     public class GcmBroadcastReceiver : GcmBroadcastReceiverBase<PushHandlerService>
     {
-        public static string[] SENDER_IDS = new string[] { Secrets.SenderID };
-
         public const string TAG = "MyBroadcastReceiver-GCM";
     }
 }

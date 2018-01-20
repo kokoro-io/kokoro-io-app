@@ -10,16 +10,13 @@ using Newtonsoft.Json.Linq;
 
 namespace KokoroIO.XamarinForms.Models
 {
+    using static ModelSecrets;
+
     public sealed class ImgurImageUploader : IImageUploader
     {
         private const string ACCESS_TOKEN_KEY = nameof(ImgurImageUploader) + "." + nameof(_AccessToken);
 
         private const string REFRESH_TOKEN_KEY = nameof(ImgurImageUploader) + "." + nameof(_RefreshToken);
-
-        // TODO: TEMPORAL KEY. MUST BE REMOVED AND REVOKED.
-        private readonly string _ClientId = "21b4c2e0b6db3c3";
-
-        private readonly string _ClientSecret = "62d75cf90ab7db546928f593ea4b643a85611363";
 
         private string _AccessToken;
         private string _RefreshToken;
@@ -42,7 +39,7 @@ namespace KokoroIO.XamarinForms.Models
 
         public bool IsAuthorized => _AccessToken != null;
 
-        public string AuthorizationUrl => $"https://api.imgur.com/oauth2/authorize?client_id={_ClientId}&response_type=token";
+        public string AuthorizationUrl => $"https://api.imgur.com/oauth2/authorize?client_id={IMGUR_CLIENT_ID}&response_type=token";
 
         public string CallbackUrl => "http://kokoro.io/client/oauthcallback/imgur";
 
@@ -94,8 +91,8 @@ namespace KokoroIO.XamarinForms.Models
                             req.Content = new FormUrlEncodedContent(new[]
                             {
                                 new KeyValuePair<string, string>("refresh_token", _RefreshToken),
-                                new KeyValuePair<string, string>("client_id", _ClientId),
-                                new KeyValuePair<string, string>("client_secret", _ClientSecret),
+                                new KeyValuePair<string, string>("client_id", IMGUR_CLIENT_ID),
+                                new KeyValuePair<string, string>("client_secret", IMGUR_CLIENT_SECRET),
                                 new KeyValuePair<string, string>("grant_type", "refresh_token"),
                             });
 
