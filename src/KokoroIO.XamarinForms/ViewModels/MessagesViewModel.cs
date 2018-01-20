@@ -308,6 +308,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             set => SetProperty(ref _SelectedMessage, value, onChanged: () => _SelectedMessageId = null);
         }
 
+        private ObservableRangeCollection<CommandViewModel> _Commands;
+
+        public ObservableRangeCollection<CommandViewModel> Commands
+            => _Commands ?? (_Commands = new ObservableRangeCollection<CommandViewModel>());
+
         private int? _SelectedMessageId;
 
         internal int? SelectedMessageId
@@ -374,6 +379,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 SelectedProfile = null;
                 IsImageHistoryVisible = false;
+                _Commands?.Clear();
                 PopupUrl = null;
             }));
 

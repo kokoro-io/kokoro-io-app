@@ -31,9 +31,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ApplicationViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ChannelDetailViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ChannelListViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\CommandViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ImageHistoryPopupViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ImageHistoryViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MessageInfoHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\CommandListPopup.xaml.cs">
+      <DependentUpon>CommandListPopup.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\CustomTableView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesPageImageHistory.xaml.cs">
       <DependentUpon>MessagesPageImageHistory.xaml</DependentUpon>
@@ -261,6 +266,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\MessagesPageImageHistory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\CommandListPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

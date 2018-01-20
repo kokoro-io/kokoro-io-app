@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
-using Plugin.Clipboard;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -52,45 +49,6 @@ namespace KokoroIO.XamarinForms.Views
                 if ((BindingContext as MessagesViewModel)?.Messages.Contains(mi) == true)
                 {
                     DisplayAlert(mi.Page.Channel.DisplayName, "Failed to delete the message", "OK");
-                }
-            });
-
-            MessagingCenter.Subscribe<MessageInfo>(this, "ShowMessageMenu", async mi =>
-            {
-                if (mi?.IsDeleted != false
-                || (BindingContext as MessagesViewModel)?.Messages.Contains(mi) != true)
-                {
-                    return;
-                }
-
-                var reply = "Reply";
-                var copy = "Copy";
-                var delete = "Delete";
-
-                var buttons = new List<string>() { reply, copy };
-
-                if (mi.CanDelete)
-                {
-                    buttons.Insert(0, delete);
-                }
-
-                var result = await DisplayActionSheet(
-                                    "Choose action for the message",
-                                    "Cancel",
-                                    buttons[0],
-                                    buttons.Skip(1).ToArray());
-
-                if (result == reply)
-                {
-                    mi.Reply();
-                }
-                else if (result == copy)
-                {
-                    CrossClipboard.Current.SetText(mi.RawContent);
-                }
-                else if (result == delete)
-                {
-                    mi.BeginConfirmDeletion();
                 }
             });
         }

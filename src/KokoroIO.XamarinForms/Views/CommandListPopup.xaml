@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xlabs:PopupLayout
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
+    xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
+    x:Class="KokoroIO.XamarinForms.Views.CommandListPopup"
+    BackgroundColor="#80000000">
+    <xlabs:PopupLayout.GestureRecognizers>
+        <TapGestureRecognizer
+            Command="{Binding ClearPopupCommand}" />
+    </xlabs:PopupLayout.GestureRecognizers>
+    <xlabs:PopupLayout.Triggers>
+        <DataTrigger
+            TargetType="xlabs:PopupLayout"
+            Binding="{Binding Commands.Count}"
+            Value="0">
+            <Setter
+                Property="IsVisible"
+                Value="False" />
+        </DataTrigger>
+    </xlabs:PopupLayout.Triggers>
+
+    <xlabs:PopupLayout.Content>
+        <ListView
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            BackgroundColor="White"
+            Margin="8"
+            ItemsSource="{Binding Commands}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Button
+                            Text="{Binding Title}"
+                            Command="{Binding Command}" />
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </xlabs:PopupLayout.Content>
+</xlabs:PopupLayout>

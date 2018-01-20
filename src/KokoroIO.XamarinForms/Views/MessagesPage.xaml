@@ -276,6 +276,8 @@
                 Grid.RowSpan="3" />
             <view:MessagesPageImageHistory
                 Grid.RowSpan="3" />
+            <view:CommandListPopup
+                Grid.RowSpan="3" />
 
             <!--TODO: support dedicated contents <xlabs:PopupLayout
                 x:Name="webViewPopup"

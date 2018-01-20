@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using KokoroIO.XamarinForms.Models;
+using Plugin.Clipboard;
 using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
@@ -258,7 +259,26 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         public void ShowMenu()
-            => MessagingCenter.Send(this, "ShowMessageMenu");
+        {
+            Page.Commands.ReplaceRange(new[]
+            {
+                new CommandViewModel("Reply", new Command(() =>
+                {
+                    Page.Commands.Clear();
+                    Reply();
+                })),
+                new CommandViewModel("Copy", new Command(() =>
+                {
+                    Page.Commands.Clear();
+                    CrossClipboard.Current.SetText(PlainTextContent);
+                })),
+                new CommandViewModel("Delete", new Command(() =>
+                {
+                    Page.Commands.Clear();
+                    BeginConfirmDeletion();
+                }))
+            });
+        }
 
         public void BeginConfirmDeletion()
             => MessagingCenter.Send(this, "ConfirmMessageDeletion");
