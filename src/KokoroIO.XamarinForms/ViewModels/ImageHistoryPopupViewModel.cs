@@ -1,10 +1,9 @@
 using System.Linq;
 using KokoroIO.XamarinForms.Models.Data;
-using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
-    public sealed class ImageHistoryPopupViewModel : BindableObject
+    public sealed class ImageHistoryPopupViewModel : ObservableObject
     {
         internal readonly MessagesViewModel _Parent;
 

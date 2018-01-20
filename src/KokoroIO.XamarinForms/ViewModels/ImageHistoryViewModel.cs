@@ -25,10 +25,10 @@ namespace KokoroIO.XamarinForms.ViewModels
             var mp = _Popup._Parent;
             if (mp.IsImageHistoryVisible)
             {
-                var tag = $"![]({ThumbnailOrRawUrl})";
+                var tag = $"[]({RawUrl})";
                 mp.AppendMessage(tag);
                 mp.IsImageHistoryVisible = false;
-                mp.ExpandsContents = false;
+                mp.ExpandsContents = true;
 
                 using (var r = await RealmServices.GetInstanceAsync())
                 using (var c = r.BeginWrite())
