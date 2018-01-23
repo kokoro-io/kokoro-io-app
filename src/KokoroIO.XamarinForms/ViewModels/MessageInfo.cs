@@ -51,6 +51,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             PlainTextContent = message.PlainTextContent;
             RawContent = message.RawContent;
             EmbedContents = message.EmbedContents;
+            ExpandEmbedContents = message.ExpandEmbedContents;
             _Status = message.Status;
         }
 
@@ -169,6 +170,18 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion EmbedContents
+
+        #region ExpandEmbedContents
+
+        private bool _ExpandEmbedContents;
+
+        public bool ExpandEmbedContents
+        {
+            get => _ExpandEmbedContents;
+            private set => SetProperty(ref _ExpandEmbedContents, value);
+        }
+
+        #endregion ExpandEmbedContents
 
         #region IsMerged
 

@@ -26,7 +26,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                 IsNsfw = message.IsNsfw,
                 HtmlContent = message.HtmlContent,
                 IsMerged = message.IsMerged,
-                EmbedContents = message.EmbedContents,
+                EmbedContents = message.ExpandEmbedContents ? message.EmbedContents : null,
                 IsDeleted = message.IsDeleted,
                 CanDelete = message.CanDelete
             };
