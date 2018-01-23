@@ -7,10 +7,10 @@ using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.ViewModels;
 using KokoroIO.XamarinForms.Views;
-using Microsoft.Azure.Mobile;
-using Microsoft.Azure.Mobile.Analytics;
-using Microsoft.Azure.Mobile.Crashes;
-using Microsoft.Azure.Mobile.Distribute;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.AppCenter.Distribute;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -123,7 +123,7 @@ namespace KokoroIO.XamarinForms
 
             if (types.Any())
             {
-                MobileCenter.Start("android=2bf93410-91e9-48a0-ac2a-b7cd2b2b62c1;"
+                AppCenter.Start("android=2bf93410-91e9-48a0-ac2a-b7cd2b2b62c1;"
                                 + "ios=05892c61-9669-4090-83d3-0fe8f350d408;"
                                 + "uwp=574a9213-3122-4c61-bb98-ada1a02e7f9d", types.ToArray());
             }

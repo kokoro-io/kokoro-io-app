@@ -2,7 +2,7 @@
 using System.Linq;
 using Foundation;
 using KokoroIO.XamarinForms.ViewModels;
-using Microsoft.Azure.Mobile.Distribute;
+using Microsoft.AppCenter.Distribute;
 using UIKit;
 using XLabs.Ioc;
 using XLabs.Platform.Device;

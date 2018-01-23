@@ -27,24 +27,25 @@ namespace KokoroIO.XamarinForms.Droid
 		public static void UpdateIdValues()
 		{
 			global::Gcm.Client.Resource.String.library_name = global::KokoroIO.XamarinForms.Droid.Resource.String.library_name;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_dialog_actioned_on_disabled_toast = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_dialog_actioned_on_disabled_toast;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_download_progress_number_format = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_download_progress_number_format;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_downloading_mandatory_update = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_downloading_mandatory_update;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_install = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_install;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_install_ready_message = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_install_ready_message;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_install_ready_title = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_install_ready_title;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_notification_category = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_notification_category;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_unknown_sources_dialog_message = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_unknown_sources_dialog_message;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_unknown_sources_dialog_settings = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_unknown_sources_dialog_settings;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_download = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_download;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_message_mandatory = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_message_mandatory;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_message_optional = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_message_optional;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_postpone = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_postpone;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_title = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_title;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_dialog_view_release_notes = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_dialog_view_release_notes;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_failed_dialog_ignore = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_failed_dialog_ignore;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_failed_dialog_reinstall = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_failed_dialog_reinstall;
-			global::Microsoft.Azure.Mobile.Distribute.Resource.String.mobile_center_distribute_update_failed_dialog_title = global::KokoroIO.XamarinForms.Droid.Resource.String.mobile_center_distribute_update_failed_dialog_title;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_dialog_actioned_on_disabled_toast = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_dialog_actioned_on_disabled_toast;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_download_progress_number_format = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_download_progress_number_format;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_downloading_mandatory_update = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_downloading_mandatory_update;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_install = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_install;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_install_ready_message = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_install_ready_message;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_install_ready_title = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_install_ready_title;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_notification_category = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_notification_category;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_unknown_sources_dialog_message = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_unknown_sources_dialog_message;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_unknown_sources_dialog_settings = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_unknown_sources_dialog_settings;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_dialog_download = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_dialog_download;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_dialog_message_mandatory = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_dialog_message_mandatory;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_dialog_message_optional = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_dialog_message_optional;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_dialog_postpone = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_dialog_postpone;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_dialog_title = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_dialog_title;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_dialog_view_release_notes = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_dialog_view_release_notes;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_failed_dialog_ignore = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_failed_dialog_ignore;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_failed_dialog_message = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_failed_dialog_message;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_failed_dialog_reinstall = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_failed_dialog_reinstall;
+			global::Microsoft.AppCenter.Distribute.Resource.String.appcenter_distribute_update_failed_dialog_title = global::KokoroIO.XamarinForms.Droid.Resource.String.appcenter_distribute_update_failed_dialog_title;
 			global::ModernHttpClient.Resource.String.library_name = global::KokoroIO.XamarinForms.Droid.Resource.String.library_name;
 			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::KokoroIO.XamarinForms.Droid.Resource.Attribute.actionBarSize;
 			global::XLabs.Forms.Droid.Resource.Animation.abc_fade_in = global::KokoroIO.XamarinForms.Droid.Resource.Animation.abc_fade_in;
@@ -5584,6 +5585,63 @@ namespace KokoroIO.XamarinForms.Droid
 			// aapt resource value: 0x7f07003d
 			public const int appbar_scrolling_view_behavior = 2131165245;
 			
+			// aapt resource value: 0x7f070045
+			public const int appcenter_distribute_dialog_actioned_on_disabled_toast = 2131165253;
+			
+			// aapt resource value: 0x7f070046
+			public const int appcenter_distribute_download_progress_number_format = 2131165254;
+			
+			// aapt resource value: 0x7f070047
+			public const int appcenter_distribute_downloading_mandatory_update = 2131165255;
+			
+			// aapt resource value: 0x7f070048
+			public const int appcenter_distribute_install = 2131165256;
+			
+			// aapt resource value: 0x7f070049
+			public const int appcenter_distribute_install_ready_message = 2131165257;
+			
+			// aapt resource value: 0x7f07004a
+			public const int appcenter_distribute_install_ready_title = 2131165258;
+			
+			// aapt resource value: 0x7f07004b
+			public const int appcenter_distribute_notification_category = 2131165259;
+			
+			// aapt resource value: 0x7f07004c
+			public const int appcenter_distribute_unknown_sources_dialog_message = 2131165260;
+			
+			// aapt resource value: 0x7f07004d
+			public const int appcenter_distribute_unknown_sources_dialog_settings = 2131165261;
+			
+			// aapt resource value: 0x7f07004e
+			public const int appcenter_distribute_update_dialog_download = 2131165262;
+			
+			// aapt resource value: 0x7f07004f
+			public const int appcenter_distribute_update_dialog_message_mandatory = 2131165263;
+			
+			// aapt resource value: 0x7f070050
+			public const int appcenter_distribute_update_dialog_message_optional = 2131165264;
+			
+			// aapt resource value: 0x7f070051
+			public const int appcenter_distribute_update_dialog_postpone = 2131165265;
+			
+			// aapt resource value: 0x7f070052
+			public const int appcenter_distribute_update_dialog_title = 2131165266;
+			
+			// aapt resource value: 0x7f070053
+			public const int appcenter_distribute_update_dialog_view_release_notes = 2131165267;
+			
+			// aapt resource value: 0x7f070054
+			public const int appcenter_distribute_update_failed_dialog_ignore = 2131165268;
+			
+			// aapt resource value: 0x7f070055
+			public const int appcenter_distribute_update_failed_dialog_message = 2131165269;
+			
+			// aapt resource value: 0x7f070056
+			public const int appcenter_distribute_update_failed_dialog_reinstall = 2131165270;
+			
+			// aapt resource value: 0x7f070057
+			public const int appcenter_distribute_update_failed_dialog_title = 2131165271;
+			
 			// aapt resource value: 0x7f07003e
 			public const int bottom_sheet_behavior = 2131165246;
 			
@@ -5601,60 +5659,6 @@ namespace KokoroIO.XamarinForms.Droid
 			
 			// aapt resource value: 0x7f070002
 			public const int library_name = 2131165186;
-			
-			// aapt resource value: 0x7f070045
-			public const int mobile_center_distribute_dialog_actioned_on_disabled_toast = 2131165253;
-			
-			// aapt resource value: 0x7f070046
-			public const int mobile_center_distribute_download_progress_number_format = 2131165254;
-			
-			// aapt resource value: 0x7f070047
-			public const int mobile_center_distribute_downloading_mandatory_update = 2131165255;
-			
-			// aapt resource value: 0x7f070048
-			public const int mobile_center_distribute_install = 2131165256;
-			
-			// aapt resource value: 0x7f070049
-			public const int mobile_center_distribute_install_ready_message = 2131165257;
-			
-			// aapt resource value: 0x7f07004a
-			public const int mobile_center_distribute_install_ready_title = 2131165258;
-			
-			// aapt resource value: 0x7f07004b
-			public const int mobile_center_distribute_notification_category = 2131165259;
-			
-			// aapt resource value: 0x7f07004c
-			public const int mobile_center_distribute_unknown_sources_dialog_message = 2131165260;
-			
-			// aapt resource value: 0x7f07004d
-			public const int mobile_center_distribute_unknown_sources_dialog_settings = 2131165261;
-			
-			// aapt resource value: 0x7f07004e
-			public const int mobile_center_distribute_update_dialog_download = 2131165262;
-			
-			// aapt resource value: 0x7f07004f
-			public const int mobile_center_distribute_update_dialog_message_mandatory = 2131165263;
-			
-			// aapt resource value: 0x7f070050
-			public const int mobile_center_distribute_update_dialog_message_optional = 2131165264;
-			
-			// aapt resource value: 0x7f070051
-			public const int mobile_center_distribute_update_dialog_postpone = 2131165265;
-			
-			// aapt resource value: 0x7f070052
-			public const int mobile_center_distribute_update_dialog_title = 2131165266;
-			
-			// aapt resource value: 0x7f070053
-			public const int mobile_center_distribute_update_dialog_view_release_notes = 2131165267;
-			
-			// aapt resource value: 0x7f070054
-			public const int mobile_center_distribute_update_failed_dialog_ignore = 2131165268;
-			
-			// aapt resource value: 0x7f070055
-			public const int mobile_center_distribute_update_failed_dialog_reinstall = 2131165269;
-			
-			// aapt resource value: 0x7f070056
-			public const int mobile_center_distribute_update_failed_dialog_title = 2131165270;
 			
 			// aapt resource value: 0x7f070005
 			public const int month_name_format = 2131165189;
