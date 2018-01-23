@@ -9,7 +9,6 @@
     <Import_RootNamespace>KokoroIO.XamarinForms.Models</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Data\ChannelUserProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\ImageHistory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\MessageNotification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\RealmServices.cs" />

@@ -35,6 +35,12 @@ namespace KokoroIO.XamarinForms.Models
             set => SetValue(value);
         }
 
+        public static string LastChannelId
+        {
+            get => GetString();
+            set => SetValue(value);
+        }
+
         public static bool PlayRingtone
         {
 #if !MODEL_TESTS

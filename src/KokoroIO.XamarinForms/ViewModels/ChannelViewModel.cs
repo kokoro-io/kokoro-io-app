@@ -23,21 +23,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal ApplicationViewModel Application { get; }
 
-        #region LastReadId
-
-        internal int? _LastReadId;
-
-        /// <summary>
-        /// Gets or sets the id of th most recente message.
-        /// </summary>
-        internal int? LastReadId
-        {
-            get => _LastReadId;
-            set => SetProperty(ref _LastReadId, value, onChanged: () => BeginWriteRealm(_LastReadId));
-        }
-
-        #endregion LastReadId
-
         #region Channel
 
         public string Id { get; }
@@ -268,6 +253,19 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             get => _LatestReadMessageId;
             private set => SetProperty(ref _LatestReadMessageId, value);
+        }
+
+        internal async void BeginUpdateLatestReadId(int value)
+        {
+            if (MembershipId != null && ((_LatestReadMessageId == null && value > 0) || value > _LatestReadMessageId))
+            {
+                LatestReadMessageId = value;
+                try
+                {
+                    await Application.PutMembershipAsync(MembershipId, latestReadMessageId: value).ConfigureAwait(false);
+                }
+                catch { }
+            }
         }
 
         #endregion LatestReadMessageId
@@ -552,63 +550,6 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Member events
 
-        internal async void BeginWriteRealm(int? lastReadId)
-        {
-            try
-            {
-                var rid = Id;
-                using (var realm = await RealmServices.GetInstanceAsync())
-                using (var trx = realm.BeginWrite())
-                {
-                    var up = realm.All<ChannelUserProperties>().FirstOrDefault(r => r.ChannelId == rid);
-                    if (up == null)
-                    {
-                        up = new ChannelUserProperties()
-                        {
-                            ChannelId = rid,
-                            UserId = Application.LoginUser.Id
-                        };
-
-                        realm.Add(up);
-                    }
-
-                    up.LastVisited = DateTimeOffset.Now;
-
-                    if (lastReadId != null)
-                    {
-                        up.LastReadId = lastReadId.Value;
-
-                        var ns = realm.All<MessageNotification>().Where(n => n.ChannelId == Id && n.MessageId <= lastReadId).ToList();
-
-                        var remCount = realm.All<MessageNotification>().Where(n => n.ChannelId == Id && n.MessageId > lastReadId).Count();
-
-                        if (ns.Any())
-                        {
-                            var notification = SH.Notification;
-                            foreach (var n in ns)
-                            {
-                                notification?.CancelNotification(n.ChannelId, n.NotificationId, remCount);
-                                realm.Remove(n);
-                            }
-                        }
-                    }
-
-                    trx.Commit();
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.Error("SavingChannelUserPropertiesFailed");
-            }
-
-            if (lastReadId != null
-                && _Unreads?.RemoveWhere(id => id <= _LastReadId) > 0)
-            {
-                OnPropertyChanged(nameof(UnreadCount));
-                HasUnread = _Unreads?.Count > 0;
-            }
-        }
-
         private HashSet<int> _Unreads;
 
         public int UnreadCount
@@ -628,7 +569,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal void Receive(Message message)
         {
-            if (!(LastReadId < message.Id))
+            if (!(_LatestReadMessageId < message.Id))
             {
                 return;
             }
@@ -667,7 +608,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        public async Task ClearUnreadAsync(int? lastReadId = null)
+        public async Task ClearUnreadAsync(int? latestReadMessageId = null)
         {
             var hasUnread = _Unreads?.Count > 0 || _HasUnread;
 

@@ -136,7 +136,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     // TODO: get first message id from argument
 
-                    var tid = _SelectedMessageId ?? Channel.LastReadId;
+                    var tid = _SelectedMessageId ?? Channel.LatestReadMessageId;
 
                     if (tid > 0)
                     {
@@ -193,8 +193,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     await Channel.ClearUnreadAsync().ConfigureAwait(false);
                 }
-
-                Channel.BeginWriteRealm(null);
             }
             catch (Exception ex)
             {

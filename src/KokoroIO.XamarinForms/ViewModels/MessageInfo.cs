@@ -201,11 +201,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             get => _IsShown;
             set => SetProperty(ref _IsShown, value, onChanged: () =>
             {
-                if (_IsShown && !(Page.Channel.LastReadId >= Id))
+                if (_IsShown && !(Page.Channel.LatestReadMessageId >= Id))
                 {
                     if (Page.HasNext || Page.Messages.LastOrDefault() != this)
                     {
-                        Page.Channel.LastReadId = Id;
+                        Page.Channel.BeginUpdateLatestReadId(Id ?? int.MinValue);
                     }
                     else
                     {

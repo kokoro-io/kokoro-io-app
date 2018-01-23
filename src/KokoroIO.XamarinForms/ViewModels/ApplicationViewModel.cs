@@ -202,8 +202,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                 GetOrCreateJoinedChannelViewModel(ms);
             }
 
-            await GetLastReadIdAsync().ConfigureAwait(false);
-
             await SubscribeAsync().ConfigureAwait(false);
 
             return r;
@@ -219,8 +217,9 @@ namespace KokoroIO.XamarinForms.ViewModels
             return GetOrCreateJoinedChannelViewModel(ms);
         }
 
-        public async Task<ChannelViewModel> PutMembershipAsync(string membershipId, bool? disableNotification = null)
+        public async Task<ChannelViewModel> PutMembershipAsync(string membershipId, bool? disableNotification = null, int? latestReadMessageId = null)
         {
+            // TODO: fix client
             Membership ms;
             using (TH.BeginScope("Executing PUT /memberships"))
             {
@@ -363,16 +362,13 @@ namespace KokoroIO.XamarinForms.ViewModels
                 using (var realm = await RealmServices.GetInstanceAsync())
                 using (var trx = realm.BeginWrite())
                 {
-                    var rups = realm.All<ChannelUserProperties>().ToList();
                     var notifs = realm.All<MessageNotification>().ToList();
 
                     var nf = SH.Notification;
 
                     foreach (var cvm in _Channels)
                     {
-                        var rup = rups.FirstOrDefault(r => r.ChannelId == cvm.Id);
-
-                        var lastId = rup?.LastReadId;
+                        var lastId = cvm.LatestReadMessageId;
 
                         var cnt = notifs.Count(n => n.ChannelId == cvm.Id && !(n.MessageId <= lastId));
                         cvm.HasUnread = cnt > 0;
@@ -392,13 +388,10 @@ namespace KokoroIO.XamarinForms.ViewModels
                         }
                     }
 
-                    var lv = rups.Max(r => r?.LastVisited);
-                    var up = rups.FirstOrDefault(r => r.LastVisited == lv);
-
                     TH.Info("Notified channel: {0}", _SelectedChannelId ?? "n/a");
-                    TH.Info("Last channel: {0}", up?.ChannelId ?? "n/a");
+                    TH.Info("Last channel: {0}", UserSettings.LastChannelId ?? "n/a");
 
-                    channelId = _SelectedChannelId ?? up?.ChannelId;
+                    channelId = _SelectedChannelId ?? UserSettings.LastChannelId;
                     trx.Commit();
                 }
 
@@ -433,6 +426,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     if (_SelectedChannel != null)
                     {
                         _SelectedChannel.IsSelected = true;
+                        UserSettings.LastChannelId = _SelectedChannel.Id;
                     }
                     OnUnreadCountChanged();
                     if (Client.State == ClientState.Disconnected
@@ -542,28 +536,6 @@ namespace KokoroIO.XamarinForms.ViewModels
             cvm.Update(membership);
 
             return cvm;
-        }
-
-        private async Task GetLastReadIdAsync()
-        {
-            if (_Channels?.Any(c => c.LastReadId == null) != true)
-            {
-                return;
-            }
-
-            using (TH.BeginScope("Reading LastReadId of Channels"))
-            using (var realm = await RealmServices.GetInstanceAsync())
-            {
-                var d = realm.All<ChannelUserProperties>()
-                                .ToList().Where(s => s.ChannelId != null && s.LastReadId > 0)
-                                .ToDictionary(s => s.ChannelId, s => s.LastReadId);
-
-                foreach (var c in _Channels)
-                {
-                    d.TryGetValue(c.Id, out var lid);
-                    c._LastReadId = lid != null ? Math.Max((int)lid.Value, c.LastReadId ?? 0) : (c.LastReadId ?? 0);
-                }
-            }
         }
 
         #endregion Channels
@@ -1025,8 +997,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                 }
 
                 Channels.RemoveRange(Channels.Where(c => !e.Data.Any(d => d.Id == c.Id)).ToArray());
-
-                await GetLastReadIdAsync().ConfigureAwait(false);
 
                 await SubscribeAsync().ConfigureAwait(false);
             });
