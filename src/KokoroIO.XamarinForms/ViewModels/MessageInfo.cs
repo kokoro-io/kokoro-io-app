@@ -27,6 +27,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             _EmbedContents = message.EmbedContents?.Count > 1
                             ? message.EmbedContents.OrderBy(c => c.Position).ToArray()
                             : message.EmbedContents;
+            _ExpandEmbedContents = message.ExpandEmbedContents;
             _Status = message.Status;
         }
 
