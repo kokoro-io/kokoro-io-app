@@ -427,6 +427,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     {
                         _SelectedChannel.IsSelected = true;
                         UserSettings.LastChannelId = _SelectedChannel.Id;
+                        App.Current.SavePropertiesAsync();
                     }
                     OnUnreadCountChanged();
                     if (Client.State == ClientState.Disconnected
