@@ -114,6 +114,51 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion IsArchived
 
+        #region LatestMessageId
+
+        private int? _LatestMessageId;
+
+        /// <summary>
+        /// 最新メッセージのIDを取得します。
+        /// </summary>
+        public int? LatestMessageId
+        {
+            get => _LatestMessageId;
+            private set => SetProperty(ref _LatestMessageId, value);
+        }
+
+        #endregion LatestMessageId
+
+        #region LatestMessagePublishedAt
+
+        private DateTime? _LatestMessagePublishedAt;
+
+        /// <summary>
+        /// 最新メッセージ投稿日時を取得します。
+        /// </summary>
+        public DateTime? LatestMessagePublishedAt
+        {
+            get => _LatestMessagePublishedAt;
+            private set => SetProperty(ref _LatestMessagePublishedAt, value);
+        }
+
+        #endregion LatestMessagePublishedAt
+
+        #region MessagesCount
+
+        private int _MessagesCount;
+
+        /// <summary>
+        /// メッセージ数を取得します。
+        /// </summary>
+        public int MessagesCount
+        {
+            get => _MessagesCount;
+            private set => SetProperty(ref _MessagesCount, value);
+        }
+
+        #endregion MessagesCount
+
         internal void Update(Channel model)
         {
             UpdateCore(model);
@@ -136,6 +181,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                         ?? model.ChannelName;
             Description = model.Description;
             IsArchived = model.IsArchived;
+            LatestMessageId = model.LatestMessageId;
+            LatestMessagePublishedAt = model.LatestMessagePublishedAt;
+            MessagesCount = model.MessagesCount;
         }
 
         #endregion Channel
@@ -170,6 +218,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private bool _NotificationDisabled;
 
+        [Obsolete]
         public bool NotificationDisabled
         {
             get => _NotificationDisabled;
@@ -177,6 +226,81 @@ namespace KokoroIO.XamarinForms.ViewModels
         }
 
         #endregion NotificationDisabled
+
+        #region NotificationPolicy
+
+        private NotificationPolicy _NotificationPolicy;
+
+        /// <summary>
+        /// 通知ポリシーを取得します。
+        /// </summary>
+        public NotificationPolicy NotificationPolicy
+        {
+            get => _NotificationPolicy;
+            private set => SetProperty(ref _NotificationPolicy, value);
+        }
+
+        #endregion NotificationPolicy
+
+        #region ReadStateTrackingPolicy
+
+        private ReadStateTrackingPolicy _ReadStateTrackingPolicy;
+
+        /// <summary>
+        /// 未読メッセージ表示ポリシーを取得します。
+        /// </summary>
+        public ReadStateTrackingPolicy ReadStateTrackingPolicy
+        {
+            get => _ReadStateTrackingPolicy;
+            private set => SetProperty(ref _ReadStateTrackingPolicy, value);
+        }
+
+        #endregion ReadStateTrackingPolicy
+
+        #region LatestReadMessageId
+
+        private int? _LatestReadMessageId;
+
+        /// <summary>
+        /// 一番新しい既読メッセージを取得します。
+        /// </summary>
+        public int? LatestReadMessageId
+        {
+            get => _LatestReadMessageId;
+            private set => SetProperty(ref _LatestReadMessageId, value);
+        }
+
+        #endregion LatestReadMessageId
+
+        #region Visible
+
+        private bool _Visible = true;
+
+        /// <summary>
+        /// チャット画面のチャンネル一覧ペインに表示するかどうかを示す値を取得します。
+        /// </summary>
+        public bool Visible
+        {
+            get => _Visible;
+            private set => SetProperty(ref _Visible, value);
+        }
+
+        #endregion Visible
+
+        #region Muted
+
+        private bool _Muted;
+
+        /// <summary>
+        /// チャット画面のチャンネル一覧ペインにて未読数表示をオフにし、表示を薄くするかどうか示す値を取得します。
+        /// </summary>
+        public bool Muted
+        {
+            get => _Muted;
+            private set => SetProperty(ref _Muted, value);
+        }
+
+        #endregion Muted
 
         internal void Update(Membership model)
         {
@@ -193,6 +317,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             MembershipId = model.Id;
             Authority = model.Authority;
             NotificationDisabled = model.DisableNotification;
+            NotificationPolicy = model.NotificationPolicy;
+            ReadStateTrackingPolicy = model.ReadStateTrackingPolicy;
+            LatestReadMessageId = model.LatestReadMessageId;
+            Visible = model.Visible;
+            Muted = model.Muted;
         }
 
         internal void ClearMembership()
@@ -200,6 +329,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             MembershipId = null;
             Authority = null;
             NotificationDisabled = false;
+            NotificationPolicy = default(NotificationPolicy);
+            ReadStateTrackingPolicy = default(ReadStateTrackingPolicy);
+            LatestReadMessageId = null;
+            Visible = true;
+            Muted = false;
             Application.Channels.Remove(this);
 
             PeekMembers()?.Remove(Application.LoginUser);
