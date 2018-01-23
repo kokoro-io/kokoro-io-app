@@ -223,7 +223,12 @@ namespace KokoroIO.XamarinForms.ViewModels
             Membership ms;
             using (TH.BeginScope("Executing PUT /memberships"))
             {
-                ms = await EnqueueClientTask(() => Client.PutMembershipAsync(membershipId, disableNotification == true ? NotificationPolicy.Nothing : NotificationPolicy.AllMessages));
+                ms = await EnqueueClientTask(
+                                () => Client.PutMembershipAsync(
+                                                membershipId,
+                                                disableNotification == true ? NotificationPolicy.Nothing
+                                                                            : NotificationPolicy.AllMessages,
+                                                latestReadMessageId: latestReadMessageId));
             }
             return GetOrCreateJoinedChannelViewModel(ms);
         }

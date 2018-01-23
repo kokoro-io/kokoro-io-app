@@ -41,8 +41,8 @@
     <Reference Include="CommonMark, Version=0.1.0.0, Culture=neutral, PublicKeyToken=001ef8810438905d, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonMark.NET.0.15.1\lib\net45\CommonMark.dll</HintPath>
     </Reference>
-    <Reference Include="KokoroIO.Client, Version=0.0.17.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\KokoroIO.Client.0.0.17-pre\lib\net45\KokoroIO.Client.dll</HintPath>
+    <Reference Include="KokoroIO.Client, Version=0.0.18.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\KokoroIO.Client.0.0.18-pre\lib\net45\KokoroIO.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.2.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>

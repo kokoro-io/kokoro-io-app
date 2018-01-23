@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
     "CommonMark.NET": "0.15.1",
-    "KokoroIO.Client": "0.0.17-pre",
+    "KokoroIO.Client": "0.0.18-pre",
     "Microsoft.AppCenter.Analytics": "1.1.0",
     "Microsoft.AppCenter.Crashes": "1.1.0",
     "Microsoft.AppCenter.Distribute": "1.1.0",
