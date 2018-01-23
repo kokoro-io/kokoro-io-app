@@ -514,7 +514,12 @@
         talk.setAttribute("data-height", talk.clientHeight.toString());
         var anchors = talk.getElementsByTagName("a");
         for (var i = 0; i < anchors.length; i++) {
-            anchors[i].removeAttribute("target");
+            var a = anchors[i];
+            if (/^javascript:/.test(a.href)) {
+                console.warn("unsupported scheme: " + a.href);
+                a.href = '#';
+            }
+            a.removeAttribute("target");
         }
         var imgs = talk.getElementsByTagName("img");
         talk.setAttribute("data-loading-images", imgs.length.toString());

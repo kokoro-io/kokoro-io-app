@@ -653,7 +653,12 @@ interface Window {
 
         let anchors = talk.getElementsByTagName("a");
         for (let i = 0; i < anchors.length; i++) {
-            anchors[i].removeAttribute("target");
+            let a = anchors[i];
+            if (/^javascript:/.test(a.href)) {
+                console.warn(`unsupported scheme: ${a.href}`);
+                a.href = '#';
+            }
+            a.removeAttribute("target");
         }
 
         let imgs = talk.getElementsByTagName("img");
