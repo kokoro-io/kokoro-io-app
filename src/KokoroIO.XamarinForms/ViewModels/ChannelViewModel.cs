@@ -16,10 +16,23 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal ChannelViewModel(ApplicationViewModel application, Channel model)
         {
             Application = application;
-            Id = model.Id;
             Kind = model.Kind;
 
             Update(model);
+
+            // deffer setting id to detect initialization
+            Id = model.Id;
+        }
+
+        internal ChannelViewModel(ApplicationViewModel application, Membership model)
+        {
+            Application = application;
+            Kind = model.Channel.Kind;
+
+            Update(model);
+
+            // deffer setting id to detect initialization
+            Id = model.Channel.Id;
         }
 
         internal ApplicationViewModel Application { get; }
@@ -253,43 +266,41 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int? LatestReadMessageId
         {
             get => _LatestReadMessageId;
-            private set => SetProperty(
+            internal set => SetProperty(
                         ref _LatestReadMessageId,
-                        value,
+                        _LatestReadMessageId == null || _LatestReadMessageId < value ? value : _LatestReadMessageId,
                         onChanged: () =>
                         {
                             UpdateUnreadCount();
+                            BeginUpdateLatestReadId();
                             CancelNotificationsAsync(_LatestReadMessageId).GetHashCode();
                         });
         }
 
-        private int _DirtyLatestReadMessageId;
 
-        internal void BeginUpdateLatestReadId(int value)
+        private void BeginUpdateLatestReadId()
         {
-            if (_DirtyLatestReadMessageId < value)
+            if (Id == null)
             {
-                _DirtyLatestReadMessageId = value;
-
-                XDevice.BeginInvokeOnMainThread(async () =>
-                {
-                    if (value == _DirtyLatestReadMessageId
-                        && MembershipId != null
-                        && ((_LatestReadMessageId == null && value > 0) || value > _LatestReadMessageId))
-                    {
-                        try
-                        {
-                            await Application.PutMembershipAsync(MembershipId, latestReadMessageId: value).ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            TH.Warn(ex, "BeginUpdateLatestReadId");
-                            return;
-                        }
-                        LatestReadMessageId = value;
-                    }
-                });
+                return;
             }
+            var value = _LatestReadMessageId;
+
+            XDevice.BeginInvokeOnMainThread(async () =>
+            {
+                if (MembershipId != null || value == _LatestReadMessageId)
+                {
+                    try
+                    {
+                        await Application.PutMembershipAsync(MembershipId, latestReadMessageId: value).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        TH.Warn(ex, "BeginUpdateLatestReadId");
+                        return;
+                    }
+                }
+            });
         }
 
         #endregion LatestReadMessageId
@@ -598,16 +609,12 @@ namespace KokoroIO.XamarinForms.ViewModels
                 return;
             }
 
-            if (_Unreads == null)
+            if (!HasUnread || UnreadCount > 0)
             {
-                _Unreads = new HashSet<int>();
-            }
-            if (!_Unreads.Add(message.Id))
-            {
-                return;
+                (_Unreads ?? (_Unreads = new HashSet<int>())).Add(message.Id);
+                OnPropertyChanged(nameof(UnreadCount));
             }
 
-            OnPropertyChanged(nameof(UnreadCount));
             HasUnread = true;
 
             var byOtherUser = message.Profile.Id != Application.LoginUser.Id
@@ -633,7 +640,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        public void UpdateUnreadCount()
+        private void UpdateUnreadCount()
         {
             if (LatestMessageId == null || LatestMessageId <= LatestReadMessageId)
             {
@@ -654,7 +661,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             HasUnread = true;
         }
 
-        public async Task ClearUnreadAsync()
+        private async Task ClearUnreadAsync()
         {
             var hasUnread = _Unreads?.Count > 0 || _HasUnread;
 
@@ -676,6 +683,11 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private async Task CancelNotificationsAsync(int? latestReadMessageId)
         {
+            if (Id == null)
+            {
+                return;
+            }
+
             try
             {
                 using (var realm = await RealmServices.GetInstanceAsync())

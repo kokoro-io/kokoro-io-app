@@ -508,11 +508,46 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             var cvm = GetOrCreateChannelViewModel(channel);
 
-            if (cvm == null)
+            if (cvm != null)
             {
-                return null;
+                InsertChannel(cvm);
             }
 
+            return cvm;
+        }
+
+        internal ChannelViewModel GetOrCreateJoinedChannelViewModel(Membership membership)
+        {
+            if (membership?.Channel != null)
+            {
+                ChannelViewModel c = null;
+                if (_ChannelDictionary == null)
+                {
+                    _ChannelDictionary = new Dictionary<string, WeakReference<ChannelViewModel>>();
+                }
+                else if (_ChannelDictionary.TryGetValue(membership.Channel.Id, out var w)
+                        && w.TryGetTarget(out c))
+                {
+                    c.Update(membership);
+
+                    InsertChannel(c);
+
+                    return c;
+                }
+
+                c = new ChannelViewModel(this, membership);
+                _ChannelDictionary[membership.Channel.Id] = new WeakReference<ChannelViewModel>(c);
+
+                InsertChannel(c);
+
+                return c;
+            }
+
+            return null;
+        }
+
+        private void InsertChannel(ChannelViewModel cvm)
+        {
             if (!Channels.Contains(cvm))
             {
                 for (var i = 0; i < Channels.Count; i++)
@@ -525,22 +560,12 @@ namespace KokoroIO.XamarinForms.ViewModels
                             || (cvm.Kind == aft.Kind && aft.ChannelName.CompareTo(cvm.ChannelName) > 0))))
                     {
                         Channels.Insert(i, cvm);
-                        return cvm;
+                        return;
                     }
                 }
 
                 Channels.Add(cvm);
             }
-
-            return cvm;
-        }
-
-        internal ChannelViewModel GetOrCreateJoinedChannelViewModel(Membership membership)
-        {
-            var cvm = GetOrCreateJoinedChannelViewModel(membership.Channel);
-            cvm.Update(membership);
-
-            return cvm;
         }
 
         #endregion Channels
