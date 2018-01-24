@@ -136,7 +136,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     // TODO: get first message id from argument
 
-                    var tid = _SelectedMessageId ?? Channel.LatestReadMessageId;
+                    var tid = _SelectedMessageId
+                                ?? (Channel.ReadStateTrackingPolicy != ReadStateTrackingPolicy.ConsumeLast ? Channel.LatestReadMessageId : null);
 
                     if (tid > 0)
                     {
