@@ -7,6 +7,7 @@ using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -255,16 +256,32 @@ namespace KokoroIO.XamarinForms.ViewModels
             private set => SetProperty(ref _LatestReadMessageId, value);
         }
 
-        internal async void BeginUpdateLatestReadId(int value)
+        private int _DirtyLatestReadMessageId;
+
+        internal void BeginUpdateLatestReadId(int value)
         {
-            if (MembershipId != null && ((_LatestReadMessageId == null && value > 0) || value > _LatestReadMessageId))
+            if (_DirtyLatestReadMessageId < value)
             {
-                LatestReadMessageId = value;
-                try
+                _DirtyLatestReadMessageId = value;
+
+                XDevice.BeginInvokeOnMainThread(async () =>
                 {
-                    await Application.PutMembershipAsync(MembershipId, latestReadMessageId: value).ConfigureAwait(false);
-                }
-                catch { }
+                    if (value == _DirtyLatestReadMessageId
+                        && MembershipId != null
+                        && ((_LatestReadMessageId == null && value > 0) || value > _LatestReadMessageId))
+                    {
+                        try
+                        {
+                            await Application.PutMembershipAsync(MembershipId, latestReadMessageId: value).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            TH.Warn(ex, "BeginUpdateLatestReadId");
+                            return;
+                        }
+                        LatestReadMessageId = value;
+                    }
+                });
             }
         }
 
