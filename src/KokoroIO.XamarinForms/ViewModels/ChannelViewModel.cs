@@ -277,7 +277,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                         });
         }
 
-
         private void BeginUpdateLatestReadId()
         {
             if (Id == null)
@@ -617,8 +616,19 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             HasUnread = true;
 
-            var byOtherUser = message.Profile.Id != Application.LoginUser.Id
+            var shouldNotify = message.Profile.Id != Application.LoginUser.Id
                             && _NotificationDisabled == false;
+
+            switch (NotificationPolicy)
+            {
+                case NotificationPolicy.Nothing:
+                    shouldNotify = false;
+                    break;
+
+                case NotificationPolicy.OnlyMentions:
+                    shouldNotify &= message.RawContent.Contains($"<@{Application.LoginUser.Id}|");
+                    break;
+            }
 
             if (Application.SelectedChannel == this)
             {
@@ -629,12 +639,12 @@ namespace KokoroIO.XamarinForms.ViewModels
                     mp.BeginAppend();
                 }
             }
-            else if (byOtherUser)
+            else if (shouldNotify)
             {
                 SH.Notification.ShowNotificationAndSave(message);
             }
 
-            if (byOtherUser && UserSettings.PlayRingtone)
+            if (shouldNotify && UserSettings.PlayRingtone)
             {
                 SH.Audio.PlayNotification();
             }

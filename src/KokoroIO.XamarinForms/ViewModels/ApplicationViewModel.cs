@@ -1312,6 +1312,10 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 if (updateProfile)
                 {
+                    if (message.Channel != null)
+                    {
+                        GetOrCreateChannelViewModel(message.Channel);
+                    }
                     GetProfileViewModel(message.Profile);
                 }
 
