@@ -223,6 +223,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     }
                     else
                     {
+                        Page.Channel.BeginUpdateLatestReadId(Id ?? int.MinValue);
                         Page.Channel.ClearUnreadAsync().ConfigureAwait(false);
                     }
                 }

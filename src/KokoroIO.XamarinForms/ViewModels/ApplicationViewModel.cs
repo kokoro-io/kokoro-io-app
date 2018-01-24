@@ -376,7 +376,6 @@ namespace KokoroIO.XamarinForms.ViewModels
                         var lastId = cvm.LatestReadMessageId;
 
                         var cnt = notifs.Count(n => n.ChannelId == cvm.Id && !(n.MessageId <= lastId));
-                        cvm.HasUnread = cnt > 0;
 
                         for (var i = notifs.Count - 1; i >= 0; i--)
                         {

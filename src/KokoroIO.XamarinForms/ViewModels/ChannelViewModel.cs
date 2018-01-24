@@ -110,7 +110,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int? LatestMessageId
         {
             get => _LatestMessageId;
-            private set => SetProperty(ref _LatestMessageId, value);
+            private set => SetProperty(ref _LatestMessageId, value, onChanged: UpdateUnreadCount);
         }
 
         #endregion LatestMessageId
@@ -253,7 +253,14 @@ namespace KokoroIO.XamarinForms.ViewModels
         public int? LatestReadMessageId
         {
             get => _LatestReadMessageId;
-            private set => SetProperty(ref _LatestReadMessageId, value);
+            private set => SetProperty(
+                        ref _LatestReadMessageId,
+                        value,
+                        onChanged: () =>
+                        {
+                            UpdateUnreadCount();
+                            CancelNotificationsAsync(_LatestReadMessageId).GetHashCode();
+                        });
         }
 
         private int _DirtyLatestReadMessageId;
@@ -579,7 +586,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public bool HasUnread
         {
             get => _HasUnread;
-            internal set => SetProperty(ref _HasUnread, value);
+            private set => SetProperty(ref _HasUnread, value);
         }
 
         #endregion HasUnread
@@ -601,7 +608,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
 
             OnPropertyChanged(nameof(UnreadCount));
-            HasUnread = _Unreads?.Count > 0;
+            HasUnread = true;
+
             var byOtherUser = message.Profile.Id != Application.LoginUser.Id
                             && _NotificationDisabled == false;
 
@@ -625,7 +633,28 @@ namespace KokoroIO.XamarinForms.ViewModels
             }
         }
 
-        public async Task ClearUnreadAsync(int? latestReadMessageId = null)
+        public void UpdateUnreadCount()
+        {
+            if (LatestMessageId == null || LatestMessageId <= LatestReadMessageId)
+            {
+                ClearUnreadAsync().GetHashCode();
+                return;
+            }
+
+            var mp = MessagesPage;
+
+            _Unreads?.Clear();
+            if (mp?.Messages.Count >= _MessagesCount
+                || (_LatestReadMessageId != null && mp?.Messages.Any(e => e.Id == _LatestReadMessageId) == true))
+            {
+                (_Unreads ?? (_Unreads = new HashSet<int>())).UnionWith(mp.Messages.Reverse().Select(e => e.Id).OfType<int>().TakeWhile(e => e != _LatestReadMessageId));
+            }
+
+            OnPropertyChanged(nameof(UnreadCount));
+            HasUnread = true;
+        }
+
+        public async Task ClearUnreadAsync()
         {
             var hasUnread = _Unreads?.Count > 0 || _HasUnread;
 
@@ -635,40 +664,46 @@ namespace KokoroIO.XamarinForms.ViewModels
                 OnPropertyChanged(nameof(UnreadCount));
             }
 
-            HasUnread = _Unreads?.Count > 0;
+            HasUnread = false;
 
             if (hasUnread)
             {
                 TH.Info("Clearing unreads in #{0} ({1})", DisplayName, Id);
 
-                try
+                await CancelNotificationsAsync(null).ConfigureAwait(false);
+            }
+        }
+
+        private async Task CancelNotificationsAsync(int? latestReadMessageId)
+        {
+            try
+            {
+                using (var realm = await RealmServices.GetInstanceAsync())
+                using (var trx = realm.BeginWrite())
                 {
-                    using (var realm = await RealmServices.GetInstanceAsync())
-                    using (var trx = realm.BeginWrite())
+                    var lid = latestReadMessageId ?? int.MaxValue;
+                    var ns = realm.All<MessageNotification>().Where(n => n.ChannelId == Id && n.MessageId <= lid);
+
+                    if (ns.Any())
                     {
-                        var ns = realm.All<MessageNotification>().Where(n => n.ChannelId == Id);
-
-                        if (ns.Any())
+                        var notification = SH.Notification;
+                        foreach (var n in ns)
                         {
-                            var notification = SH.Notification;
-                            foreach (var n in ns)
+                            try
                             {
-                                try
-                                {
-                                    notification?.CancelNotification(n.ChannelId, n.NotificationId, 0);
-                                }
-                                catch { }
-
-                                realm.Remove(n);
+                                notification?.CancelNotification(n.ChannelId, n.NotificationId, 0);
                             }
-                            trx.Commit();
+                            catch { }
+
+                            realm.Remove(n);
                         }
+                        trx.Commit();
                     }
                 }
-                catch (Exception ex)
-                {
-                    ex.Error("SavingChannelUserPropertiesFailed");
-                }
+            }
+            catch (Exception ex)
+            {
+                ex.Error("SavingChannelUserPropertiesFailed");
             }
         }
     }
