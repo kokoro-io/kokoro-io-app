@@ -20,6 +20,8 @@ namespace KokoroIO.XamarinForms.Views
 
         public override bool IsGroup => false;
 
+        public override bool IsDirectMessage => Channel.Kind == ChannelKind.DirectMessage;
+
         public override bool IsSelected => Channel.IsSelected;
         public override bool IsArchived => Channel.IsArchived;
         public override bool IsExpanded => true;

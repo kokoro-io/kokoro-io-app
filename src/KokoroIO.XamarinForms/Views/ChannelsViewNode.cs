@@ -24,6 +24,8 @@ namespace KokoroIO.XamarinForms.Views
 
         public abstract bool IsGroup { get; }
 
+        public virtual bool IsDirectMessage => false;
+
         public abstract bool IsSelected { get; }
 
         public abstract bool IsArchived { get; }

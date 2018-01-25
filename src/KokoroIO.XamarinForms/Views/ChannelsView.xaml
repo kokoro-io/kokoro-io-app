@@ -74,7 +74,7 @@
                             <ColumnDefinition
                                 Width="{Binding ConcatenationDepth, Converter={StaticResource gridLengthConverter}}" />
                             <ColumnDefinition
-                                Width="8" />
+                                Width="16" />
                             <ColumnDefinition
                                 Width="Auto" />
                             <ColumnDefinition />
@@ -95,9 +95,19 @@
                             Grid.Column="1"
                             Style="{StaticResource channelLabelStyle}"
                             Text="#"
-                            HorizontalTextAlignment="Center"
-                            HorizontalOptions="Center">
+                            HorizontalOptions="Fill"
+                            HorizontalTextAlignment="End"
+                            VerticalOptions="Fill"
+                            VerticalTextAlignment="Center">
                             <Label.Triggers>
+                                <DataTrigger
+                                    TargetType="Label"
+                                    Binding="{Binding IsDirectMessage}"
+                                    Value="True">
+                                    <Setter
+                                        Property="Text"
+                                        Value="@" />
+                                </DataTrigger>
                                 <DataTrigger
                                     TargetType="Label"
                                     Binding="{Binding IsGroup}"
@@ -105,9 +115,6 @@
                                     <Setter
                                         Property="Text"
                                         Value="▼" />
-                                    <Setter
-                                        Property="FontSize"
-                                        Value="8" />
                                 </DataTrigger>
                                 <DataTrigger
                                     TargetType="Label"
