@@ -169,20 +169,6 @@ html.html-phone .talk .embed_content > .embed-mixedcontent .meta > *:last-child:
     max-width: 540px;
   }
 }
-.html-phone .embed_contents .embed_media.nsfw a,
-.html-tablet .embed_contents .embed_media.nsfw a,
-.html-phone .embed_contents .embed-thumbnail.nsfw a,
-.html-tablet .embed_contents .embed-thumbnail.nsfw a {
-  display: inline-block;
-  background-color: #000;
-}
-.html-phone .embed_contents .embed_media.nsfw img,
-.html-tablet .embed_contents .embed_media.nsfw img,
-.html-phone .embed_contents .embed-thumbnail.nsfw img,
-.html-tablet .embed_contents .embed-thumbnail.nsfw img {
-  /*filter: grayscale(90%);*/
-  opacity: 0.1;
-}
 .html-phone *,
 .html-tablet * {
   -webkit-user-select: none;
