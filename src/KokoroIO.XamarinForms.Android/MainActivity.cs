@@ -11,7 +11,13 @@ using XLabs.Platform.Services.Media;
 
 namespace KokoroIO.XamarinForms.Droid
 {
-    [Activity(Label = "kokoro.io", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.Multiple)]
+    [Activity(
+#if DEBUG
+        Label = "dev)kokoro.io"
+#else
+        Label = "kokoro.io"
+#endif
+        , Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.Multiple)]
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "image/*")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
