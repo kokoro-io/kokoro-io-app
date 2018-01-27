@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "target": "es5",
+    "outFile": "Messages.js"
+  },
+  "include": [ "Scripts/*.ts" ],
+  "compileOnSave": true
+}

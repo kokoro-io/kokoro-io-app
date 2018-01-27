@@ -130,10 +130,7 @@
       <DependentUpon>Messages.less</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Messages.js">
-      <DependentUpon>Messages.ts</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Messages.js" />
     <Content Include="Messages.min.css">
       <DependentUpon>Messages.css</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -153,9 +150,13 @@
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <None Include="Messages.less" />
+    <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Messages.ts" />
+    <TypeScriptCompile Include="Scripts\Builder.ts" />
+    <TypeScriptCompile Include="Scripts\Constants.ts" />
+    <TypeScriptCompile Include="Scripts\Entities.d.ts" />
+    <TypeScriptCompile Include="Scripts\Messages.ts" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pygments.css">
