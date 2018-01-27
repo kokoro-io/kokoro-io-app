@@ -404,6 +404,28 @@ module Messages {
         }
     }
 
+    function _isAbove(talk: HTMLDivElement, b: HTMLElement) {
+        return talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < b.scrollTop;
+    }
+
+    function _isBelow(talk: HTMLDivElement, b: HTMLElement) {
+        return b.scrollTop + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN;
+    }
+
+    function _hideTalk(talk: HTMLElement) {
+        if (!talk.classList.contains("hidden")) {
+            talk.style.height = talk.clientHeight.toString() + 'px';
+            talk.classList.add("hidden");
+        }
+    }
+
+    function _showTalk(talk: HTMLElement) {
+        if (talk.classList.contains("hidden")) {
+            talk.style.height = null;
+            talk.classList.remove("hidden");
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         var windowWidth = window.innerWidth;
 
@@ -423,28 +445,86 @@ module Messages {
             _reportVisibilities();
         });
 
+        let displayed: HTMLDivElement[];
+
         document.addEventListener("scroll", function () {
             const b = HOST();
-            const talks = b.children;
-            for (var i = 0; i < talks.length; i++) {
-                var talk = <HTMLDivElement>talks[i];
 
-                var hidden = (talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < b.scrollTop
-                    || b.scrollTop + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN)
-                    && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
+            let displaying: HTMLDivElement[];
 
-                if (hidden) {
-                    if (!talk.classList.contains("hidden")) {
-                        talk.style.height = talk.clientHeight.toString() + 'px';
-                        talk.classList.add("hidden");
+            if (displayed && displayed.length > 0) {
+                for (let talk of displayed) {
+                    if (!talk.parentElement) {
+                        continue;
                     }
-                } else {
-                    if (talk.classList.contains("hidden")) {
-                        talk.style.height = null;
-                        talk.classList.remove("hidden");
+                    if (_isAbove(talk, b)) {
+                        continue;
+                    } else if (_isBelow(talk, b)) {
+                        break;
+                    } else {
+                        displaying = [];
+
+                        if (displayed[0] === talk) {
+                            for (let n = talk.previousSibling; n; n = n.previousSibling) {
+                                const t = <HTMLDivElement>n;
+                                if (t.nodeType === Node.ELEMENT_NODE) {
+                                    if (_isAbove(t, b)) {
+                                        break;
+                                    }
+                                    displaying.unshift(t);
+                                }
+                            }
+                        }
+
+                        displaying.push(talk);
+
+                        for (let n = talk.nextSibling; n; n = n.nextSibling) {
+                            const t = <HTMLDivElement>n;
+                            if (t.nodeType === Node.ELEMENT_NODE) {
+                                if (_isBelow(t, b)) {
+                                    break;
+                                }
+                                displaying.push(t);
+                            }
+                        }
                     }
                 }
             }
+
+            if (displayed && displaying) {
+                for (let talk of displayed) {
+                    if (displaying.indexOf(talk) < 0
+                        && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0)) {
+                        _hideTalk(talk);
+                    }
+                }
+
+                for (let talk of displaying) {
+                    _showTalk(talk);
+                }
+            } else {
+                displaying = [];
+                const talks = b.children;
+                for (let i = 0; i < talks.length; i++) {
+                    const talk = <HTMLDivElement>talks[i];
+                    const visible = !_isAbove(talk, b) && !_isBelow(talk, b);
+                    const hidden = !visible && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
+
+                    if (hidden) {
+                        _hideTalk(talk);
+                    } else {
+                        _showTalk(talk);
+                    }
+
+                    if (visible) {
+                        displaying.push(talk);
+                    }
+                }
+            }
+
+            console.dir(displaying);
+
+            displayed = displaying;
 
             _reportVisibilities();
 

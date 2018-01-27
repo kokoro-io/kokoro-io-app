@@ -623,6 +623,24 @@ var Messages;
             }
         }
     }
+    function _isAbove(talk, b) {
+        return talk.offsetTop + talk.clientHeight + Messages.HIDE_CONTENT_MARGIN < b.scrollTop;
+    }
+    function _isBelow(talk, b) {
+        return b.scrollTop + b.clientHeight < talk.offsetTop - Messages.HIDE_CONTENT_MARGIN;
+    }
+    function _hideTalk(talk) {
+        if (!talk.classList.contains("hidden")) {
+            talk.style.height = talk.clientHeight.toString() + 'px';
+            talk.classList.add("hidden");
+        }
+    }
+    function _showTalk(talk) {
+        if (talk.classList.contains("hidden")) {
+            talk.style.height = null;
+            talk.classList.remove("hidden");
+        }
+    }
     document.addEventListener("DOMContentLoaded", function () {
         var windowWidth = window.innerWidth;
         window.addEventListener("resize", function () {
@@ -638,27 +656,81 @@ var Messages;
             }
             _reportVisibilities();
         });
+        var displayed;
         document.addEventListener("scroll", function () {
             var b = HOST();
-            var talks = b.children;
-            for (var i = 0; i < talks.length; i++) {
-                var talk = talks[i];
-                var hidden = (talk.offsetTop + talk.clientHeight + Messages.HIDE_CONTENT_MARGIN < b.scrollTop
-                    || b.scrollTop + b.clientHeight < talk.offsetTop - Messages.HIDE_CONTENT_MARGIN)
-                    && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
-                if (hidden) {
-                    if (!talk.classList.contains("hidden")) {
-                        talk.style.height = talk.clientHeight.toString() + 'px';
-                        talk.classList.add("hidden");
+            var displaying;
+            if (displayed && displayed.length > 0) {
+                for (var _i = 0, displayed_1 = displayed; _i < displayed_1.length; _i++) {
+                    var talk = displayed_1[_i];
+                    if (!talk.parentElement) {
+                        continue;
                     }
-                }
-                else {
-                    if (talk.classList.contains("hidden")) {
-                        talk.style.height = null;
-                        talk.classList.remove("hidden");
+                    if (_isAbove(talk, b)) {
+                        continue;
+                    }
+                    else if (_isBelow(talk, b)) {
+                        break;
+                    }
+                    else {
+                        displaying = [];
+                        if (displayed[0] === talk) {
+                            for (var n = talk.previousSibling; n; n = n.previousSibling) {
+                                var t = n;
+                                if (t.nodeType === Node.ELEMENT_NODE) {
+                                    if (_isAbove(t, b)) {
+                                        break;
+                                    }
+                                    displaying.unshift(t);
+                                }
+                            }
+                        }
+                        displaying.push(talk);
+                        for (var n = talk.nextSibling; n; n = n.nextSibling) {
+                            var t = n;
+                            if (t.nodeType === Node.ELEMENT_NODE) {
+                                if (_isBelow(t, b)) {
+                                    break;
+                                }
+                                displaying.push(t);
+                            }
+                        }
                     }
                 }
             }
+            if (displayed && displaying) {
+                for (var _a = 0, displayed_2 = displayed; _a < displayed_2.length; _a++) {
+                    var talk = displayed_2[_a];
+                    if (displaying.indexOf(talk) < 0
+                        && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0)) {
+                        _hideTalk(talk);
+                    }
+                }
+                for (var _b = 0, displaying_1 = displaying; _b < displaying_1.length; _b++) {
+                    var talk = displaying_1[_b];
+                    _showTalk(talk);
+                }
+            }
+            else {
+                displaying = [];
+                var talks = b.children;
+                for (var i = 0; i < talks.length; i++) {
+                    var talk = talks[i];
+                    var visible = !_isAbove(talk, b) && !_isBelow(talk, b);
+                    var hidden = !visible && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
+                    if (hidden) {
+                        _hideTalk(talk);
+                    }
+                    else {
+                        _showTalk(talk);
+                    }
+                    if (visible) {
+                        displaying.push(talk);
+                    }
+                }
+            }
+            console.dir(displaying);
+            displayed = displaying;
             _reportVisibilities();
             if (b.scrollHeight < b.clientHeight) {
                 return;
