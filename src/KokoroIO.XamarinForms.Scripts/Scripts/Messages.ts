@@ -278,7 +278,7 @@ module Messages {
         let anchors = talk.getElementsByTagName("a");
         for (let i = 0; i < anchors.length; i++) {
             let a = anchors[i];
-            if (/^javascript:/.test(a.href)) {
+            if (/^javascript:/.test(a.href) && !/^javascript:void\(0?\);?/.test(a.href)) {
                 console.warn(`unsupported scheme: ${a.href}`);
                 a.href = '#';
             }
