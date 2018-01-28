@@ -695,6 +695,7 @@ var Messages;
                                 displaying.push(t);
                             }
                         }
+                        break;
                     }
                 }
             }
@@ -729,7 +730,6 @@ var Messages;
                     }
                 }
             }
-            console.dir(displaying);
             displayed = displaying;
             _reportVisibilities();
             if (b.scrollHeight < b.clientHeight) {

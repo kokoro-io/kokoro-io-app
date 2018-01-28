@@ -487,6 +487,8 @@ module Messages {
                                 displaying.push(t);
                             }
                         }
+
+                        break;
                     }
                 }
             }
@@ -521,8 +523,6 @@ module Messages {
                     }
                 }
             }
-
-            console.dir(displaying);
 
             displayed = displaying;
 
