@@ -15,7 +15,8 @@ namespace KokoroIO.XamarinForms.ViewModels
             _IsArchiveBannerShown = channel.IsArchived;
 
             PrependCommand = new Command(BeginPrepend);
-            RefreshCommand = new Command(BeginAppend);
+            AppendCommand = new Command(BeginAppend);
+            RefreshCommand = new Command(BeginRefresh);
 
             Channel.PropertyChanged += Channel_PropertyChanged;
         }
@@ -109,6 +110,61 @@ namespace KokoroIO.XamarinForms.ViewModels
         public void BeginAppend()
             => BeginLoadMessages(false).GetHashCode();
 
+        // TODO: increase page size by depth
+        private const int PAGE_SIZE = 30;
+
+        public async void BeginRefresh()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+
+                Message[] messages;
+                if (Messages.Count == 0)
+                {
+                    messages = await Application.GetMessagesAsync(Channel.Id, limit: PAGE_SIZE);
+                }
+                else if (Messages.Count <= PAGE_SIZE)
+                {
+                    messages = await Application.GetMessagesAsync(Channel.Id, limit: PAGE_SIZE, afterId: Messages.First().Id);
+                }
+                else
+                {
+                    var shown = Messages.Where(e => e.IsShown).ToList();
+                    var center = shown.Any() ? shown.Skip(shown.Count >> 1).First() : Messages.Last();
+                    var last = Messages.SkipWhile(e => e != center).Take(PAGE_SIZE >> 1).LastOrDefault() ?? Messages.Last();
+                    var first = Messages.Reverse().SkipWhile(e => e != last).Take(PAGE_SIZE + 1).LastOrDefault() ?? Messages.First();
+
+                    messages = await Application.GetMessagesAsync(Channel.Id, afterId: first.Id, limit: PAGE_SIZE);
+                }
+
+                MessagesLoaded = true;
+
+                if (messages.Any())
+                {
+                    _MinId = Math.Min(messages.Min(m => m.Id), _MinId ?? int.MaxValue);
+                    _MaxId = Math.Max(messages.Max(m => m.Id), _MaxId ?? int.MinValue);
+                    InsertMessages(messages);
+                }
+                _SelectedMessageId = null;
+            }
+            catch (Exception ex)
+            {
+                ex.Error("Load message failed");
+
+                MessagingCenter.Send(this, "LoadMessageFailed");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         internal bool MessagesLoaded { get; private set; }
 
         private async Task BeginLoadMessages(bool prepend = false)
@@ -121,9 +177,6 @@ namespace KokoroIO.XamarinForms.ViewModels
             try
             {
                 IsBusy = true;
-
-                // TODO: increase page size by depth
-                const int PAGE_SIZE = 30;
 
                 // int? bid, aid;
                 Message[] messages;
@@ -289,8 +342,9 @@ namespace KokoroIO.XamarinForms.ViewModels
         internal void UpdateMessage(Message message)
             => _Messages?.FirstOrDefault(m => m.Id == message.Id)?.Update(message);
 
-        public Command PrependCommand { get; set; }
-        public Command RefreshCommand { get; set; }
+        public Command PrependCommand { get; }
+        public Command AppendCommand { get; }
+        public Command RefreshCommand { get; }
 
         #region SelectedMessage
 

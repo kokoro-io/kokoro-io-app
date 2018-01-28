@@ -58,6 +58,10 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem
             Order="Secondary"
+            Text="Refresh"
+            Command="{Binding RefreshCommand}" />
+        <ToolbarItem
+            Order="Secondary"
             Command="{Binding Channel.ToggleNotificationCommand}">
             <ToolbarItem.Text>
                 <Binding
@@ -107,7 +111,7 @@
             </Grid.RowDefinitions>
             <view:MessagesView
                 LoadOlderCommand="{Binding PrependCommand}"
-                RefreshCommand="{Binding RefreshCommand}"
+                RefreshCommand="{Binding AppendCommand}"
                 NavigatingCommand="{Binding OpenUrlCommand}"
                 Messages="{Binding Messages}"
                 SelectedMessage="{Binding SelectedMessage}"
