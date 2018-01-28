@@ -282,6 +282,7 @@ var Messages;
 (function (Messages) {
     var _hasUnread = false;
     var _isUpdating = false;
+    var displayed;
     function HOST() {
         return document.body;
     }
@@ -293,6 +294,9 @@ var Messages;
         try {
             var b = HOST();
             console.debug("Setting " + (messages ? messages.length : 0) + " messages");
+            if (!messages || messages.length === 0) {
+                displayed = null;
+            }
             b.innerHTML = "";
             _addMessagessCore(messages, null, false);
             b.scrollTop = b.scrollHeight - b.clientHeight;
@@ -571,56 +575,20 @@ var Messages;
         return document.querySelector('div.talk[data-idempotent-key=\"' + idempotentKey + "\"]");
     }
     var _visibleIds;
-    var _lastTimer;
-    var _lastScrollHeight;
-    var _lastScrollTop;
     function _reportVisibilities() {
-        var b = HOST();
-        _lastScrollTop = b.scrollTop;
-        _lastScrollHeight = b.scrollHeight;
-        if (_lastTimer) {
-            clearTimeout(_lastTimer);
-        }
-        _lastTimer = setTimeout(function () {
-            _lastTimer = null;
-            var b = HOST();
-            if (_lastScrollTop != b.scrollTop || _lastScrollHeight != b.scrollHeight) {
-                _reportVisibilities();
-            }
-            else {
-                _reportVisibilitiesCore();
-            }
-        }, 250);
-    }
-    function _reportVisibilitiesCore() {
-        var b = HOST();
-        var talks = b.children;
-        var ids = "";
-        for (var i = 0; i < talks.length; i++) {
-            var talk = talks[i];
-            if (b.scrollTop < talk.offsetTop + talk.clientHeight
-                && talk.offsetTop < b.scrollTop + b.clientHeight) {
-                var id = talk.getAttribute("data-message-id") || talk.getAttribute("data-idempotent-key");
-                if (ids.length > 0) {
-                    ids += "," + id;
-                }
-                else {
-                    ids = id;
-                }
-            }
-            else if (ids.length > 0) {
-                break;
-            }
-        }
+        _determineDisplayedElements();
+        var ids = displayed.map(function (e) { return e.getAttribute("data-message-id") || e.getAttribute("data-idempotent-key"); }).join(",");
         if (_visibleIds !== ids) {
             location.href = "http://kokoro.io/client/control?event=visibility&ids=" + ids;
             _visibleIds = ids;
             if (Messages.LOG_VIEWPORT) {
+                var b = HOST();
                 console.log("visibility changed: scrollTop: " + b.scrollTop
                     + (", clientHeight: " + b.clientHeight)
                     + (", lastElementChild.offsetTop: " + (b.lastElementChild ? b.lastElementChild.offsetTop : -1))
                     + (", lastElementChild.clientHeight: " + (b.lastElementChild ? b.lastElementChild.clientHeight : -1)));
             }
+            _visibleIds = ids;
         }
     }
     function _isAbove(talk, b) {
@@ -641,6 +609,81 @@ var Messages;
             talk.classList.remove("hidden");
         }
     }
+    function _determineDisplayedElements() {
+        var b = HOST();
+        var displaying;
+        if (displayed && displayed.length > 0) {
+            for (var _i = 0, displayed_1 = displayed; _i < displayed_1.length; _i++) {
+                var talk = displayed_1[_i];
+                if (!talk.parentElement) {
+                    continue;
+                }
+                if (_isAbove(talk, b)) {
+                    continue;
+                }
+                else if (_isBelow(talk, b)) {
+                    break;
+                }
+                else {
+                    displaying = [];
+                    if (displayed[0] === talk) {
+                        for (var n = talk.previousSibling; n; n = n.previousSibling) {
+                            var t = n;
+                            if (t.nodeType === Node.ELEMENT_NODE) {
+                                if (_isAbove(t, b)) {
+                                    break;
+                                }
+                                displaying.unshift(t);
+                            }
+                        }
+                    }
+                    displaying.push(talk);
+                    for (var n = talk.nextSibling; n; n = n.nextSibling) {
+                        var t = n;
+                        if (t.nodeType === Node.ELEMENT_NODE) {
+                            if (_isBelow(t, b)) {
+                                break;
+                            }
+                            displaying.push(t);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        if (displayed && displaying) {
+            for (var _a = 0, displayed_2 = displayed; _a < displayed_2.length; _a++) {
+                var talk = displayed_2[_a];
+                if (displaying.indexOf(talk) < 0
+                    && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0)) {
+                    _hideTalk(talk);
+                }
+            }
+            for (var _b = 0, displaying_1 = displaying; _b < displaying_1.length; _b++) {
+                var talk = displaying_1[_b];
+                _showTalk(talk);
+            }
+        }
+        else {
+            displaying = [];
+            var talks = b.children;
+            for (var i = 0; i < talks.length; i++) {
+                var talk = talks[i];
+                var visible = !_isAbove(talk, b) && !_isBelow(talk, b);
+                var hidden = !visible && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
+                if (hidden) {
+                    _hideTalk(talk);
+                }
+                else {
+                    _showTalk(talk);
+                }
+                if (visible) {
+                    displaying.push(talk);
+                }
+            }
+        }
+        displayed = displaying;
+    }
     document.addEventListener("DOMContentLoaded", function () {
         var windowWidth = window.innerWidth;
         window.addEventListener("resize", function () {
@@ -656,81 +699,8 @@ var Messages;
             }
             _reportVisibilities();
         });
-        var displayed;
         document.addEventListener("scroll", function () {
             var b = HOST();
-            var displaying;
-            if (displayed && displayed.length > 0) {
-                for (var _i = 0, displayed_1 = displayed; _i < displayed_1.length; _i++) {
-                    var talk = displayed_1[_i];
-                    if (!talk.parentElement) {
-                        continue;
-                    }
-                    if (_isAbove(talk, b)) {
-                        continue;
-                    }
-                    else if (_isBelow(talk, b)) {
-                        break;
-                    }
-                    else {
-                        displaying = [];
-                        if (displayed[0] === talk) {
-                            for (var n = talk.previousSibling; n; n = n.previousSibling) {
-                                var t = n;
-                                if (t.nodeType === Node.ELEMENT_NODE) {
-                                    if (_isAbove(t, b)) {
-                                        break;
-                                    }
-                                    displaying.unshift(t);
-                                }
-                            }
-                        }
-                        displaying.push(talk);
-                        for (var n = talk.nextSibling; n; n = n.nextSibling) {
-                            var t = n;
-                            if (t.nodeType === Node.ELEMENT_NODE) {
-                                if (_isBelow(t, b)) {
-                                    break;
-                                }
-                                displaying.push(t);
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-            if (displayed && displaying) {
-                for (var _a = 0, displayed_2 = displayed; _a < displayed_2.length; _a++) {
-                    var talk = displayed_2[_a];
-                    if (displaying.indexOf(talk) < 0
-                        && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0)) {
-                        _hideTalk(talk);
-                    }
-                }
-                for (var _b = 0, displaying_1 = displaying; _b < displaying_1.length; _b++) {
-                    var talk = displaying_1[_b];
-                    _showTalk(talk);
-                }
-            }
-            else {
-                displaying = [];
-                var talks = b.children;
-                for (var i = 0; i < talks.length; i++) {
-                    var talk = talks[i];
-                    var visible = !_isAbove(talk, b) && !_isBelow(talk, b);
-                    var hidden = !visible && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0);
-                    if (hidden) {
-                        _hideTalk(talk);
-                    }
-                    else {
-                        _showTalk(talk);
-                    }
-                    if (visible) {
-                        displaying.push(talk);
-                    }
-                }
-            }
-            displayed = displaying;
             _reportVisibilities();
             if (b.scrollHeight < b.clientHeight) {
                 return;
