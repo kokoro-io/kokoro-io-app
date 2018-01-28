@@ -3,6 +3,7 @@ using System.IO;
 using KokoroIO.XamarinForms.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
@@ -51,6 +52,17 @@ namespace KokoroIO.XamarinForms.Views
                     DisplayAlert(mi.Page.Channel.DisplayName, "Failed to delete the message", "OK");
                 }
             });
+
+            if (XDevice.RuntimePlatform == XDevice.iOS)
+            {
+                ToolbarItems.Clear();
+                var tbi = new ToolbarItem()
+                {
+                    Text = "..."
+                };
+                tbi.SetBinding(ToolbarItem.CommandProperty, new Binding(nameof(MessagesViewModel.ShowMenuCommand)));
+                ToolbarItems.Add(tbi);
+            }
         }
 
         private void ExpandableEditor_FilePasted(object sender, EventArgs<Stream> e)

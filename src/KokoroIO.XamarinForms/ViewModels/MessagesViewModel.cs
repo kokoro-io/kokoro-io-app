@@ -115,6 +115,8 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         public async void BeginRefresh()
         {
+            ClearPopupCommand.Execute(null);
+
             if (IsBusy)
             {
                 return;
@@ -750,6 +752,26 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             return false;
         }
+
+        private Command _ShowMenuCommand;
+
+        public Command ShowMenuCommand
+            => _ShowMenuCommand ?? (_ShowMenuCommand = new Command(() =>
+            {
+                Commands.ReplaceRange(new[]
+                {
+                    new CommandViewModel("Refresh", RefreshCommand),
+                    new CommandViewModel("Channel Detail", ShowChannelCommand)
+                });
+            }));
+
+        private Command _ShowChannelCommand;
+        public Command ShowChannelCommand
+            => _ShowChannelCommand ?? (_ShowChannelCommand = new Command(() =>
+            {
+                ClearPopupCommand.Execute(null);
+                Channel.ShowDetailCommand.Execute(null);
+            }));
 
         #region ImageHistory
 

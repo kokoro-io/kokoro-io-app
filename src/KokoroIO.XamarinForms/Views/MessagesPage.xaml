@@ -89,7 +89,7 @@
         <ToolbarItem
             Order="Secondary"
             Text="Members"
-            Command="{Binding Channel.ShowDetailCommand}" />
+            Command="{Binding ShowChannelCommand}" />
         <ToolbarItem
             Order="Secondary"
             Text="Invite member [WIP]" />
