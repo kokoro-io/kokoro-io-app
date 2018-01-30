@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using KokoroIO.XamarinForms.ViewModels;
-using Newtonsoft.Json;
 using Plugin.Clipboard;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
@@ -199,34 +198,7 @@ namespace KokoroIO.XamarinForms.Views
 
         #region View updating queue
 
-        private enum UpdateType
-        {
-            // Inbound events.
-            // 1. set_Messages.
-            // 2. Messages#CollectionChanged.
-            // 3. MessageInfo#PropertyChanged.
-            // 4. Show message
-            // 5. set_HasUnread
-            Added,
-
-            Removed,
-            IsMergedChanged,
-            Show,
-        }
-
-        private sealed class UpdateRequest
-        {
-            public UpdateRequest(UpdateType type, MessageInfo message)
-            {
-                Type = type;
-                Message = message;
-            }
-
-            public UpdateType Type { get; }
-            public MessageInfo Message { get; }
-        }
-
-        private readonly List<UpdateRequest> _Requests = new List<UpdateRequest>();
+        private readonly List<MessagesViewUpdateRequest> _Requests = new List<MessagesViewUpdateRequest>();
         private bool _IsReset;
         private bool? _HasUnread;
         private bool _IsRequestProcessing;
@@ -243,7 +215,7 @@ namespace KokoroIO.XamarinForms.Views
                     return;
                 }
 
-                var rq = _Requests.LastOrDefault(r => r.Type == UpdateType.Show);
+                var rq = _Requests.LastOrDefault(r => r.Type == MessagesViewUpdateType.Show);
                 _Requests.Clear();
                 _IsReset = true;
 
@@ -265,8 +237,8 @@ namespace KokoroIO.XamarinForms.Views
                 {
                     return;
                 }
-                _Requests.RemoveAll(r => r.Type != UpdateType.Show && es.Any(e => e == r.Message));
-                _Requests.AddRange(es.Distinct().Select(e => new UpdateRequest(UpdateType.Added, e)));
+                _Requests.RemoveAll(r => r.Type != MessagesViewUpdateType.Show && es.Any(e => e == r.Message));
+                _Requests.AddRange(es.Distinct().Select(e => new MessagesViewUpdateRequest(MessagesViewUpdateType.Added, e)));
                 BeginProcessUpdates();
             }
         }
@@ -281,7 +253,7 @@ namespace KokoroIO.XamarinForms.Views
                 {
                     return;
                 }
-                _Requests.AddRange(es.Distinct().Select(e => new UpdateRequest(UpdateType.Removed, e)));
+                _Requests.AddRange(es.Distinct().Select(e => new MessagesViewUpdateRequest(MessagesViewUpdateType.Removed, e)));
                 BeginProcessUpdates();
             }
         }
@@ -295,11 +267,11 @@ namespace KokoroIO.XamarinForms.Views
                     return;
                 }
 
-                if (_Requests.Any(r => r.Type == UpdateType.Added && r.Message == message))
+                if (_Requests.Any(r => r.Type == MessagesViewUpdateType.Added && r.Message == message))
                 {
                     return;
                 }
-                _Requests.Add(new UpdateRequest(UpdateType.IsMergedChanged, message));
+                _Requests.Add(new MessagesViewUpdateRequest(MessagesViewUpdateType.IsMergedChanged, message));
                 BeginProcessUpdates();
             }
         }
@@ -308,8 +280,8 @@ namespace KokoroIO.XamarinForms.Views
         {
             lock (_Requests)
             {
-                _Requests.RemoveAll(r => r.Type == UpdateType.Show);
-                _Requests.Add(new UpdateRequest(UpdateType.Show, message));
+                _Requests.RemoveAll(r => r.Type == MessagesViewUpdateType.Show);
+                _Requests.Add(new MessagesViewUpdateRequest(MessagesViewUpdateType.Show, message));
                 BeginProcessUpdates();
             }
         }
@@ -333,7 +305,7 @@ namespace KokoroIO.XamarinForms.Views
         private async void ProcessUpdates()
         {
             bool reset;
-            UpdateRequest[] requests;
+            MessagesViewUpdateRequest[] requests;
             bool? hasUnread;
 
             lock (_Requests)
@@ -361,114 +333,15 @@ namespace KokoroIO.XamarinForms.Views
                 }
             }
 
-            var sm = requests.LastOrDefault(r => r.Type == UpdateType.Show)?.Message;
             try
             {
-                using (var sw = new StringWriter())
+                var script = MessagesViewHelper.CreateScriptForRequest(Messages, reset, requests, hasUnread);
+                if (!string.IsNullOrEmpty(script))
                 {
-                    if (reset)
-                    {
-                        sw.Write("window.setMessages(");
-                        if (Messages == null)
-                        {
-                            sw.Write("null");
-                            TH.Info("Clearing messages of MessagesView");
-                        }
-                        else
-                        {
-                            new JsonSerializer().Serialize(
-                                sw, Messages.Select(m => m.ToJson())
-                                            .OrderBy(m => m.PublishedAt ?? DateTime.MaxValue));
-                            TH.Info("Setting {0} messages to MessagesView", Messages.Count());
-                        }
-
-                        sw.WriteLine(");");
-                    }
-                    else
-                    {
-                        List<MessageInfo> added = null, removed = null, merged = null;
-                        foreach (var g in requests.GroupBy(r => r.Message))
-                        {
-                            if (g.Any(r => r.Type == UpdateType.Added))
-                            {
-                                (added ?? (added = new List<MessageInfo>())).Add(g.Key);
-                            }
-                            else if (g.Any(r => r.Type == UpdateType.Removed))
-                            {
-                                (removed ?? (removed = new List<MessageInfo>())).Add(g.Key);
-                            }
-                            else if (g.Any(r => r.Type == UpdateType.IsMergedChanged))
-                            {
-                                (merged ?? (merged = new List<MessageInfo>())).Add(g.Key);
-                            }
-                        }
-
-                        var js = new JsonSerializer();
-
-                        if (removed != null)
-                        {
-                            sw.Write("window.removeMessages(");
-                            js.Serialize(sw, removed.Select(m => m.Id).OfType<int>());
-                            sw.Write(",");
-                            js.Serialize(sw, removed.Select(m => m.IdempotentKey).OfType<Guid>());
-                            sw.Write(",");
-                            if (merged != null && added == null)
-                            {
-                                js.Serialize(sw, merged.Select(m => m.ToMergeInfo()));
-                            }
-                            else
-                            {
-                                sw.Write("null");
-                            }
-                            sw.WriteLine(");");
-                            TH.Info("Removing {0} messages of MessagesView", removed.Count);
-                        }
-                        if (added != null || (merged != null && removed == null))
-                        {
-                            sw.Write("window.addMessages(");
-                            if (added != null)
-                            {
-                                js.Serialize(
-                                    sw,
-                                    added.Select(m => m.ToJson())
-                                            .OrderBy(m => m.PublishedAt ?? DateTime.MaxValue));
-                                TH.Info("Adding {0} messages to MessagesView", added.Count);
-                            }
-                            else
-                            {
-                                sw.Write("[]");
-                            }
-                            sw.Write(",");
-                            if (merged != null)
-                            {
-                                js.Serialize(sw, merged.Select(m => m.ToMergeInfo()));
-                            }
-                            else
-                            {
-                                sw.Write("[]");
-                            }
-                            sw.WriteLine(");");
-                        }
-                    }
-                    if (sm?.Id > 0)
-                    {
-                        sw.WriteLine("window.showMessage({0}, true);", sm.Id);
-                        TH.Info("Showing message#{0} in MessagesView", sm.Id);
-                    }
-                    if (hasUnread != null)
-                    {
-                        sw.WriteLine("window.setHasUnread({0});", hasUnread == true ? "true" : "false");
-                        TH.Info("Setting HasUnread = {0}", hasUnread);
-                    }
-
-                    var script = sw.ToString();
-                    if (!string.IsNullOrEmpty(script))
-                    {
-                        await InvokeScriptAsync(script).ConfigureAwait(false);
-                        _HasMessages = Messages?.Any() == true;
-                    }
-                    _UpdateRetryCount = 0;
+                    await InvokeScriptAsync(script).ConfigureAwait(false);
+                    _HasMessages = Messages?.Any() == true;
                 }
+                _UpdateRetryCount = 0;
             }
             catch (Exception ex)
             {
@@ -482,6 +355,7 @@ namespace KokoroIO.XamarinForms.Views
                     return;
                 }
 
+                var sm = requests.LastOrDefault(r => r.Type == MessagesViewUpdateType.Show)?.Message;
                 EnqueueFailedRequests(reset, requests, sm);
             }
             finally
@@ -497,7 +371,7 @@ namespace KokoroIO.XamarinForms.Views
             }
         }
 
-        private void EnqueueFailedRequests(bool reset, UpdateRequest[] requests, MessageInfo showing)
+        private void EnqueueFailedRequests(bool reset, MessagesViewUpdateRequest[] requests, MessageInfo showing)
         {
             if (reset)
             {
@@ -512,24 +386,24 @@ namespace KokoroIO.XamarinForms.Views
                     {
                         foreach (var m in requests)
                         {
-                            if (m.Type == UpdateType.Show)
+                            if (m.Type == MessagesViewUpdateType.Show)
                             {
                                 continue;
                             }
 
-                            var cur = _Requests.FirstOrDefault(r => r.Type != UpdateType.Show && r.Message == m.Message);
+                            var cur = _Requests.FirstOrDefault(r => r.Type != MessagesViewUpdateType.Show && r.Message == m.Message);
                             switch (m.Type)
                             {
-                                case UpdateType.Added:
-                                    if (cur?.Type != UpdateType.Removed)
+                                case MessagesViewUpdateType.Added:
+                                    if (cur?.Type != MessagesViewUpdateType.Removed)
                                     {
                                         _Requests.Add(m);
                                         valid = true;
                                     }
                                     break;
 
-                                case UpdateType.Removed:
-                                case UpdateType.IsMergedChanged:
+                                case MessagesViewUpdateType.Removed:
+                                case MessagesViewUpdateType.IsMergedChanged:
                                     if (cur == null)
                                     {
                                         _Requests.Add(m);
@@ -540,9 +414,9 @@ namespace KokoroIO.XamarinForms.Views
                         }
                     }
 
-                    if (showing != null && _Requests.Any(r => r.Type == UpdateType.Show))
+                    if (showing != null && _Requests.Any(r => r.Type == MessagesViewUpdateType.Show))
                     {
-                        _Requests.Add(new UpdateRequest(UpdateType.Show, showing));
+                        _Requests.Add(new MessagesViewUpdateRequest(MessagesViewUpdateType.Show, showing));
                         valid = true;
                     }
                     if (valid)
