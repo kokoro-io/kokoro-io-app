@@ -1,4 +1,5 @@
-﻿using Foundation;
+﻿using System.Threading.Tasks;
+using Foundation;
 using KokoroIO.XamarinForms.iOS.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
@@ -16,7 +17,7 @@ namespace KokoroIO.XamarinForms.iOS.Renderers
 
             if (mwv != null)
             {
-                mwv.NavigateToStringCore = null;
+                mwv.UpdateAsync = null;
             }
 
             base.OnElementChanged(e);
@@ -25,13 +26,33 @@ namespace KokoroIO.XamarinForms.iOS.Renderers
 
             if (mwv != null)
             {
-                mwv.NavigateToStringCore = NavigateToStringCore;
+                mwv.UpdateAsync = UpdateAsync;
             }
         }
 
-        private void NavigateToStringCore(string html)
+        private bool _Loaded;
+
+        private Task<bool> UpdateAsync(bool reset, MessagesViewUpdateRequest[] requests, bool? hasUnread)
         {
-            LoadHtmlString(html, new NSUrl(NSBundle.MainBundle.BundlePath, true));
+
+            var mwv = Element as MessagesView;
+
+            if (mwv != null)
+            {
+                if (!_Loaded)
+                {
+                    _Loaded = true;
+                    LoadHtmlString(MessagesViewHelper.GetHtml(), new NSUrl(NSBundle.MainBundle.BundlePath, true));
+                }
+
+                var script = MessagesViewHelper.CreateScriptForRequest(mwv.Messages, reset, requests, hasUnread);
+                if (!string.IsNullOrEmpty(script))
+                {
+                    EvaluateJavascript(script);
+                    return Task.FromResult(true);
+                }
+            }
+            return Task.FromResult(false);
         }
     }
 }

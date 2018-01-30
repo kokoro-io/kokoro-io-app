@@ -17,8 +17,7 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = null;
-                mwv.NavigateToStringCore = null;
+                mwv.UpdateAsync = null;
             }
 
             base.OnElementChanged(e);
@@ -27,17 +26,31 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = InvokeScriptAsyncCore;
-                mwv.NavigateToStringCore = NavigateToStringCore;
+                mwv.UpdateAsync = UpdateAsync;
             }
         }
 
-        private Task InvokeScriptAsyncCore(string script)
-            => Control.InvokeScriptAsync("eval", new[] { script }).AsTask();
+        private bool _Loaded;
 
-        private void NavigateToStringCore(string html)
+        private async Task<bool> UpdateAsync(bool reset, MessagesViewUpdateRequest[] requests, bool? hasUnread)
         {
-            Control.NavigateToString(html);
+            var mwv = Element as MessagesView;
+
+            if (mwv != null)
+            {
+                if (!_Loaded)
+                {
+                    _Loaded = true;
+                    Control.NavigateToString(MessagesViewHelper.GetHtml());
+                }
+                var script = MessagesViewHelper.CreateScriptForRequest(mwv.Messages, reset, requests, hasUnread);
+                if (!string.IsNullOrEmpty(script))
+                {
+                    await Control.InvokeScriptAsync("eval", new[] { script });
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

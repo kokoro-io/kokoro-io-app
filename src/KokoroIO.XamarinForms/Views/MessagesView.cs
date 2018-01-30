@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -21,6 +20,8 @@ namespace KokoroIO.XamarinForms.Views
         {
             Navigating += MessagesView_Navigating;
         }
+
+        internal Func<bool, MessagesViewUpdateRequest[], bool?, Task<bool>> UpdateAsync;
 
         #region Messages
 
@@ -194,8 +195,6 @@ namespace KokoroIO.XamarinForms.Views
             }
         }
 
-        #region HTML and JavaScript
-
         #region View updating queue
 
         private readonly List<MessagesViewUpdateRequest> _Requests = new List<MessagesViewUpdateRequest>();
@@ -335,10 +334,9 @@ namespace KokoroIO.XamarinForms.Views
 
             try
             {
-                var script = MessagesViewHelper.CreateScriptForRequest(Messages, reset, requests, hasUnread);
-                if (!string.IsNullOrEmpty(script))
+                var t = UpdateAsync?.Invoke(reset, requests, hasUnread);
+                if (t != null && await t.ConfigureAwait(false))
                 {
-                    await InvokeScriptAsync(script).ConfigureAwait(false);
                     _HasMessages = Messages?.Any() == true;
                 }
                 _UpdateRetryCount = 0;
@@ -435,56 +433,6 @@ namespace KokoroIO.XamarinForms.Views
         }
 
         #endregion View updating queue
-
-        internal Func<string, Task> InvokeScriptAsyncCore;
-        internal Action<string> NavigateToStringCore;
-
-        private bool _HtmlInitialized;
-
-        private async Task InvokeScriptAsync(string script)
-        {
-            await InitHtmlAsync();
-
-            if (InvokeScriptAsyncCore != null)
-            {
-                await InvokeScriptAsyncCore(script).ConfigureAwait(false);
-            }
-            else
-            {
-                Eval(script);
-            }
-        }
-
-        private async Task InitHtmlAsync()
-        {
-            if (!_HtmlInitialized)
-            {
-                while (NavigateToStringCore == null)
-                {
-                    await Task.Delay(100).ConfigureAwait(false);
-                }
-
-                using (var rs = RH.GetManifestResourceStream("Messages.html"))
-                using (var sr = new StreamReader(rs))
-                {
-                    var html = sr.ReadToEnd();
-
-                    if (XDevice.Idiom == TargetIdiom.Desktop)
-                    {
-                        html = html.Replace("<html>", "<html class=\"html-desktop\">");
-                    }
-                    else if (XDevice.Idiom == TargetIdiom.Tablet)
-                    {
-                        html = html.Replace("<html>", "<html class=\"html-tablet\">");
-                    }
-
-                    NavigateToStringCore(html);
-                }
-                _HtmlInitialized = true;
-            }
-        }
-
-        #endregion HTML and JavaScript
 
         #region Navigating
 

@@ -32,9 +32,8 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
             var mwv = e.OldElement as MessagesView;
 
             if (mwv != null)
-            {
-                mwv.InvokeScriptAsyncCore = null;
-                mwv.NavigateToStringCore = null;
+            { 
+                mwv.UpdateAsync = null;
             }
 
             base.OnElementChanged(e);
@@ -46,9 +45,8 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
             mwv = e.NewElement as MessagesView;
 
             if (mwv != null)
-            {
-                mwv.InvokeScriptAsyncCore = InvokeScriptAsyncCore;
-                mwv.NavigateToStringCore = NavigateToStringCore;
+            { 
+                mwv.UpdateAsync = UpdateAsync;
             }
         }
 
@@ -123,9 +121,29 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
         #endregion InvokeScriptAsyncCore
 
-        private void NavigateToStringCore(string html)
+        private bool _Loaded;
+
+        private async Task<bool> UpdateAsync(bool reset, MessagesViewUpdateRequest[] requests, bool? hasUnread)
         {
-            Control.LoadDataWithBaseURL("https://kokoro.io/", html, "text/html", "UTF-8", null);
+
+            var mwv = Element as MessagesView;
+
+            if (mwv != null)
+            {
+                if (!_Loaded)
+                {
+                    _Loaded = true;
+                    Control.LoadDataWithBaseURL("https://kokoro.io/", MessagesViewHelper.GetHtml(), "text/html", "UTF-8", null);
+                }
+
+                var script = MessagesViewHelper.CreateScriptForRequest(mwv.Messages, reset, requests, hasUnread);
+                if (!string.IsNullOrEmpty(script))
+                {
+                    await InvokeScriptAsyncCore(script);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

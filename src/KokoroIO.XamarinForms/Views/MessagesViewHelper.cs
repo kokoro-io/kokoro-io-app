@@ -4,11 +4,32 @@ using System.IO;
 using System.Linq;
 using KokoroIO.XamarinForms.ViewModels;
 using Newtonsoft.Json;
+using Xamarin.Forms;
+using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
     internal static class MessagesViewHelper
     {
+        public static string GetHtml()
+        {
+            using (var rs = RH.GetManifestResourceStream("Messages.html"))
+            using (var sr = new StreamReader(rs))
+            {
+                var html = sr.ReadToEnd();
+
+                if (XDevice.Idiom == TargetIdiom.Desktop)
+                {
+                    return html.Replace("<html>", "<html class=\"html-desktop\">");
+                }
+                else if (XDevice.Idiom == TargetIdiom.Tablet)
+                {
+                    return html.Replace("<html>", "<html class=\"html-tablet\">");
+                }
+                return html;
+            }
+        }
+
         public static string CreateScriptForRequest(IEnumerable<MessageInfo> messages, bool reset, MessagesViewUpdateRequest[] requests, bool? hasUnread)
         {
             var sm = requests.LastOrDefault(r => r.Type == MessagesViewUpdateType.Show)?.Message;
