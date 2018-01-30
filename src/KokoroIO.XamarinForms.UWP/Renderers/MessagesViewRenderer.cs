@@ -20,7 +20,17 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
                 mwv.UpdateAsync = null;
             }
 
+            if (Control != null)
+            {
+                Control.NavigationStarting -= Control_NavigationStarting;
+            }
+
             base.OnElementChanged(e);
+
+            if (Control != null)
+            {
+                Control.NavigationStarting += Control_NavigationStarting;
+            }
 
             mwv = e.NewElement as MessagesView;
 
@@ -28,6 +38,22 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
             {
                 mwv.UpdateAsync = UpdateAsync;
             }
+        }
+
+        private void Control_NavigationStarting(Windows.UI.Xaml.Controls.WebView sender, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
+        {
+            if (args.Uri == null)
+            {
+                return;
+            }
+
+            args.Cancel = true;
+            try
+            {
+                MessagesViewHelper.ShouldOverrideRequest(Element as MessagesView, args.Uri.ToString());
+            }
+            catch
+            { }
         }
 
         private bool _Loaded;
@@ -51,6 +77,16 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
                 }
             }
             return false;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && Control != null)
+            {
+                Control.NavigationStarting -= Control_NavigationStarting;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

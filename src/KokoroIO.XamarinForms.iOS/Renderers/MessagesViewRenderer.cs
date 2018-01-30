@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Foundation;
 using KokoroIO.XamarinForms.iOS.Renderers;
 using KokoroIO.XamarinForms.Views;
+using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
@@ -11,6 +13,37 @@ namespace KokoroIO.XamarinForms.iOS.Renderers
 {
     public sealed class MessagesViewRenderer : WebViewRenderer
     {
+        private class CustomDelegate : UIWebViewDelegate
+        {
+            private readonly MessagesViewRenderer _Renderer;
+
+            public CustomDelegate(MessagesViewRenderer r)
+            {
+                _Renderer = r;
+            }
+
+            public override bool ShouldStartLoad(UIWebView webView, NSUrlRequest request, UIWebViewNavigationType navigationType)
+                => !_Renderer.OnNavigating(request.Url.ToString());
+        }
+
+        private bool OnNavigating(string url)
+        {
+            if (url.StartsWith("file://", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            try
+            {
+                return MessagesViewHelper.ShouldOverrideRequest(Element as MessagesView, url);
+            }
+            catch
+            { }
+
+            //return true;
+            return false;
+        }
+
         protected override void OnElementChanged(VisualElementChangedEventArgs e)
         {
             var mwv = e.OldElement as MessagesView;
@@ -21,6 +54,7 @@ namespace KokoroIO.XamarinForms.iOS.Renderers
             }
 
             base.OnElementChanged(e);
+            Delegate = new CustomDelegate(this);
 
             mwv = e.NewElement as MessagesView;
 
@@ -34,7 +68,6 @@ namespace KokoroIO.XamarinForms.iOS.Renderers
 
         private Task<bool> UpdateAsync(bool reset, MessagesViewUpdateRequest[] requests, bool? hasUnread)
         {
-
             var mwv = Element as MessagesView;
 
             if (mwv != null)
