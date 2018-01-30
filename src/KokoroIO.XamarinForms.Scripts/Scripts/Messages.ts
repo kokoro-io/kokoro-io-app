@@ -348,7 +348,7 @@ module Messages {
 
     let _visibleIds: string;
 
-    function _reportVisibilities() {
+    function _reportVisibilities(): boolean {
 
         _determineDisplayedElements();
         const ids = displayed.map(e => e.getAttribute("data-message-id") || e.getAttribute("data-idempotent-key")).join(",");
@@ -364,7 +364,9 @@ module Messages {
                     + `, lastElementChild.clientHeight: ${b.lastElementChild ? (b.lastElementChild as HTMLElement).clientHeight : -1}`);
             }
             _visibleIds = ids;
+            return true;
         }
+        return false;
     }
 
     function _isAbove(talk: HTMLDivElement, b: HTMLElement) {
@@ -490,23 +492,23 @@ module Messages {
         document.addEventListener("scroll", function () {
             const b = HOST();
 
-            _reportVisibilities();
-
-            if (b.scrollHeight < b.clientHeight) {
-                return;
-            }
-
-            if (b.scrollTop < LOAD_OLDER_MARGIN) {
-                if (!_isUpdating) {
-                    console.log("Loading older messages.");
-                    location.href = `http://kokoro.io/client/control?event=prepend&count=${b.children.length}`;
+            if (_reportVisibilities()) {
+                if (b.scrollHeight < b.clientHeight) {
+                    return;
                 }
-            } else {
-                var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
-                if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
+
+                if (b.scrollTop < LOAD_OLDER_MARGIN) {
                     if (!_isUpdating) {
-                        console.log("Loading newer messages.");
-                        location.href = `http://kokoro.io/client/control?event=append&count=${b.children.length}`;
+                        console.log("Loading older messages.");
+                        location.href = `http://kokoro.io/client/control?event=prepend&count=${b.children.length}`;
+                    }
+                } else {
+                    var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
+                    if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
+                        if (!_isUpdating) {
+                            console.log("Loading newer messages.");
+                            location.href = `http://kokoro.io/client/control?event=append&count=${b.children.length}`;
+                        }
                     }
                 }
             }
