@@ -48,8 +48,11 @@
       <DependentUpon>MessagesPageProfile.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesViewHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesViewMergeInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesViewMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesViewUpdateRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MessagesViewUpdateType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\RoundLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ConditionalConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\EntityCandicates.cs" />

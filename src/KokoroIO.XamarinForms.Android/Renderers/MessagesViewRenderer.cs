@@ -6,6 +6,7 @@ using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
+using AWebView = Android.Webkit.WebView;
 
 [assembly: ExportRenderer(typeof(MessagesView), typeof(MessagesViewRenderer))]
 
@@ -13,6 +14,36 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 {
     public class MessagesViewRenderer : WebViewRenderer
     {
+        private class WebClient : WebViewClient
+        {
+            private MessagesViewRenderer _renderer;
+
+            public WebClient(MessagesViewRenderer renderer)
+            {
+                _renderer = renderer;
+            }
+
+            [Obsolete]
+            public override bool ShouldOverrideUrlLoading(AWebView view, string url)
+            {
+                if (_renderer.Element == null)
+                {
+                    return true;
+                }
+
+                return _renderer.OnNavigating(url);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                base.Dispose(disposing);
+                if (disposing)
+                {
+                    _renderer = null;
+                }
+            }
+        }
+
         public MessagesViewRenderer(Context context)
             : base(context) { }
 
@@ -27,19 +58,31 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 #endif
         }
 
+        private bool OnNavigating(string url)
+        {
+            try
+            {
+                return MessagesViewHelper.ShouldOverrideRequest(Element as MessagesView, url);
+            }
+            catch
+            { }
+
+            return false;
+        }
+
         protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.WebView> e)
         {
             var mwv = e.OldElement as MessagesView;
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = null;
-                mwv.NavigateToStringCore = null;
+                mwv.UpdateAsync = null;
             }
 
             base.OnElementChanged(e);
             if (Control != null)
             {
+                Control.SetWebViewClient(new WebClient(this));
                 Control.Settings.MixedContentMode = MixedContentHandling.AlwaysAllow;
             }
 
@@ -47,8 +90,7 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = InvokeScriptAsyncCore;
-                mwv.NavigateToStringCore = NavigateToStringCore;
+                mwv.UpdateAsync = UpdateAsync;
             }
         }
 
@@ -123,9 +165,28 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
         #endregion InvokeScriptAsyncCore
 
-        private void NavigateToStringCore(string html)
+        private bool _Loaded;
+
+        private async Task<bool> UpdateAsync(bool reset, MessagesViewUpdateRequest[] requests, bool? hasUnread)
         {
-            Control.LoadDataWithBaseURL("https://kokoro.io/", html, "text/html", "UTF-8", null);
+            var mwv = Element as MessagesView;
+
+            if (mwv != null)
+            {
+                if (!_Loaded)
+                {
+                    _Loaded = true;
+                    Control.LoadDataWithBaseURL("https://kokoro.io/", MessagesViewHelper.GetHtml(), "text/html", "UTF-8", null);
+                }
+
+                var script = MessagesViewHelper.CreateScriptForRequest(mwv.Messages, reset, requests, hasUnread);
+                if (!string.IsNullOrEmpty(script))
+                {
+                    await InvokeScriptAsyncCore(script);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

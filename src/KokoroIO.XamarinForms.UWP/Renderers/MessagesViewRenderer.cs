@@ -17,27 +17,76 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = null;
-                mwv.NavigateToStringCore = null;
+                mwv.UpdateAsync = null;
+            }
+
+            if (Control != null)
+            {
+                Control.NavigationStarting -= Control_NavigationStarting;
             }
 
             base.OnElementChanged(e);
+
+            if (Control != null)
+            {
+                Control.NavigationStarting += Control_NavigationStarting;
+            }
 
             mwv = e.NewElement as MessagesView;
 
             if (mwv != null)
             {
-                mwv.InvokeScriptAsyncCore = InvokeScriptAsyncCore;
-                mwv.NavigateToStringCore = NavigateToStringCore;
+                mwv.UpdateAsync = UpdateAsync;
             }
         }
 
-        private Task InvokeScriptAsyncCore(string script)
-            => Control.InvokeScriptAsync("eval", new[] { script }).AsTask();
-
-        private void NavigateToStringCore(string html)
+        private void Control_NavigationStarting(Windows.UI.Xaml.Controls.WebView sender, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
         {
-            Control.NavigateToString(html);
+            if (args.Uri == null)
+            {
+                return;
+            }
+
+            args.Cancel = true;
+            try
+            {
+                MessagesViewHelper.ShouldOverrideRequest(Element as MessagesView, args.Uri.ToString());
+            }
+            catch
+            { }
+        }
+
+        private bool _Loaded;
+
+        private async Task<bool> UpdateAsync(bool reset, MessagesViewUpdateRequest[] requests, bool? hasUnread)
+        {
+            var mwv = Element as MessagesView;
+
+            if (mwv != null)
+            {
+                if (!_Loaded)
+                {
+                    _Loaded = true;
+                    Control.NavigateToString(MessagesViewHelper.GetHtml());
+                }
+                var script = MessagesViewHelper.CreateScriptForRequest(mwv.Messages, reset, requests, hasUnread);
+                if (!string.IsNullOrEmpty(script))
+                {
+                    await Control.InvokeScriptAsync("eval", new[] { script });
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && Control != null)
+            {
+                Control.NavigationStarting -= Control_NavigationStarting;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }
