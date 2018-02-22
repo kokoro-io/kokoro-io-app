@@ -762,6 +762,21 @@ namespace KokoroIO.XamarinForms.ViewModels
                             return;
                         }
                     }
+                    else if (u.AbsolutePath == "/"
+                            && u.Fragment.StartsWith("#/channels/"))
+                    {
+                        var id = u.Fragment.Substring("#/channels/".Length);
+
+                        // TODO: search channel by id
+                        var ch = GetChannelViewModel(id)
+                                    ?? await GetChannelAsync(id);
+                        if (ch != null)
+                        {
+                            ch.ShowDetailCommand.Execute(null);
+
+                            return;
+                        }
+                    }
                 }
 
                 if (mp?.OpenUrl(u) == true)
