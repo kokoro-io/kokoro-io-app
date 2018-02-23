@@ -286,6 +286,8 @@ module Messages {
             if (/^javascript:/.test(a.href) && !/^javascript:void\(0?\);?/.test(a.href)) {
                 console.warn(`unsupported scheme: ${a.href}`);
                 a.href = '#';
+            } else if (/^https:\/\/kokoro\.io\/#\/channels\/([A-Za-z0-9]{9})$/.test(a.href)) {
+                a.href = 'https://kokoro.io/channels/' + RegExp.$1;
             }
             a.removeAttribute("target");
         }
