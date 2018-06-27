@@ -1,4 +1,5 @@
 using System.Text;
+using Android.Gms.Iid;
 using Android.Util;
 using KokoroIO.XamarinForms.Droid.Services;
 using KokoroIO.XamarinForms.Services;
@@ -16,7 +17,7 @@ namespace KokoroIO.XamarinForms.Droid.Services
         public DeviceKind Kind => DeviceKind.Android;
 
         public byte[] GetIdentifier()
-            => Encoding.UTF8.GetBytes(Android.OS.Build.Serial);
+            => Encoding.UTF8.GetBytes(Android.OS.Build.Serial + ";" + InstanceID.GetInstance(MainActivity.GetCurrentContext()).Id);
 
         public float GetDisplayScale()
         {
