@@ -78,7 +78,9 @@ namespace KokoroIO.XamarinForms.ViewModels
                     var ds = SH.Device;
                     var ns = SH.Notification;
 
-                    var pnsTask = ns.GetPlatformNotificationServiceHandleAsync();
+                    var pnsTask = UserSettings.EnablePushNotification
+                        ? ns.GetPlatformNotificationServiceHandleAsync()
+                        : Task.FromResult<string>(null);
 
                     await Task.WhenAny(pnsTask, Task.Delay(15000));
 

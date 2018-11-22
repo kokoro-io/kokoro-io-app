@@ -325,6 +325,28 @@ namespace KokoroIO.XamarinForms.ViewModels
             return GetOrCreateJoinedChannelViewModel(channel);
         }
 
+        public async Task SetSubscribeNotificationAsync(bool value)
+        {
+            var ds = SH.Device;
+
+            if (UserSettings.EnablePushNotification)
+            {
+                var pnsTask = SH.Notification.GetPlatformNotificationServiceHandleAsync();
+
+                await Task.WhenAny(pnsTask, Task.Delay(15000));
+
+                var pns = pnsTask.Status == TaskStatus.RanToCompletion ? pnsTask.Result : UserSettings.PnsHandle;
+                await Client.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
+                UserSettings.PnsHandle = pns;
+            }
+            else
+            {
+                SH.Notification.UnregisterPlatformNotificationService();
+                await Client.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), null, false);
+                UserSettings.PnsHandle = null;
+            }
+        }
+
         #endregion kokoro.io API Client
 
         #region Channels

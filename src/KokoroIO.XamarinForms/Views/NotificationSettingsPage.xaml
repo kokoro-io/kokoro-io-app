@@ -8,10 +8,19 @@
     Title="{Binding Title}">
     <ContentPage.Icon>
         <OnPlatform
-            x:TypeArguments="FileImageSource"
-            WinPhone="notifications.png"
-            iOS="notifications_white.png"
-            Android="notifications_white.png" />
+            x:TypeArguments="FileImageSource">
+            <OnPlatform.Platforms>
+                <On
+                    Platform="iOS"
+                    Value="notifications_white.png" />
+                <On
+                    Platform="Android"
+                    Value="notifications_white.png" />
+                <On
+                    Platform="UWP"
+                    Value="notifications.png" />
+            </OnPlatform.Platforms>
+        </OnPlatform>
     </ContentPage.Icon>
     <ContentPage.Content>
         <Grid>
@@ -26,6 +35,9 @@
                     <TableRoot>
                         <TableSection
                             Title="General Settings">
+                            <SwitchCell
+                                Text="Enable background push notification."
+                                On="{Binding EnablePushNotification}" />
                             <SwitchCell
                                 Text="Play ringtone when a new message posted."
                                 On="{Binding PlayRingtone}" />

@@ -9,6 +9,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             Title = "Notification";
             Settings = settings;
 
+            _EnablePushNotification = UserSettings.EnablePushNotification;
             _PlayRingtone = UserSettings.PlayRingtone;
             _MobileCenterAnalyticsEnabled = UserSettings.MobileCenterAnalyticsEnabled;
             _MobileCenterCrashesEnabled = UserSettings.MobileCenterCrashesEnabled;
@@ -17,6 +18,30 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         internal SettingsViewModel Settings { get; }
         public ApplicationViewModel Application => Settings.Application;
+
+        #region EnablePushNotification
+
+        private bool _EnablePushNotification;
+
+        public bool EnablePushNotification
+        {
+            get => _EnablePushNotification;
+            set
+            {
+                if (_EnablePushNotification != value)
+                {
+                    _EnablePushNotification = value;
+                    UserSettings.EnablePushNotification = value;
+                    OnPropertyChanged();
+
+#pragma warning disable 4014
+                    Application.SetSubscribeNotificationAsync(value);
+#pragma warning restore 4014
+                }
+            }
+        }
+
+        #endregion EnablePushNotification
 
         #region PlayRingtone
 

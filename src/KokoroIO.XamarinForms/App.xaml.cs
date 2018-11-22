@@ -65,7 +65,9 @@ namespace KokoroIO.XamarinForms
                 var ds = SH.Device;
                 var ns = SH.Notification;
 
-                var pnsTask = ns.GetPlatformNotificationServiceHandleAsync();
+                var pnsTask = UserSettings.EnablePushNotification
+                    ? ns.GetPlatformNotificationServiceHandleAsync()
+                    : Task.FromResult<string>(null);
 
                 var pnsTaskTimeout = Task.WhenAny(pnsTask, Task.Delay(15000));
 

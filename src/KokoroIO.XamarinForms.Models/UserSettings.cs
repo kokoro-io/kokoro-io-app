@@ -35,6 +35,12 @@ namespace KokoroIO.XamarinForms.Models
             set => SetValue(value);
         }
 
+        public static bool EnablePushNotification
+        {
+            get => GetBoolean() ?? true;
+            set => SetValue(value);
+        }
+
         public static string LastChannelId
         {
             get => GetString();
