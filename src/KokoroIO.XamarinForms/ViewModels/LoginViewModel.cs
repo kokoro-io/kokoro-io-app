@@ -1,9 +1,9 @@
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
-using System.Text.RegularExpressions;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -86,8 +86,16 @@ namespace KokoroIO.XamarinForms.ViewModels
 
                     var pns = pnsTask.Status == TaskStatus.RanToCompletion ? pnsTask.Result : null;
 
-                    var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
-                    c.AccessToken = device.AccessToken.Token;
+                    if (string.IsNullOrEmpty(em) && !string.IsNullOrEmpty(pw))
+                    {
+                        c.AccessToken = pw;
+                        await c.PostDeviceAsync(ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
+                    }
+                    else
+                    {
+                        var device = await c.PostDeviceAsync(em, pw, ds.MachineName, ds.Kind, ds.GetDeviceIdentifierString(), pns, pns != null);
+                        c.AccessToken = device.AccessToken.Token;
+                    }
 
                     var me = await c.GetProfileAsync();
 
