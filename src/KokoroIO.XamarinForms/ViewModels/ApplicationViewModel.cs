@@ -467,7 +467,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private string _SelectedChannelId;
 
-        internal string SelectedChannelId
+        public string SelectedChannelId
         {
             get => _SelectedChannel?.Id ?? _SelectedChannelId;
             set
@@ -1323,7 +1323,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Document Interaction
 
-        internal static void ReceiveNotification(Message message)
+        public static void ReceiveNotification(Message message)
         {
             var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
 

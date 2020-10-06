@@ -114,7 +114,7 @@ namespace KokoroIO.XamarinForms.Views
             remove { _FilePasted -= value; }
         }
 
-        internal new void InvalidateMeasure()
+        public new void InvalidateMeasure()
         {
             base.InvalidateMeasure();
         }

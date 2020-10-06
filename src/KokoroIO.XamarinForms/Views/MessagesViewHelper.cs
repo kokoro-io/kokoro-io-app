@@ -10,7 +10,7 @@ using XDevice = Xamarin.Forms.Device;
 
 namespace KokoroIO.XamarinForms.Views
 {
-    internal static class MessagesViewHelper
+    public static class MessagesViewHelper
     {
         public static string GetHtml()
         {

@@ -365,7 +365,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private int? _SelectedMessageId;
 
-        internal int? SelectedMessageId
+        public int? SelectedMessageId
         {
             get => _SelectedMessageId ?? _SelectedMessage?.Id;
             set

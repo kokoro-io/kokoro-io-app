@@ -1,17 +1,6 @@
 ﻿using KokoroIO.XamarinForms.Services;
 using System;
-
-#if WINDOWS_UWP
-using KokoroIO.XamarinForms.UWP.Services;
-#else
-#if __IOS__
-using KokoroIO.XamarinForms.iOS.Services;
-#else
-
-using KokoroIO.XamarinForms.Droid.Services;
-
-#endif
-#endif
+using Xamarin.Forms;
 
 namespace KokoroIO.XamarinForms
 {
@@ -19,9 +8,9 @@ namespace KokoroIO.XamarinForms
     {
         static SH()
         {
-            Device = new DeviceService();
-            Audio = new AudioService();
-            Notification = new NotificationService();
+            Device = DependencyService.Get<IDeviceService>();
+            Audio = DependencyService.Get<IAudioService>();
+            Notification = DependencyService.Get<INotificationService>();
         }
 
         public static IDeviceService Device { get; }

@@ -1,6 +1,6 @@
 namespace KokoroIO.XamarinForms.Views
 {
-    internal enum MessagesViewUpdateType
+    public enum MessagesViewUpdateType
     {
         // Inbound events.
         // 1. set_Messages.

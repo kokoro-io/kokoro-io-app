@@ -35,7 +35,7 @@ namespace KokoroIO.XamarinForms.Views
 
         #endregion SelectCommand
 
-        internal abstract string GetText(object item);
+        public abstract string GetText(object item);
 
         private static void OnEntitiesChanged(BindableObject bindable, object oldValue, object newValue)
         {
@@ -60,7 +60,7 @@ namespace KokoroIO.XamarinForms.Views
             UpdateText();
         }
 
-        internal Action TextUpdater;
+        public Action TextUpdater;
 
         private void UpdateText()
         {

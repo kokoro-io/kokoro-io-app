@@ -6,7 +6,7 @@ using Microsoft.AppCenter.Analytics;
 
 namespace KokoroIO.XamarinForms
 {
-    internal static class TH
+    public static class TH
     {
 #if WINDOWS_UWP
         private static void ErrorCore(string message)
