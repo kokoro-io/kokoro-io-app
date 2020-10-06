@@ -27,8 +27,6 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
 
             if (Control != null)
             {
-                Control.PlaceholderText = (e.NewElement as ExpandableEditor)?.Placeholder ?? string.Empty;
-
                 Control.AllowDrop = true;
                 Control.AddHandler(FormsTextBox.KeyDownEvent, (KeyEventHandler)Control_KeyDown, true);
                 Control.TextChanged += Control_TextChanged;
@@ -215,11 +213,6 @@ namespace KokoroIO.XamarinForms.UWP.Renderers
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(ExpandableEditor.Placeholder):
-                        Control.PlaceholderText = (Element as ExpandableEditor)?.Placeholder ?? string.Empty;
-
-                        break;
-
                     case nameof(ExpandableEditor.SelectionStart):
                     case nameof(ExpandableEditor.SelectionLength):
                         if (Element is ExpandableEditor ee)

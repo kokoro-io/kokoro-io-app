@@ -13,19 +13,6 @@ namespace KokoroIO.XamarinForms.Views
             this.Unfocused += (_, __) => HasFocus = IsFocused;
         }
 
-        #region Placeholder
-
-        public static readonly BindableProperty PlaceholderProperty
-            = BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(MessagesView));
-
-        public string Placeholder
-        {
-            get => (string)GetValue(PlaceholderProperty);
-            set => SetValue(PlaceholderProperty, value);
-        }
-
-        #endregion Placeholder
-
         #region MaxLines
 
         public static readonly BindableProperty MaxLinesProperty
@@ -106,7 +93,7 @@ namespace KokoroIO.XamarinForms.Views
 
         #endregion PostCommand
 
-        internal EventHandler<EventArgs<Stream>> _FilePasted;
+        public EventHandler<EventArgs<Stream>> _FilePasted;
 
         public event EventHandler<EventArgs<Stream>> FilePasted
         {
