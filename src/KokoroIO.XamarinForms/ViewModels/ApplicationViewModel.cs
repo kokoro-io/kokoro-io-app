@@ -1080,7 +1080,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             TH.Info("Channel#{0} updated", e.Data.Id);
 
-            XDevice.BeginInvokeOnMainThread(async () => GetOrCreateChannelViewModel(e.Data));
+            XDevice.BeginInvokeOnMainThread(() => GetOrCreateChannelViewModel(e.Data));
         }
 
         private void Client_MemberJoined(object sender, EventArgs<Membership> e)

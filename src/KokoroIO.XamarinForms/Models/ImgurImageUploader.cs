@@ -41,7 +41,7 @@ namespace KokoroIO.XamarinForms.Models
 
         public string CallbackUrl => "http://kokoro.io/client/oauthcallback/imgur";
 
-        public async Task ReceiveCallbackAsync(string url)
+        public Task ReceiveCallbackAsync(string url)
         {
             string at = null, rt = null;
             try
@@ -67,6 +67,7 @@ namespace KokoroIO.XamarinForms.Models
                 }
                 catch { }
             }
+            return Task.CompletedTask;
         }
 
         public async Task<UploadedImageInfo> UploadAsync(Stream data, string fileName)
