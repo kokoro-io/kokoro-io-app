@@ -38,7 +38,7 @@ namespace KokoroIO.XamarinForms.Models
 
         public static bool EnablePushNotification
         {
-            get => GetBoolean();
+            get => GetBoolean(defaultValue: /* TODO: Push Notification */false);
             set => SetValue(value);
         }
 
