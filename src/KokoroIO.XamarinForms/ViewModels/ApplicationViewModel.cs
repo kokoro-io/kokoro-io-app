@@ -7,6 +7,7 @@ using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -806,7 +807,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     return;
                 }
 
-                XDevice.OpenUri(u);
+                await Launcher.TryOpenAsync(u);
             }
         }
 
