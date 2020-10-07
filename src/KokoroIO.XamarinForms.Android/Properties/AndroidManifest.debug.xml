@@ -1,8 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="debug.io.kokoro.XamarinForms" android:versionCode="1" android:versionName="1.1" android:installLocation="auto">
-	<uses-sdk android:minSdkVersion="28" android:targetSdkVersion="28" />
-	<uses-permission android:name="android.permission.CAMERA" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.VIBRATE" />
-	<application android:label="dev)kokoro.io" android:icon="@drawable/kokoro"></application>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="debug.io.kokoro.XamarinForms"
+          android:versionCode="1"
+          android:versionName="1.1"
+          android:installLocation="auto"
+          android:extractNativeLibs="false">
+  <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="28" />
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <application android:label="dev)kokoro.io" android:icon="@drawable/kokoro"></application>
 </manifest>
