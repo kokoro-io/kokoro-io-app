@@ -7,6 +7,7 @@ using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
 using KokoroIO.XamarinForms.Services;
 using KokoroIO.XamarinForms.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -467,7 +468,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         private string _SelectedChannelId;
 
-        internal string SelectedChannelId
+        public string SelectedChannelId
         {
             get => _SelectedChannel?.Id ?? _SelectedChannelId;
             set
@@ -806,7 +807,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                     return;
                 }
 
-                XDevice.OpenUri(u);
+                await Launcher.TryOpenAsync(u);
             }
         }
 
@@ -1080,7 +1081,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             TH.Info("Channel#{0} updated", e.Data.Id);
 
-            XDevice.BeginInvokeOnMainThread(async () => GetOrCreateChannelViewModel(e.Data));
+            XDevice.BeginInvokeOnMainThread(() => GetOrCreateChannelViewModel(e.Data));
         }
 
         private void Client_MemberJoined(object sender, EventArgs<Membership> e)
@@ -1323,7 +1324,7 @@ namespace KokoroIO.XamarinForms.ViewModels
 
         #endregion Document Interaction
 
-        internal static void ReceiveNotification(Message message)
+        public static void ReceiveNotification(Message message)
         {
             var avm = App.Current?.MainPage?.BindingContext as ApplicationViewModel;
 

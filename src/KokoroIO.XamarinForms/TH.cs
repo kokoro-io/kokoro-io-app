@@ -6,28 +6,8 @@ using Microsoft.AppCenter.Analytics;
 
 namespace KokoroIO.XamarinForms
 {
-    internal static class TH
+    public static class TH
     {
-#if WINDOWS_UWP
-        private static void ErrorCore(string message)
-            => Debug.WriteLine(message);
-
-        private static void ErrorCore(string format, params object[] args)
-            => Debug.WriteLine(format, args);
-
-        private static void WarnCore(string message)
-            => Debug.WriteLine(message);
-
-        private static void WarnCore(string format, params object[] args)
-            => Debug.WriteLine(format, args);
-
-        private static void InfoCore(string message)
-            => Debug.WriteLine(message);
-
-        private static void InfoCore(string format, params object[] args)
-            => Debug.WriteLine(format, args);
-#else
-
         private static void ErrorCore(string message)
             => System.Diagnostics.Trace.TraceError(message);
 
@@ -45,8 +25,6 @@ namespace KokoroIO.XamarinForms
 
         private static void InfoCore(string format, params object[] args)
             => System.Diagnostics.Trace.TraceInformation(format, args);
-
-#endif
 
         public static void Error(string message)
         {

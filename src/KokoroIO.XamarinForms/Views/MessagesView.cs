@@ -15,7 +15,7 @@ namespace KokoroIO.XamarinForms.Views
         private readonly HashSet<MessageInfo> _BindedMessages = new HashSet<MessageInfo>();
         private bool _HasMessages;
 
-        internal Func<bool, MessagesViewUpdateRequest[], bool?, Task<bool>> UpdateAsync;
+        public Func<bool, MessagesViewUpdateRequest[], bool?, Task<bool>> UpdateAsync;
 
         #region Messages
 

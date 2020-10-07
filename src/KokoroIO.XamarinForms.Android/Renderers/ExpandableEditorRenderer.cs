@@ -22,8 +22,6 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
             if (Control != null)
             {
-                Control.Hint = (e.NewElement as ExpandableEditor)?.Placeholder ?? string.Empty;
-
                 // Xamarin.Forms.Platform.Android did not provide events to handle selection change.
                 Control.TextChanged += Control_TextChanged;
                 Control.KeyPress += Control_KeyPress;
@@ -83,12 +81,6 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(ExpandableEditor.Placeholder):
-
-                        Control.Hint = (Element as ExpandableEditor)?.Placeholder ?? string.Empty;
-
-                        break;
-
                     case nameof(ExpandableEditor.SelectionStart):
                     case nameof(ExpandableEditor.SelectionLength):
                         ApplySelection();

@@ -4,7 +4,7 @@ namespace KokoroIO.XamarinForms.Views
 {
     public sealed class ChannelsLabel : EntitiesLabel
     {
-        internal override string GetText(object item)
+        public override string GetText(object item)
             => ((ChannelViewModel)item).DisplayName;
     }
 }

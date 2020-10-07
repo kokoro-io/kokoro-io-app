@@ -4,7 +4,7 @@ namespace KokoroIO.XamarinForms.Views
 {
     public sealed class MembersLabel : EntitiesLabel
     {
-        internal override string GetText(object item)
+        public override string GetText(object item)
             => "@" + ((ProfileViewModel)item).ScreenName;
     }
 }

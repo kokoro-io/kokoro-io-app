@@ -21,7 +21,7 @@ namespace KokoroIO.XamarinForms.UWP.Services
             {
                 _NotificationPlayer = new MediaPlayer()
                 {
-                    Source = MediaSource.CreateFromStream(
+                    Source = Windows.Media.Core.MediaSource.CreateFromStream(
                                 GetType().GetTypeInfo().Assembly
                                     .GetManifestResourceStream("KokoroIO.XamarinForms.UWP.Resources.ring.mp3")
                                     .AsRandomAccessStream(),
