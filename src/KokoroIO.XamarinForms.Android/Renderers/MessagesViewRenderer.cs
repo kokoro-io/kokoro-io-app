@@ -23,6 +23,16 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
                 _renderer = renderer;
             }
 
+            public override bool ShouldOverrideUrlLoading(AWebView view, IWebResourceRequest request)
+            {
+                if (_renderer.Element == null)
+                {
+                    return true;
+                }
+
+                return _renderer.OnNavigating(request.Url?.ToString());
+            }
+
             [Obsolete]
             public override bool ShouldOverrideUrlLoading(AWebView view, string url)
             {
@@ -60,6 +70,7 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
         private bool OnNavigating(string url)
         {
+            TH.Info("OnNavigating: {0}", url);
             try
             {
                 return MessagesViewHelper.ShouldOverrideRequest(Element as MessagesView, url);
@@ -142,6 +153,9 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
 
             public override bool OnConsoleMessage(ConsoleMessage consoleMessage)
             {
+#if DEBUG
+                TH.Info("WebView console:[{0}]{1}", consoleMessage.InvokeMessageLevel(), consoleMessage.Message());
+#endif
                 if (consoleMessage.InvokeMessageLevel() == ConsoleMessage.MessageLevel.Error)
                 {
                     tcs.TrySetException(new Exception(consoleMessage.Message()));

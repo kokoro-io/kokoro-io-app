@@ -32,9 +32,9 @@ module Messages {
                 displayed = null;
             }
             b.innerHTML = "";
-            _addMessagessCore(messages, null, false);
+            addMessagesCore(messages, null, false);
 
-            b.scrollTop = b.scrollHeight - b.clientHeight;
+            window.scrollTo(0, b.scrollHeight - b.clientHeight);
             _reportVisibilities();
         } finally {
             _isUpdating = false;
@@ -50,10 +50,10 @@ module Messages {
             var isEmpty = b.children.length === 0;
             showNewMessage = showNewMessage && !isEmpty;
 
-            _addMessagessCore(messages, merged, !showNewMessage && !isEmpty);
+            addMessagesCore(messages, merged, !showNewMessage && !isEmpty);
 
             if (isEmpty) {
-                b.scrollTop = b.scrollHeight - b.clientHeight;
+                window.scrollTo(0, b.scrollHeight - b.clientHeight);
             } else if (showNewMessage && messages && messages.length > 0) {
                 var minId = Number.MAX_VALUE;
                 messages.forEach(v => minId = Math.min(minId, v.Id));
@@ -79,11 +79,11 @@ module Messages {
                     var talk = document.getElementById('talk' + ids[i]);
 
                     if (talk) {
-                        var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+                        var nt = talk.offsetTop < window.scrollY ? window.scrollY - talk.clientHeight : window.scrollY;
 
                         talk.remove();
 
-                        b.scrollTop = nt;
+                        window.scrollTo(0, nt);
                     }
                 }
             }
@@ -91,11 +91,11 @@ module Messages {
                 for (let i = 0; i < idempotentKeys.length; i++) {
                     let talk = _talkByIdempotentKey(idempotentKeys[i]);
                     if (talk) {
-                        var nt = talk.offsetTop < b.scrollTop ? b.scrollTop - talk.clientHeight : b.scrollTop;
+                        var nt = talk.offsetTop < window.scrollY ? window.scrollY - talk.clientHeight : window.scrollY;
 
                         talk.remove();
 
-                        b.scrollTop = nt;
+                        window.scrollTo(0, nt);
                     }
                 }
             }
@@ -106,9 +106,9 @@ module Messages {
         }
     }
 
-    function _addMessagessCore(messages: MessageInfo[], merged: MergeInfo[], scroll: boolean) {
+    function addMessagesCore(messages: MessageInfo[], merged: MergeInfo[], scroll: boolean) {
         let b = HOST();
-        var lastTalk = scroll && b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight ? b.lastElementChild : null;
+        var lastTalk = scroll && window.scrollY + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight ? b.lastElementChild : null;
         scroll = scroll && !lastTalk;
         if (messages) {
             var j = 0;
@@ -128,8 +128,8 @@ module Messages {
                         || (m.IdempotentKey ? _talkByIdempotentKey(m.IdempotentKey) : null);
 
                     if (cur) {
-                        let shoudScroll = scroll && cur.offsetTop + cur.clientHeight - IS_TOP_MARGIN < b.scrollTop;
-                        let st = b.scrollTop - cur.clientHeight;
+                        let shoudScroll = scroll && cur.offsetTop + cur.clientHeight - IS_TOP_MARGIN < window.scrollY;
+                        let st = window.scrollY - cur.clientHeight;
 
                         let talk = createTaklElement(m);
                         b.insertBefore(talk, cur);
@@ -137,7 +137,7 @@ module Messages {
                         cur.remove();
 
                         if (scroll) {
-                            b.scrollTop = st + talk.clientHeight;
+                            window.scrollTo(0, st + talk.clientHeight);
                         }
                         continue;
                     }
@@ -159,15 +159,15 @@ module Messages {
                     } else if (id <= pid) {
                         let talk = createTaklElement(m);
                         if (id == pid) {
-                            let shoudScroll = scroll && aft && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
-                            let st = b.scrollTop - prev.clientHeight;
+                            let shoudScroll = scroll && aft && aft.offsetTop - IS_TOP_MARGIN < window.scrollY;
+                            let st = window.scrollY - prev.clientHeight;
 
                             b.insertBefore(talk, prev);
                             _afterTalkInserted(talk, prev.clientHeight);
                             prev.remove();
 
                             if (scroll) {
-                                b.scrollTop = st + talk.clientHeight;
+                                window.scrollTo(0, st + talk.clientHeight);
                             }
                         } else {
                             _insertBefore(talk, prev, scroll);
@@ -202,13 +202,13 @@ module Messages {
             var talk = document.getElementById("talk" + id);
             if (talk) {
                 let b = HOST();
-                console.log(`current scrollTo is ${b.scrollTop}, and offsetTop is ${talk.offsetTop}`);
-                if (talk.offsetTop < b.scrollTop || toTop) {
+                console.log(`current scrollTo is ${window.scrollY}, and offsetTop is ${talk.offsetTop}`);
+                if (talk.offsetTop < window.scrollY || toTop) {
                     console.log(`scrolling to ${talk.offsetTop}`);
-                    b.scrollTop = talk.offsetTop;
-                } else if (b.scrollTop + b.clientHeight < talk.offsetTop - talk.clientHeight) {
+                    window.scrollTo(0, talk.offsetTop);
+                } else if (window.scrollY + b.clientHeight < talk.offsetTop - talk.clientHeight) {
                     console.log(`scrolling to ${talk.offsetTop - b.clientHeight}`);
-                    b.scrollTop = talk.offsetTop - b.clientHeight;
+                    window.scrollTo(0, talk.offsetTop - b.clientHeight);
                 }
             }
         } finally {
@@ -226,13 +226,13 @@ module Messages {
 
                 var talk = document.getElementById('talk' + id);
                 if (talk) {
-                    var shouldScroll = scroll && talk.offsetTop - IS_TOP_MARGIN < b.scrollTop;
+                    var shouldScroll = scroll && talk.offsetTop - IS_TOP_MARGIN < window.scrollY;
 
-                    var bt = b.scrollTop - talk.clientHeight;
+                    var bt = window.scrollY - talk.clientHeight;
                     talk.classList.remove(!isMerged ? "continued" : "not-continued");
                     talk.classList.add(isMerged ? "continued" : "not-continued");
                     if (shouldScroll) {
-                        b.scrollTop = bt + talk.clientHeight;
+                        window.scrollTo(0, bt + talk.clientHeight);
                     }
                 }
             }
@@ -241,14 +241,14 @@ module Messages {
 
     function _insertBefore(talk: HTMLDivElement, aft: HTMLDivElement, scroll: boolean) {
         let b = HOST();
-        scroll = scroll && aft.offsetTop - IS_TOP_MARGIN < b.scrollTop;
-        var st = b.scrollTop;
+        scroll = scroll && aft.offsetTop - IS_TOP_MARGIN < window.scrollY;
+        var st = window.scrollY;
 
         b.insertBefore(talk, aft);
         _afterTalkInserted(talk);
 
         if (scroll) {
-            b.scrollTop = st + talk.clientHeight;
+            window.scrollTo(0, st + talk.clientHeight);
         }
     }
 
@@ -258,22 +258,22 @@ module Messages {
                 if (talk.previousElementSibling) {
                     setTimeout(function () {
                         let b = HOST();
-                        b.scrollTop = talk.offsetTop;
+                        window.scrollTo(0, talk.offsetTop);
                     }, 1);
                 }
             } else {
                 let b = HOST();
-                b.scrollTop = talk.offsetTop;
+                window.scrollTo(0, talk.offsetTop);
             }
         }
     }
 
     function _afterTalkInserted(talk: HTMLDivElement, previousHeight?: number) {
         let b = HOST();
-        if (talk.offsetTop < b.scrollTop) {
+        if (talk.offsetTop < window.scrollY) {
             let delta = talk.clientHeight - (previousHeight || 0);
             if (delta != 0) {
-                b.scrollTop += delta;
+                window.scrollBy(0, delta);
                 console.log("scolled " + delta);
             }
         }
@@ -308,11 +308,11 @@ module Messages {
                     let ph = parseInt(talk.getAttribute("data-height"), 10);
                     let delta = talk.clientHeight - ph;
                     let b = HOST();
-                    if (b.scrollTop + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight - delta) {
+                    if (window.scrollY + b.clientHeight + IS_BOTTOM_MARGIN > b.scrollHeight - delta) {
                         // previous viewport was bottom.
-                        b.scrollTop = b.scrollHeight - b.clientHeight;
-                    } else if (talk.offsetTop < b.scrollTop) {
-                        b.scrollTop += delta;
+                        window.scrollTo(0, b.scrollHeight - b.clientHeight);
+                    } else if (talk.offsetTop < window.scrollY) {
+                        window.scrollBy(0, delta);
                     }
                     talk.setAttribute("data-height", talk.clientHeight.toString());
 
@@ -355,12 +355,14 @@ module Messages {
         _determineDisplayedElements();
         const ids = displayed.map(e => e.getAttribute("data-message-id") || e.getAttribute("data-idempotent-key")).join(",");
 
+        // console.debug("displayed elements: " + ids);
+
         if (_visibleIds !== ids) {
             location.href = "http://kokoro.io/client/control?event=visibility&ids=" + ids;
             _visibleIds = ids;
             if (LOG_VIEWPORT) {
                 const b = HOST();
-                console.log(`visibility changed: scrollTop: ${b.scrollTop}`
+                console.log(`visibility changed: scrollY: ${window.scrollY}`
                     + `, clientHeight: ${b.clientHeight}`
                     + `, lastElementChild.offsetTop: ${b.lastElementChild ? (b.lastElementChild as HTMLElement).offsetTop : -1}`
                     + `, lastElementChild.clientHeight: ${b.lastElementChild ? (b.lastElementChild as HTMLElement).clientHeight : -1}`);
@@ -372,11 +374,13 @@ module Messages {
     }
 
     function _isAbove(talk: HTMLDivElement, b: HTMLElement) {
-        return talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < b.scrollTop;
+        // console.debug(`_isAbove: ${talk.offsetTop} + ${talk.clientHeight} + ${HIDE_CONTENT_MARGIN} < ${window.scrollY} = ${talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < window.scrollY}`);
+        return talk.offsetTop + talk.clientHeight + HIDE_CONTENT_MARGIN < window.scrollY;
     }
 
     function _isBelow(talk: HTMLDivElement, b: HTMLElement) {
-        return b.scrollTop + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN;
+        // console.debug(`_isBelow: ${window.scrollY} + ${b.clientHeight} < ${talk.offsetTop} - ${HIDE_CONTENT_MARGIN} = ${window.scrollY + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN}`);
+        return window.scrollY + b.clientHeight < talk.offsetTop - HIDE_CONTENT_MARGIN;
     }
 
     function _hideTalk(talk: HTMLElement) {
@@ -397,19 +401,28 @@ module Messages {
         const b = HOST();
         let displaying: HTMLDivElement[];
 
+        // 直前に表示されていた要素が記録されているかどうか判定
         if (displayed && displayed.length > 0) {
             for (let talk of displayed) {
+
                 if (!talk.parentElement) {
+                    // 削除済み
                     continue;
                 }
+
                 if (_isAbove(talk, b)) {
+                    // 対象要素が可視範囲より上の場合、次の要素へ
                     continue;
                 } else if (_isBelow(talk, b)) {
+                    // 対象要素が可視範囲より下の場合、判定を終了する
                     break;
                 } else {
                     displaying = [];
 
+                    // 前回の先頭要素が表示されている場合
                     if (displayed[0] === talk) {
+
+                        // 可視の兄要素をすべて追加する
                         for (let n = talk.previousSibling; n; n = n.previousSibling) {
                             const t = <HTMLDivElement>n;
                             if (t.nodeType === Node.ELEMENT_NODE) {
@@ -421,8 +434,10 @@ module Messages {
                         }
                     }
 
+                    // 自身を追加する
                     displaying.push(talk);
 
+                    // 可視の弟要素を追加する
                     for (let n = talk.nextSibling; n; n = n.nextSibling) {
                         const t = <HTMLDivElement>n;
                         if (t.nodeType === Node.ELEMENT_NODE) {
@@ -439,6 +454,7 @@ module Messages {
         }
 
         if (displayed && displaying) {
+            // 表示範囲に重複がある場合、差分で表示を切り替える
             for (let talk of displayed) {
                 if (displaying.indexOf(talk) < 0
                     && !(parseInt(talk.getAttribute("data-loading-images"), 10) > 0)) {
@@ -450,6 +466,8 @@ module Messages {
                 _showTalk(talk);
             }
         } else {
+            // 表示範囲に重複がない場合、全要素の表示位置を判定する
+
             displaying = [];
             const talks = b.children;
             for (let i = 0; i < talks.length; i++) {
@@ -499,13 +517,13 @@ module Messages {
                     return;
                 }
 
-                if (b.scrollTop < LOAD_OLDER_MARGIN) {
+                if (window.scrollY < LOAD_OLDER_MARGIN) {
                     if (!_isUpdating) {
                         console.log("Loading older messages.");
                         location.href = `http://kokoro.io/client/control?event=prepend&count=${b.children.length}`;
                     }
                 } else {
-                    var fromBottom = b.scrollHeight - b.scrollTop - b.clientHeight;
+                    var fromBottom = b.scrollHeight - window.scrollY - b.clientHeight;
                     if (fromBottom < 4 || (_hasUnread && fromBottom < LOAD_NEWER_MARGIN)) {
                         if (!_isUpdating) {
                             console.log("Loading newer messages.");
@@ -537,7 +555,7 @@ module Messages {
                 }
 
                 var b = document.body;
-                if (b.scrollTop + b.clientHeight + 4 > b.scrollHeight) {
+                if (window.scrollY + b.clientHeight + 4 > b.scrollHeight) {
                     mouseDownStart = new Date().getTime();
 
                     setTimeout(function () {
@@ -573,4 +591,4 @@ module Messages {
         });
         location.href = "http://kokoro.io/client/control?event=loaded";
     });
-}
+} 
