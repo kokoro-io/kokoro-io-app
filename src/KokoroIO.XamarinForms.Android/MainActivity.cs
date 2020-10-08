@@ -13,9 +13,9 @@ namespace KokoroIO.XamarinForms.Droid
 {
     [Activity(
 #if DEBUG
-        Label = "dev)kokoro.io"
+        Label = "dev)kokoro.io", Icon = "@mipmap/icon_debug"
 #else
-        Label = "kokoro.io"
+        Label = "kokoro.io", Icon = "@mipmap/icon"
 #endif
         , Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.Multiple)]
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "image/*")]
