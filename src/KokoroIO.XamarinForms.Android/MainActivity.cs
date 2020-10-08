@@ -23,7 +23,7 @@ namespace KokoroIO.XamarinForms.Droid
     {
         private static System.WeakReference<MainActivity> _Current;
 
-        protected override void OnCreate(Bundle bundle)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
             var mp = App.Current?.MainPage;
 
@@ -32,7 +32,7 @@ namespace KokoroIO.XamarinForms.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
-            base.OnCreate(bundle);
+            base.OnCreate(savedInstanceState);
             _Current = new System.WeakReference<MainActivity>(this);
 
             var cid = Intent.Extras?.GetString("channelId");
@@ -48,7 +48,8 @@ namespace KokoroIO.XamarinForms.Droid
                     avm.SelectedChannel.GetOrCreateMessagesPage().SelectedMessageId = id;
                 }
 
-                global::Xamarin.Forms.Forms.Init(this, bundle);
+                Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+                global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
                 DependencyService.Register<IMediaPicker, Services.MediaPicker>();
                 LoadApplication(new App(avm));
 
@@ -58,7 +59,8 @@ namespace KokoroIO.XamarinForms.Droid
             var resolver = new SimpleContainer().Register(t => AndroidDevice.CurrentDevice);
             Resolver.ResetResolver(resolver.GetResolver());
 
-            global::Xamarin.Forms.Forms.Init(this, bundle);
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             DependencyService.Register<IMediaPicker, Services.MediaPicker>();
 
             LoadApplication(new App(channelId: cid));
