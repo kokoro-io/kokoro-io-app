@@ -166,20 +166,27 @@
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
-                        <views:RoundLabel
+                        <Frame
                             Grid.Column="4"
                             Margin="4,0"
+                            Padding="4,0"
                             CornerRadius="8"
                             MinimumWidthRequest="24"
                             VerticalOptions="Center"
-                            VerticalTextAlignment="Center"
-                            HorizontalTextAlignment="Center"
-                            TextColor="#fff"
                             BackgroundColor="#2C3E50"
-                            Font="Monospace,Bold"
-                            FontSize="Small"
-                            Text="{Binding UnreadCount, Converter={StaticResource targetNullValueConverter}}"
-                            IsVisible="{Binding IsUnreadCountVisible}" />
+                            BorderColor="#2C3E50"
+                            IsVisible="{Binding IsUnreadCountVisible}">
+                            <Label
+                                Margin="0"
+                                Padding="0"
+                                VerticalTextAlignment="Center"
+                                HorizontalTextAlignment="Center"
+                                TextColor="#fff"
+                                FontFamily="Monospace"
+                                FontAttributes="Bold"
+                                FontSize="Small"
+                                Text="{Binding UnreadCount, Converter={StaticResource targetNullValueConverter}}" />
+                        </Frame>
                     </Grid>
                 </ViewCell>
             </DataTemplate>

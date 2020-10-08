@@ -68,7 +68,6 @@
     <Compile Include="Renderers\CustomTableViewRenderer.cs" />
     <Compile Include="Renderers\ExpandableEditorRenderer.cs" />
     <Compile Include="Renderers\MessagesViewRenderer.cs" />
-    <Compile Include="Renderers\RoundLabelRenderer.cs" />
     <Compile Include="Services\AudioService.cs" />
     <Compile Include="Services\DeviceService.cs" />
     <Compile Include="Services\NotificationService.cs" />
