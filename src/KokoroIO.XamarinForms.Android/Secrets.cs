@@ -11,8 +11,5 @@ namespace KokoroIO.XamarinForms.Droid
             "323911141792"
 #endif
             ;
-
-        public const string ListenConnectionString = "Endpoint=sb://kokoro-io.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=I0TdAKFvK2KWOZ+7a0v+rLklDjuK9KgNulwzgiobbuk=";
-        public const string NotificationHubName = "kokoro-io-production";
     }
 }
