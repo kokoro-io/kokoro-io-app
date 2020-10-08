@@ -195,7 +195,7 @@ namespace KokoroIO.XamarinForms.Views
         private bool _IsReset;
         private bool? _HasUnread;
         private bool _IsRequestProcessing;
-        private bool _HtmlLoaded;
+        internal bool _HtmlLoaded;
 
         private int _UpdateRetryCount;
 

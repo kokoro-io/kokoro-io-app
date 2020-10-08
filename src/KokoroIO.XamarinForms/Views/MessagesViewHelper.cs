@@ -165,8 +165,7 @@ namespace KokoroIO.XamarinForms.Views
             const string PREFIX = "http://kokoro.io/client/control?event=loaded";
             if (url == PREFIX)
             {
-
-                // TODO: mv._HtmlLoaded = true;
+                mv._HtmlLoaded = true;
                 return true;
             }
             return false;

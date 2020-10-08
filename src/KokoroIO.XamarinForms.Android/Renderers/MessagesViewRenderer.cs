@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Android.Content;
+﻿using Android.Content;
 using Android.Webkit;
 using KokoroIO.XamarinForms.Droid.Renderers;
 using KokoroIO.XamarinForms.Views;
+using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 using AWebView = Android.Webkit.WebView;
@@ -196,7 +196,23 @@ namespace KokoroIO.XamarinForms.Droid.Renderers
                 var script = MessagesViewHelper.CreateScriptForRequest(mwv.Messages, reset, requests, hasUnread);
                 if (!string.IsNullOrEmpty(script))
                 {
-                    await InvokeScriptAsyncCore(script);
+                    for (var i = 0; i < 3; i++)
+                    {
+                        try
+                        {
+                            await InvokeScriptAsyncCore(script);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            TH.Error("Invoking script failed: {0}", ex);
+                            if (i == 2)
+                            {
+                                throw;
+                            }
+                            await Task.Delay(100);
+                        }
+                    }
                     return true;
                 }
             }
