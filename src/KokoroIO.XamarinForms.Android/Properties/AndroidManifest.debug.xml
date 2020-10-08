@@ -9,5 +9,5 @@
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.VIBRATE" />
-  <application android:label="dev)kokoro.io" android:icon="@drawable/kokoro"></application>
+  <application android:label="dev)kokoro.io" android:icon="@mipmap/icon_debug"></application>
 </manifest>
