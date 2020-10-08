@@ -1,11 +1,9 @@
 using System;
-using Realms;
 
 namespace KokoroIO.XamarinForms.Models.Data
 {
-    public class ImageHistory : RealmObject
+    public class ImageHistory
     {
-        [PrimaryKey]
         public string RawUrl { get; set; }
 
         public string Group { get; set; }

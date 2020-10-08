@@ -386,41 +386,35 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             try
             {
-                string channelId;
-                using (var realm = await RealmServices.GetInstanceAsync())
-                using (var trx = realm.BeginWrite())
+                var notifs = UserSettings.GetMessageNotifications();
+
+                var nf = SH.Notification;
+
+                foreach (var cvm in _Channels)
                 {
-                    var notifs = realm.All<MessageNotification>().ToList();
+                    var lastId = cvm.LatestReadMessageId;
 
-                    var nf = SH.Notification;
+                    var cnt = notifs.Count(n => n.ChannelId == cvm.Id && !(n.MessageId <= lastId));
 
-                    foreach (var cvm in _Channels)
+                    for (var i = notifs.Count - 1; i >= 0; i--)
                     {
-                        var lastId = cvm.LatestReadMessageId;
-
-                        var cnt = notifs.Count(n => n.ChannelId == cvm.Id && !(n.MessageId <= lastId));
-
-                        for (var i = notifs.Count - 1; i >= 0; i--)
+                        var n = notifs[i];
+                        if (n.ChannelId == cvm.Id)
                         {
-                            var n = notifs[i];
-                            if (n.ChannelId == cvm.Id)
+                            if (n.MessageId <= lastId)
                             {
-                                if (n.MessageId <= lastId)
-                                {
-                                    nf.CancelNotification(cvm.Id, n.NotificationId, cnt);
-                                    realm.Remove(n);
-                                    notifs.RemoveAt(i);
-                                }
+                                nf.CancelNotification(cvm.Id, n.NotificationId, cnt);
+                                notifs.RemoveAt(i);
                             }
                         }
                     }
-
-                    TH.Info("Notified channel: {0}", _SelectedChannelId ?? "n/a");
-                    TH.Info("Last channel: {0}", UserSettings.LastChannelId ?? "n/a");
-
-                    channelId = _SelectedChannelId ?? UserSettings.LastChannelId;
-                    trx.Commit();
                 }
+
+                TH.Info("Notified channel: {0}", _SelectedChannelId ?? "n/a");
+                TH.Info("Last channel: {0}", UserSettings.LastChannelId ?? "n/a");
+
+                var channelId = _SelectedChannelId ?? UserSettings.LastChannelId;
+                UserSettings.SetMessageNotifications(notifs);
 
                 SelectedChannel = _Channels.FirstOrDefault(c => c.Id == channelId);
                 _SelectedChannelId = null;
@@ -1232,24 +1226,21 @@ namespace KokoroIO.XamarinForms.ViewModels
                 {
                     await App.Current.SavePropertiesAsync();
 
-                    using (var r = await RealmServices.GetInstanceAsync())
-                    using (var c = r.BeginWrite())
+                    var imgs = UserSettings.GetImageHistories();
+                    var ih = imgs.FirstOrDefault(e => e.RawUrl == img.RawUrl);
+                    if (ih == null)
                     {
-                        var ih = r.Find<ImageHistory>(img.RawUrl);
-                        if (ih == null)
+                        ih = new ImageHistory()
                         {
-                            ih = new ImageHistory()
-                            {
-                                RawUrl = img.RawUrl,
-                                Title = title,
-                                ThumbnailUrl = img.ThumbnailUrl
-                            };
-                            r.Add(ih);
-                        }
-                        ih.LastUsed = DateTimeOffset.Now;
-
-                        c.Commit();
+                            RawUrl = img.RawUrl,
+                            Title = title,
+                            ThumbnailUrl = img.ThumbnailUrl
+                        };
+                        imgs.Add(ih);
                     }
+                    ih.LastUsed = DateTimeOffset.Now;
+
+                    UserSettings.SetImageHistories(imgs);
                 }
                 catch { }
 

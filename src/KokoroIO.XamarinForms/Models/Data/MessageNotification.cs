@@ -1,10 +1,7 @@
-using Realms;
-
 namespace KokoroIO.XamarinForms.Models.Data
 {
-    public class MessageNotification : RealmObject
+    public class MessageNotification
     {
-        [PrimaryKey]
         public long MessageId { get; set; }
 
         public string ChannelId { get; set; }

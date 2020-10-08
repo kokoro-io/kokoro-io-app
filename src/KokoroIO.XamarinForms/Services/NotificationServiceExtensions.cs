@@ -1,11 +1,12 @@
 using System;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
 
 namespace KokoroIO.XamarinForms.Services
 {
     internal static class NotificationServiceExtensions
     {
-        public static async void ShowNotificationAndSave(this INotificationService ps, Message message)
+        public static void ShowNotificationAndSave(this INotificationService ps, Message message)
         {
             if (ps == null)
             {
@@ -17,18 +18,12 @@ namespace KokoroIO.XamarinForms.Services
 
                 if (mid != null)
                 {
-                    using (var realm = await RealmServices.GetInstanceAsync())
-                    using (var trx = realm.BeginWrite())
+                    UserSettings.AddMessageNotification(new MessageNotification()
                     {
-                        var mn = new MessageNotification();
-                        mn.MessageId = message.Id;
-                        mn.ChannelId = message.Channel.Id;
-                        mn.NotificationId = mid;
-
-                        realm.Add(mn);
-
-                        trx.Commit();
-                    }
+                        MessageId = message.Id,
+                        ChannelId = message.Channel.Id,
+                        NotificationId = mid,
+                    });
                 }
             }
             catch (Exception ex)

@@ -1,5 +1,7 @@
-using System;
+using KokoroIO.XamarinForms.Models;
 using KokoroIO.XamarinForms.Models.Data;
+using System;
+using System.Linq;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -20,7 +22,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         public string ThumbnailUrl { get; }
         public string ThumbnailOrRawUrl => ThumbnailUrl ?? RawUrl;
 
-        public async void Select()
+        public void Select()
         {
             var mp = _Popup._Parent;
             if (mp.IsImageHistoryVisible)
@@ -30,15 +32,12 @@ namespace KokoroIO.XamarinForms.ViewModels
                 mp.IsImageHistoryVisible = false;
                 mp.ExpandsContents = true;
 
-                using (var r = await RealmServices.GetInstanceAsync())
-                using (var c = r.BeginWrite())
+                var imgs = UserSettings.GetImageHistories();
+                var ih = imgs.FirstOrDefault(e => e.RawUrl == RawUrl);
+                if (ih != null)
                 {
-                    var ih = r.Find<ImageHistory>(RawUrl);
-                    if (ih != null)
-                    {
-                        ih.LastUsed = DateTimeOffset.Now;
-                        c.Commit();
-                    }
+                    ih.LastUsed = DateTimeOffset.Now;
+                    UserSettings.SetImageHistories(imgs);
                 }
             }
         }

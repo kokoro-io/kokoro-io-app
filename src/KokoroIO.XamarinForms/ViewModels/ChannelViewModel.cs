@@ -1,11 +1,10 @@
+using KokoroIO.XamarinForms.Models;
+using KokoroIO.XamarinForms.Services;
+using KokoroIO.XamarinForms.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KokoroIO.XamarinForms.Models;
-using KokoroIO.XamarinForms.Models.Data;
-using KokoroIO.XamarinForms.Services;
-using KokoroIO.XamarinForms.Views;
 using Xamarin.Forms;
 using XDevice = Xamarin.Forms.Device;
 
@@ -273,7 +272,7 @@ namespace KokoroIO.XamarinForms.ViewModels
                         {
                             UpdateUnreadCount();
                             BeginUpdateLatestReadId();
-                            CancelNotificationsAsync(_LatestReadMessageId).GetHashCode();
+                            CancelNotifications(_LatestReadMessageId);
                         });
         }
 
@@ -654,7 +653,7 @@ namespace KokoroIO.XamarinForms.ViewModels
         {
             if (LatestMessageId == null || LatestMessageId <= LatestReadMessageId)
             {
-                ClearUnreadAsync().GetHashCode();
+                ClearUnread();
                 return;
             }
 
@@ -671,7 +670,7 @@ namespace KokoroIO.XamarinForms.ViewModels
             HasUnread = true;
         }
 
-        private async Task ClearUnreadAsync()
+        private void ClearUnread()
         {
             var hasUnread = _Unreads?.Count > 0 || _HasUnread;
 
@@ -687,11 +686,11 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 TH.Info("Clearing unreads in #{0} ({1})", DisplayName, Id);
 
-                await CancelNotificationsAsync(null).ConfigureAwait(false);
+                CancelNotifications(null);
             }
         }
 
-        private async Task CancelNotificationsAsync(int? latestReadMessageId)
+        private void CancelNotifications(int? latestReadMessageId)
         {
             if (Id == null)
             {
@@ -700,27 +699,24 @@ namespace KokoroIO.XamarinForms.ViewModels
 
             try
             {
-                using (var realm = await RealmServices.GetInstanceAsync())
-                using (var trx = realm.BeginWrite())
+                var lid = latestReadMessageId ?? int.MaxValue;
+                var notifs = UserSettings.GetMessageNotifications();
+                var ns = notifs.Where(n => n.ChannelId == Id && n.MessageId <= lid).ToList();
+
+                if (ns.Any())
                 {
-                    var lid = latestReadMessageId ?? int.MaxValue;
-                    var ns = realm.All<MessageNotification>().Where(n => n.ChannelId == Id && n.MessageId <= lid);
-
-                    if (ns.Any())
+                    var notification = SH.Notification;
+                    foreach (var n in ns)
                     {
-                        var notification = SH.Notification;
-                        foreach (var n in ns)
+                        try
                         {
-                            try
-                            {
-                                notification?.CancelNotification(n.ChannelId, n.NotificationId, 0);
-                            }
-                            catch { }
-
-                            realm.Remove(n);
+                            notification?.CancelNotification(n.ChannelId, n.NotificationId, 0);
                         }
-                        trx.Commit();
+                        catch { }
+
+                        notifs.Remove(n);
                     }
+                    UserSettings.SetMessageNotifications(notifs);
                 }
             }
             catch (Exception ex)

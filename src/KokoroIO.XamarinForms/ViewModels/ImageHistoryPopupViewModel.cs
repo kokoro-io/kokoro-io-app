@@ -1,5 +1,5 @@
+using KokoroIO.XamarinForms.Models;
 using System.Linq;
-using KokoroIO.XamarinForms.Models.Data;
 
 namespace KokoroIO.XamarinForms.ViewModels
 {
@@ -20,19 +20,13 @@ namespace KokoroIO.XamarinForms.ViewModels
             {
                 if (_Images == null)
                 {
-                    _Images = new ObservableRangeCollection<ImageHistoryViewModel>();
-                    BeginLoad();
+                    _Images = new ObservableRangeCollection<ImageHistoryViewModel>(
+                        UserSettings.GetImageHistories()
+                                       .OrderBy(e => e.IsFavored ? 0 : 1)
+                                       .ThenByDescending(e => e.LastUsed)
+                                       .Select(e => new ImageHistoryViewModel(this, e)));
                 }
                 return _Images;
-            }
-        }
-
-        private async void BeginLoad()
-        {
-            using (var r = await RealmServices.GetInstanceAsync())
-            {
-                var his = r.All<ImageHistory>().ToList();
-                _Images.ReplaceRange(his.OrderBy(e => e.IsFavored ? 0 : 1).ThenByDescending(e => e.LastUsed).Select(e => new ImageHistoryViewModel(this, e)));
             }
         }
     }

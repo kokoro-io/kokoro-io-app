@@ -1,4 +1,7 @@
-﻿using System;
+﻿using KokoroIO.XamarinForms.Models.Data;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Xamarin.Essentials;
 
@@ -76,6 +79,65 @@ namespace KokoroIO.XamarinForms.Models
             set => SetValue(value);
         }
 
+        #region MessageNotifications
+
+        private const string MESSAGE_NOTIFICATIONS = "MessageNotifications";
+
+        public static List<MessageNotification> GetMessageNotifications()
+        {
+            try
+            {
+                var js = Preferences.Get(MESSAGE_NOTIFICATIONS, null);
+                if (!string.IsNullOrEmpty(js))
+                {
+                    return JsonConvert.DeserializeObject<List<MessageNotification>>(js);
+                }
+            }
+            catch { }
+            return new List<MessageNotification>();
+        }
+
+        public static void AddMessageNotification(MessageNotification item)
+            => Preferences.Set(
+                MESSAGE_NOTIFICATIONS,
+                JsonConvert.SerializeObject(GetMessageNotifications().Where(e => e.MessageId != item.MessageId).Concat(new[] { item }).ToList()));
+
+        public static void SetMessageNotifications(IEnumerable<MessageNotification> items)
+            => Preferences.Set(
+                MESSAGE_NOTIFICATIONS,
+                JsonConvert.SerializeObject(items.ToList()));
+
+        #endregion MessageNotifications
+
+        #region ImageHistories
+
+        private const string IMAGE_HISTORIES = "ImageHistories";
+
+        public static List<ImageHistory> GetImageHistories()
+        {
+            try
+            {
+                var js = Preferences.Get(IMAGE_HISTORIES, null);
+                if (!string.IsNullOrEmpty(js))
+                {
+                    return JsonConvert.DeserializeObject<List<ImageHistory>>(js);
+                }
+            }
+            catch { }
+            return new List<ImageHistory>();
+        }
+
+        public static void AddImageHistory(ImageHistory item)
+            => Preferences.Set(
+                IMAGE_HISTORIES,
+                JsonConvert.SerializeObject(GetImageHistories().Where(e => e.RawUrl != item.RawUrl).Concat(new[] { item }).ToList()));
+
+        public static void SetImageHistories(IEnumerable<ImageHistory> items)
+            => Preferences.Set(
+                IMAGE_HISTORIES,
+                JsonConvert.SerializeObject(items.ToList()));
+
+        #endregion ImageHistories
 
 #if !MODEL_TESTS
 
