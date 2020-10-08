@@ -431,12 +431,6 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\visibility_off.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\Tabbar.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\Toolbar.axml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\mipmap-hdpi\icon_background.png" />
   </ItemGroup>
   <ItemGroup>
