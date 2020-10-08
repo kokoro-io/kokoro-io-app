@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
-    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
+    xmlns:v="clr-namespace:KokoroIO.XamarinForms.Views"
     xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
     Title="{Binding Title}"
@@ -37,22 +37,34 @@
         </Style>
         <Style
             x:Key="footerButtonStyle"
-            TargetType="xlabs:ImageButton">
+            TargetType="Button">
+            <Setter
+                Property="FontFamily"
+                Value="zmdi" />
             <Setter
                 Property="BackgroundColor"
+                Value="Transparent" />
+            <Setter
+                Property="BorderColor"
                 Value="Transparent" />
             <Setter
                 Property="Margin"
                 Value="0" />
             <Setter
-                Property="ImageWidthRequest"
-                Value="24" />
+                Property="Padding"
+                Value="0" />
             <Setter
-                Property="ImageHeightRequest"
+                Property="BorderWidth"
+                Value="0" />
+            <Setter
+                Property="FontSize"
                 Value="24" />
             <Setter
                 Property="WidthRequest"
                 Value="48" />
+            <Setter
+                Property="HeightRequest"
+                Value="24" />
         </Style>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
@@ -67,7 +79,7 @@
                 <Binding
                     Path="Channel.NotificationDisabled">
                     <Binding.Converter>
-                        <view:ConditionalConverter
+                        <v:ConditionalConverter
                             x:TypeArguments="sys:String"
                             True="Notifications disabled"
                             False="Notifications enabled" />
@@ -78,7 +90,7 @@
                 <Binding
                     Path="Channel.NotificationDisabled">
                     <Binding.Converter>
-                        <view:ConditionalConverter
+                        <v:ConditionalConverter
                             x:TypeArguments="FileImageSource"
                             True="notifications_off.png"
                             False="notifications.png" />
@@ -109,7 +121,7 @@
             <RowDefinition
                 Height="Auto" />
         </Grid.RowDefinitions>
-        <view:MessagesView
+        <v:MessagesView
             LoadOlderCommand="{Binding PrependCommand}"
             RefreshCommand="{Binding AppendCommand}"
             NavigatingCommand="{Binding OpenUrlCommand}"
@@ -180,65 +192,61 @@
                             Value="False" />
                     </DataTrigger>
                 </StackLayout.Triggers>
-
-                <xlabs:ImageButton
+                <Button
                     Style="{StaticResource footerButtonStyle}"
-                    Image="image.png"
+                    Text="{x:Static v:Zmdi.ImageOutline}"
                     Command="{Binding UploadImageCommand}"
                     IsVisible="{Binding SupportsImageUpload}" />
-
-                <xlabs:ImageButton
+                <Button
                     Style="{StaticResource footerButtonStyle}"
-                    Image="camera.png"
+                    Text="{x:Static v:Zmdi.Camera}"
                     Command="{Binding TakePhotoCommand}"
                     IsVisible="{Binding SupportsTakePhoto}" />
-
-                <xlabs:ImageButton
+                <Button
                     Style="{StaticResource footerButtonStyle}"
-                    Image="history.png"
+                    Text="{x:Static v:Zmdi.TimeRestore}"
                     Command="{Binding ShowImageHistoryCommand}" />
-
-                <xlabs:ImageButton
+                <Button
                     Style="{StaticResource footerButtonStyle}"
-                    Image="visibility.png"
+                    Text="{x:Static v:Zmdi.Eye}"
                     Command="{Binding ToggleNsfwCommand}">
-                    <xlabs:ImageButton.Triggers>
+                    <Button.Triggers>
                         <DataTrigger
-                            TargetType="xlabs:ImageButton"
+                            TargetType="Button"
                             Binding="{Binding IsNsfw}"
                             Value="True">
                             <Setter
-                                Property="Image"
-                                Value="visibility_off.png" />
+                                Property="Text"
+                                Value="{x:Static v:Zmdi.EyeOff}" />
                         </DataTrigger>
-                    </xlabs:ImageButton.Triggers>
-                </xlabs:ImageButton>
-
-                <xlabs:ImageButton
+                    </Button.Triggers>
+                </Button>
+                <Button
                     Style="{StaticResource footerButtonStyle}"
-                    Image="expand_content.png"
+                    Text="{x:Static v:Zmdi.LayerOff}"
                     Command="{Binding ToggleExpandsContentsCommand}">
-                    <xlabs:ImageButton.Triggers>
+                    <Button.Triggers>
                         <DataTrigger
-                            TargetType="xlabs:ImageButton"
+                            TargetType="Button"
                             Binding="{Binding ExpandsContents}"
-                            Value="False">
+                            Value="True">
                             <Setter
-                                Property="Image"
-                                Value="skip_content.png" />
+                                Property="Text"
+                                Value="{x:Static v:Zmdi.Layer}" />
                         </DataTrigger>
-                    </xlabs:ImageButton.Triggers>
-                </xlabs:ImageButton>
+                    </Button.Triggers>
+                </Button>
+
             </StackLayout>
 
-            <view:MembersLabel
+            <v:MembersLabel
                 LineBreakMode="NoWrap"
                 VerticalTextAlignment="Center"
                 IsVisible="{Binding ProfileCandicates.HasResult}"
                 Entities="{Binding ProfileCandicates.Result}"
                 SelectCommand="{Binding  ProfileCandicates.SelectCommand}" />
 
-            <view:ChannelsLabel
+            <v:ChannelsLabel
                 LineBreakMode="NoWrap"
                 VerticalTextAlignment="Center"
                 IsVisible="{Binding ChannelCandicates.HasResult}"
@@ -255,7 +263,7 @@
                 <ColumnDefinition
                     Width="Auto" />
             </Grid.ColumnDefinitions>
-            <view:ExpandableEditor
+            <v:ExpandableEditor
                 x:Name="editor"
                 FontSize="Small"
                 HorizontalOptions="FillAndExpand"
@@ -268,19 +276,20 @@
                 PostCommand="{Binding PostCommand}"
                 FilePasted="ExpandableEditor_FilePasted"
                 Unfocused="ExpandableEditor_Unfocused" />
-            <xlabs:ImageButton
+            <Button
                 Grid.Column="1"
                 Style="{StaticResource footerButtonStyle}"
-                Image="send.png"
+                Text="{x:Static v:Zmdi.MailSend}"
                 VerticalOptions="End"
+                Margin="0,4"
                 Command="{Binding PostCommand}" />
         </Grid>
 
-        <view:MessagesPageProfile
+        <v:MessagesPageProfile
             Grid.RowSpan="3" />
-        <view:MessagesPageImageHistory
+        <v:MessagesPageImageHistory
             Grid.RowSpan="3" />
-        <view:CommandListPopup
+        <v:CommandListPopup
             Grid.RowSpan="3" />
 
         <!--TODO: support dedicated contents <xlabs:PopupLayout

@@ -142,10 +142,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
-    <Content Include="camera.png" />
     <Content Include="email.png" />
-    <Content Include="expand_content.png" />
-    <Content Include="history.png" />
     <Content Include="image.png" />
     <Content Include="image_white.png" />
     <Content Include="info.png" />
@@ -157,11 +154,8 @@
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Resources\ring.mp3" />
     <Content Include="search.png" />
-    <Content Include="send.png" />
     <Content Include="settings.png" />
-    <Content Include="skip_content.png" />
     <Content Include="slideout.png" />
-    <Content Include="visibility.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

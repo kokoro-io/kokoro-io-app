@@ -281,15 +281,6 @@
     <BundleResource Include="Resources\account_white%403x.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\camera.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\camera%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\camera%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\email.png" />
   </ItemGroup>
   <ItemGroup>
@@ -297,24 +288,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\email%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\expand_content.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\expand_content%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\expand_content%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\history.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\history%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\history%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\image.png" />
@@ -416,15 +389,6 @@
     <BundleResource Include="Resources\search%403x.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\send.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\send%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\send%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\settings.png" />
   </ItemGroup>
   <ItemGroup>
@@ -432,15 +396,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\settings%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\skip_content.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\skip_content%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\skip_content%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\slideout.png" />
@@ -465,23 +420,5 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\tab_feed%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\visibility.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\visibility%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\visibility%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\visibility_off.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\visibility_off%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\visibility_off%403x.png" />
   </ItemGroup>
 </Project>

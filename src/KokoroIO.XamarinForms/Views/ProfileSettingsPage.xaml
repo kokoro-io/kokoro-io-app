@@ -2,8 +2,8 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
+    xmlns:v="clr-namespace:KokoroIO.XamarinForms.Views"
     x:Class="KokoroIO.XamarinForms.Views.ProfileSettingsPage"
     Title="{Binding Title}"
     x:DataType="vm:ProfileSettingsViewModel">
@@ -17,22 +17,34 @@
     <ContentPage.Resources>
         <Style
             x:Key="footerButtonStyle"
-            TargetType="xlabs:ImageButton">
+            TargetType="Button">
+            <Setter
+                Property="FontFamily"
+                Value="zmdi" />
             <Setter
                 Property="BackgroundColor"
+                Value="Transparent" />
+            <Setter
+                Property="BorderColor"
                 Value="Transparent" />
             <Setter
                 Property="Margin"
                 Value="0" />
             <Setter
-                Property="ImageWidthRequest"
-                Value="24" />
+                Property="Padding"
+                Value="0" />
             <Setter
-                Property="ImageHeightRequest"
+                Property="BorderWidth"
+                Value="0" />
+            <Setter
+                Property="FontSize"
                 Value="24" />
             <Setter
                 Property="WidthRequest"
                 Value="48" />
+            <Setter
+                Property="HeightRequest"
+                Value="24" />
         </Style>
     </ContentPage.Resources>
     <Grid
@@ -70,14 +82,13 @@
                     Margin="8"
                     Source="{Binding Application.LoginUser.Avatar120px}" />
 
-                <xlabs:ImageButton
+                <Button
                     Style="{StaticResource footerButtonStyle}"
-                    Image="image.png"
+                    Text="{x:Static v:Zmdi.ImageOutline}"
                     Command="{Binding SelectPhotoCommand}" />
-
-                <xlabs:ImageButton
+                <Button
                     Style="{StaticResource footerButtonStyle}"
-                    Image="camera.png"
+                    Text="{x:Static v:Zmdi.Camera}"
                     Command="{Binding TakePhotoCommand}" />
 
             </StackLayout>

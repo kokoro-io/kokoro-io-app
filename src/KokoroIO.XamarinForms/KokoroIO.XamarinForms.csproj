@@ -11,7 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\*" />
+    <None Remove="Resources\Gyazo.png" />
+    <None Remove="Resources\Material-Design-Iconic-Font.ttf" />
+    <None Remove="Resources\Messages.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\*" />
+    <EmbeddedResource Include="Resources\Gyazo.png" />
+    <EmbeddedResource Include="Resources\Material-Design-Iconic-Font.ttf" />
+    <EmbeddedResource Include="Resources\Messages.html" />
   </ItemGroup>
 
   <ItemGroup>
