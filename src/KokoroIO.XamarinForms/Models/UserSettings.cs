@@ -1,5 +1,6 @@
 ﻿using KokoroIO.XamarinForms.Models.Data;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,19 @@ namespace KokoroIO.XamarinForms.Models
 {
     internal sealed class UserSettings
     {
+        public static string DeviceId
+        {
+            get
+            {
+                var did = Preferences.Get(nameof(DeviceId), null);
+                if (string.IsNullOrEmpty(did))
+                {
+                    Preferences.Set(nameof(DeviceId), did = Guid.NewGuid().ToString());
+                }
+                return did;
+            }
+        }
+
         public static string MailAddress
         {
             get => GetString();

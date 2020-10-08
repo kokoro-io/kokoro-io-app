@@ -18,18 +18,7 @@ namespace KokoroIO.XamarinForms.UWP.Services
                 .FirstOrDefault(n => n.Type == HostNameType.DomainName)?.DisplayName ?? "Universal Windows Platform";
 
         public DeviceKind Kind => DeviceKind.Uwp;
-
-        public byte[] GetIdentifier()
-        {
-            var token = Windows.System.Profile.HardwareIdentification.GetPackageSpecificToken(null);
-            var dr = Windows.Storage.Streams.DataReader.FromBuffer(token.Id);
-
-            var buf = new byte[token.Id.Length];
-            dr.ReadBytes(buf);
-
-            return buf;
-        }
-
+         
         public float GetDisplayScale()
             => (float)DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
     }

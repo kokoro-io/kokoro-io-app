@@ -6,8 +6,6 @@ namespace KokoroIO.XamarinForms.Services
 
         DeviceKind Kind { get; }
 
-        byte[] GetIdentifier();
-
         float GetDisplayScale();
     }
 }

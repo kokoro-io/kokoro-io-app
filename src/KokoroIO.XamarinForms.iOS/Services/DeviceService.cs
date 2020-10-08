@@ -14,9 +14,6 @@ namespace KokoroIO.XamarinForms.iOS.Services
 
         public DeviceKind Kind => DeviceKind.Ios;
 
-        public byte[] GetIdentifier()
-            => UIKit.UIDevice.CurrentDevice.IdentifierForVendor.GetBytes();
-
         public float GetDisplayScale()
             => (float)UIScreen.MainScreen.Scale;
     }

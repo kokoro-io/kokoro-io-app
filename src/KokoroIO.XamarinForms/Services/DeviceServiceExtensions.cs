@@ -1,5 +1,5 @@
+using KokoroIO.XamarinForms.Models;
 using System;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -11,8 +11,7 @@ namespace KokoroIO.XamarinForms.Services
 
         public static string GetDeviceIdentifierString(this IDeviceService ds)
         {
-            var hash = TokenName.Select(ch => (byte)ch).Concat(ds.GetIdentifier()).ToArray();
-
+            var hash = Encoding.UTF8.GetBytes(UserSettings.DeviceId);
             hash = SHA256.Create().ComputeHash(hash);
 
             var sb = new StringBuilder(Convert.ToBase64String(hash));
