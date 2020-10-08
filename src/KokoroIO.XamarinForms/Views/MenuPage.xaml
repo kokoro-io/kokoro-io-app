@@ -1,30 +1,66 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
-    xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
+    xmlns:v="clr-namespace:KokoroIO.XamarinForms.Views"
     x:Class="KokoroIO.XamarinForms.Views.MenuPage"
     Title="{Binding Title}"
     x:DataType="vm:MenuViewModel">
     <ContentPage.Resources>
         <Style
-            x:Key="footerButtonStyle"
-            TargetType="xlabs:ImageButton">
+            x:Key="imageButtonStackLayoutStyle"
+            TargetType="StackLayout">
             <Setter
-                Property="BackgroundColor"
-                Value="Transparent" />
+                Property="Orientation"
+                Value="Horizontal" />
+            <Setter
+                Property="Spacing"
+                Value="0" />
+            <Setter
+                Property="Margin"
+                Value="4,0" />
+            <Setter
+                Property="Padding"
+                Value="4" />
+        </Style>
+        <Style
+            x:Key="iconStyle"
+            TargetType="Label">
+            <Setter
+                Property="FontFamily"
+                Value="zmdi" />
             <Setter
                 Property="Margin"
                 Value="0" />
             <Setter
-                Property="ImageWidthRequest"
+                Property="Padding"
+                Value="0" />
+            <Setter
+                Property="FontSize"
                 Value="24" />
             <Setter
-                Property="ImageHeightRequest"
+                Property="WidthRequest"
                 Value="24" />
+            <Setter
+                Property="HeightRequest"
+                Value="24" />
+            <Setter
+                Property="VerticalOptions"
+                Value="Center" />
+        </Style>
+        <Style
+            x:Key="captionStyle"
+            TargetType="Label">
+            <Setter
+                Property="Margin"
+                Value="2,0,0,0" />
+            <Setter
+                Property="FontSize"
+                Value="16" />
+            <Setter
+                Property="VerticalOptions"
+                Value="Center" />
         </Style>
     </ContentPage.Resources>
     <Grid
@@ -77,7 +113,7 @@
 
         </Grid>
 
-        <view:ChannelsView
+        <v:ChannelsView
             Grid.Row="2"
             VerticalOptions="Fill"
             ItemsSource="{Binding Channels}" />
@@ -86,27 +122,46 @@
             Grid.Row="3"
             Orientation="Horizontal"
             HorizontalOptions="Start">
-            <xlabs:ImageButton
-                Style="{StaticResource footerButtonStyle}"
-                Image="search.png"
-                Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='Channels[{0}]'}"
-                Command="{Binding Application.ChannelListCommand}">
-                <xlabs:ImageButton.Triggers>
-                    <DataTrigger
-                        TargetType="xlabs:ImageButton"
-                        Binding="{Binding Application.LoginUser.InvitedChannelsCount}"
-                        Value="0">
-                        <Setter
-                            Property="Text"
-                            Value="Channels" />
-                    </DataTrigger>
-                </xlabs:ImageButton.Triggers>
-            </xlabs:ImageButton>
-            <xlabs:ImageButton
-                Style="{StaticResource footerButtonStyle}"
-                Image="settings.png"
-                Text="Settings"
-                Command="{Binding Application.SettingsCommand}" />
+
+            <StackLayout
+                Style="{StaticResource imageButtonStackLayoutStyle}">
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding Application.ChannelListCommand}" />
+                </StackLayout.GestureRecognizers>
+                <Label
+                    Style="{StaticResource iconStyle}"
+                    Text="{x:Static v:Zmdi.Search}" />
+                <Label
+                    Style="{StaticResource captionStyle}"
+                    Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='CHANNELS[{0}]'}">
+                    <Label.Triggers>
+                        <DataTrigger
+                            TargetType="Label"
+                            Binding="{Binding Application.LoginUser.InvitedChannelsCount}"
+                            Value="0">
+                            <Setter
+                                Property="Text"
+                                Value="CHANNELS" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </StackLayout>
+
+            <StackLayout
+                Style="{StaticResource imageButtonStackLayoutStyle}">
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding Application.SettingsCommand}" />
+                </StackLayout.GestureRecognizers>
+                <Label
+                    Style="{StaticResource iconStyle}"
+                    Text="{x:Static v:Zmdi.Settings}" />
+                <Label
+                    Style="{StaticResource captionStyle}"
+                    Text="SETTINGS" />
+            </StackLayout>
+
         </StackLayout>
     </Grid>
 </ContentPage>

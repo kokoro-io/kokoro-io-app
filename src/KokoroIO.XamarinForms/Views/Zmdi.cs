@@ -10,5 +10,8 @@
         public static string LayerOff => "\uf18b";
         public static string Layer => "\uf18c";
         public static string MailSend => "\uf194";
+        public static string Search => "\uf1c3";
+        public static string Settings => "\uf1c6";
+        public static string Email => "\uf15a";
     }
 }

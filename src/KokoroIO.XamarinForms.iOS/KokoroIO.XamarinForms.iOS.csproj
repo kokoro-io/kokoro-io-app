@@ -281,15 +281,6 @@
     <BundleResource Include="Resources\account_white%403x.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\email.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\email%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\email%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\image.png" />
   </ItemGroup>
   <ItemGroup>
@@ -378,24 +369,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\ring.mp3" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\search.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\search%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\search%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\settings.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\settings%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\settings%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\slideout.png" />
