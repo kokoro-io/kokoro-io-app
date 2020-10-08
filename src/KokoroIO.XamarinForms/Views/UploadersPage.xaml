@@ -2,9 +2,12 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.UploadersPage"
-    Title="Choose uploader">
-    <Grid>
+    Title="Choose uploader"
+    x:DataType="vm:UploadersViewModel">
+    <Grid
+        x:DataType="vm:UploadersViewModel">
         <Grid.RowDefinitions>
             <RowDefinition
                 Height="Auto" />
@@ -22,8 +25,10 @@
             CachingStrategy="RecycleElement"
             ItemSelected="ListView_ItemSelected">
             <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
+                <DataTemplate
+                    x:DataType="vm:UploaderInfo">
+                    <ViewCell
+                        x:DataType="vm:UploaderInfo">
                         <Grid>
                             <Label
                                 Text="{Binding DisplayName}"

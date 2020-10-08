@@ -7,106 +7,106 @@
     xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.MenuPage"
-    Title="{Binding Title}">
+    Title="{Binding Title}"
+    x:DataType="vm:MenuViewModel">
     <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style
-                x:Key="footerButtonStyle"
-                TargetType="xlabs:ImageButton">
-                <Setter
-                    Property="BackgroundColor"
-                    Value="Transparent" />
-                <Setter
-                    Property="Margin"
-                    Value="0" />
-                <Setter
-                    Property="ImageWidthRequest"
-                    Value="24" />
-                <Setter
-                    Property="ImageHeightRequest"
-                    Value="24" />
-            </Style>
-        </ResourceDictionary>
+        <Style
+            x:Key="footerButtonStyle"
+            TargetType="xlabs:ImageButton">
+            <Setter
+                Property="BackgroundColor"
+                Value="Transparent" />
+            <Setter
+                Property="Margin"
+                Value="0" />
+            <Setter
+                Property="ImageWidthRequest"
+                Value="24" />
+            <Setter
+                Property="ImageHeightRequest"
+                Value="24" />
+        </Style>
     </ContentPage.Resources>
-    <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid
-                x:Name="LogoImageGrid"
-                BackgroundColor="#2C3E50"
-                HeightRequest="32">
-                <Image
-                    Margin="8,4"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    Source="kokoroio_white.png" />
-            </Grid>
-
-            <Grid
-                Grid.Row="1"
-                BackgroundColor="Transparent">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="Auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.GestureRecognizers>
-                    <TapGestureRecognizer
-                        Command="{Binding Application.SettingsCommand}"
-                        CommandParameter="{x:Type vm:ProfileSettingsViewModel}" />
-                </Grid.GestureRecognizers>
-
-                <Image
-                    WidthRequest="40"
-                    HeightRequest="40"
-                    Margin="8"
-                    Source="{Binding Application.LoginUser.DisplayAvatar}" />
-
-                <Label
-                    Grid.Column="1"
-                    Margin="8"
-                    VerticalOptions="Center"
-                    Text="{Binding Application.LoginUser.DisplayName}" />
-
-            </Grid>
-
-            <view:ChannelsView
-                Grid.Row="2"
-                VerticalOptions="Fill"
-                ItemsSource="{Binding Channels}" />
-
-            <StackLayout
-                Grid.Row="3"
-                Orientation="Horizontal"
-                HorizontalOptions="Start">
-                <xlabs:ImageButton
-                    Style="{StaticResource footerButtonStyle}"
-                    Image="search.png"
-                    Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='Channels[{0}]'}"
-                    Command="{Binding Application.ChannelListCommand}">
-                    <xlabs:ImageButton.Triggers>
-                        <DataTrigger 
-                            TargetType="xlabs:ImageButton"
-                            Binding="{Binding Application.LoginUser.InvitedChannelsCount}"
-                            Value="0">
-                            <Setter Property="Text" Value="Channels" />
-                        </DataTrigger>
-                    </xlabs:ImageButton.Triggers>
-                </xlabs:ImageButton>
-                <xlabs:ImageButton
-                    Style="{StaticResource footerButtonStyle}"
-                    Image="settings.png"
-                    Text="Settings"
-                    Command="{Binding Application.SettingsCommand}" />
-            </StackLayout>
+    <Grid
+        x:DataType="vm:MenuViewModel">
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid
+            x:Name="LogoImageGrid"
+            BackgroundColor="#2C3E50"
+            HeightRequest="32">
+            <Image
+                Margin="8,4"
+                VerticalOptions="Center"
+                HorizontalOptions="Start"
+                Source="kokoroio_white.png" />
         </Grid>
-    </ContentPage.Content>
+
+        <Grid
+            Grid.Row="1"
+            BackgroundColor="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding Application.SettingsCommand}"
+                    CommandParameter="{x:Type vm:ProfileSettingsViewModel}" />
+            </Grid.GestureRecognizers>
+
+            <Image
+                WidthRequest="40"
+                HeightRequest="40"
+                Margin="8"
+                Source="{Binding Application.LoginUser.DisplayAvatar}" />
+
+            <Label
+                Grid.Column="1"
+                Margin="8"
+                VerticalOptions="Center"
+                Text="{Binding Application.LoginUser.DisplayName}" />
+
+        </Grid>
+
+        <view:ChannelsView
+            Grid.Row="2"
+            VerticalOptions="Fill"
+            ItemsSource="{Binding Channels}" />
+
+        <StackLayout
+            Grid.Row="3"
+            Orientation="Horizontal"
+            HorizontalOptions="Start">
+            <xlabs:ImageButton
+                Style="{StaticResource footerButtonStyle}"
+                Image="search.png"
+                Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='Channels[{0}]'}"
+                Command="{Binding Application.ChannelListCommand}">
+                <xlabs:ImageButton.Triggers>
+                    <DataTrigger
+                        TargetType="xlabs:ImageButton"
+                        Binding="{Binding Application.LoginUser.InvitedChannelsCount}"
+                        Value="0">
+                        <Setter
+                            Property="Text"
+                            Value="Channels" />
+                    </DataTrigger>
+                </xlabs:ImageButton.Triggers>
+            </xlabs:ImageButton>
+            <xlabs:ImageButton
+                Style="{StaticResource footerButtonStyle}"
+                Image="settings.png"
+                Text="Settings"
+                Command="{Binding Application.SettingsCommand}" />
+        </StackLayout>
+    </Grid>
 </ContentPage>

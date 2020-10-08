@@ -2,9 +2,10 @@
 <ContentPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels" 
+    xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.NotificationSettingsPage"
-    Title="{Binding Title}">
+    Title="{Binding Title}"
+    x:DataType="vm:NotificationSettingsViewModel">
     <ContentPage.Icon>
         <OnPlatform
             x:TypeArguments="FileImageSource">
@@ -21,49 +22,48 @@
             </OnPlatform.Platforms>
         </OnPlatform>
     </ContentPage.Icon>
-    <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
+    <Grid
+        x:DataType="vm:NotificationSettingsViewModel">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
 
-            <TableView>
-                <TableView.Root>
-                    <TableRoot>
-                        <TableSection
-                            Title="General Settings">
-                            <SwitchCell
-                                Text="Enable background push notification."
-                                On="{Binding EnablePushNotification}" />
-                            <SwitchCell
-                                Text="Play ringtone when a new message posted."
-                                On="{Binding PlayRingtone}" />
-                        </TableSection>
-                        <TableSection
-                            Title="Visual Studio Mobile Center">
-                            <SwitchCell
-                                Text="Analytics"
-                                On="{Binding MobileCenterAnalyticsEnabled}" />
-                            <SwitchCell
-                                Text="Crashes"
-                                On="{Binding MobileCenterCrashesEnabled}" />
-                            <SwitchCell
-                                Text="Distribute"
-                                On="{Binding MobileCenterDistributeEnabled}" />
-                        </TableSection>
-                    </TableRoot>
-                </TableView.Root>
-            </TableView>
+        <TableView>
+            <TableView.Root>
+                <TableRoot>
+                    <TableSection
+                        Title="General Settings">
+                        <SwitchCell
+                            Text="Enable background push notification."
+                            On="{Binding EnablePushNotification}" />
+                        <SwitchCell
+                            Text="Play ringtone when a new message posted."
+                            On="{Binding PlayRingtone}" />
+                    </TableSection>
+                    <TableSection
+                        Title="Visual Studio Mobile Center">
+                        <SwitchCell
+                            Text="Analytics"
+                            On="{Binding MobileCenterAnalyticsEnabled}" />
+                        <SwitchCell
+                            Text="Crashes"
+                            On="{Binding MobileCenterCrashesEnabled}" />
+                        <SwitchCell
+                            Text="Distribute"
+                            On="{Binding MobileCenterDistributeEnabled}" />
+                    </TableSection>
+                </TableRoot>
+            </TableView.Root>
+        </TableView>
 
-            <Grid
-                Grid.Row="1">
-                <Button
-                    HorizontalOptions="End"
-                    Text="Back"
-                    Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
-            </Grid>
+        <Grid
+            Grid.Row="1">
+            <Button
+                HorizontalOptions="End"
+                Text="Back"
+                Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
         </Grid>
-    </ContentPage.Content>
+    </Grid>
 </ContentPage>

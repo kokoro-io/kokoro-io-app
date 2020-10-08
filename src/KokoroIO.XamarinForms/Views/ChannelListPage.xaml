@@ -5,133 +5,133 @@
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.ChannelListPage"
-    Title="{Binding Title}">
+    Title="{Binding Title}"
+    x:DataType="vm:ChannelListViewModel">
     <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style
-                x:Key="imageButtonStyle"
-                TargetType="xlabs:ImageButton">
-                <Setter
-                    Property="BackgroundColor"
-                    Value="Transparent" />
-                <Setter
-                    Property="Margin"
-                    Value="0" />
-                <Setter
-                    Property="ImageWidthRequest"
-                    Value="24" />
-                <Setter
-                    Property="ImageHeightRequest"
-                    Value="24" />
-            </Style>
-        </ResourceDictionary>
+        <Style
+            x:Key="imageButtonStyle"
+            TargetType="xlabs:ImageButton">
+            <Setter
+                Property="BackgroundColor"
+                Value="Transparent" />
+            <Setter
+                Property="Margin"
+                Value="0" />
+            <Setter
+                Property="ImageWidthRequest"
+                Value="24" />
+            <Setter
+                Property="ImageHeightRequest"
+                Value="24" />
+        </Style>
     </ContentPage.Resources>
-    <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
+    <Grid
+        x:DataType="vm:ChannelListViewModel">
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
 
-            <StackLayout
-                Orientation="Horizontal"
-                HorizontalOptions="Start">
-                <xlabs:ImageButton
-                    Image="search.png"
-                    Text="Public"
-                    Command="{Binding ShowInvitationsCommand}"
-                    CommandParameter="False">
-                    <xlabs:ImageButton.Style>
-                        <Style
-                            TargetType="xlabs:ImageButton"
-                            BasedOn="{StaticResource imageButtonStyle}">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    TargetType="xlabs:ImageButton"
-                                    Binding="{Binding ShowInvitations}"
-                                    Value="False">
-                                    <Setter
-                                        Property="TextColor"
-                                        Value="#18BC9C" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </xlabs:ImageButton.Style>
-                </xlabs:ImageButton>
-                <xlabs:ImageButton
-                    Image="email.png"
-                    Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='Invited[{0}]'}"
-                    Command="{Binding ShowInvitationsCommand}"
-                    CommandParameter="True">
-                    <xlabs:ImageButton.Style>
-                        <Style
-                            TargetType="xlabs:ImageButton"
-                            BasedOn="{StaticResource imageButtonStyle}">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    TargetType="xlabs:ImageButton"
-                                    Binding="{Binding ShowInvitations}"
-                                    Value="True">
-                                    <Setter
-                                        Property="TextColor"
-                                        Value="#18BC9C" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </xlabs:ImageButton.Style>
-                </xlabs:ImageButton>
-            </StackLayout>
+        <StackLayout
+            Orientation="Horizontal"
+            HorizontalOptions="Start">
+            <xlabs:ImageButton
+                Image="search.png"
+                Text="Public"
+                Command="{Binding ShowInvitationsCommand}"
+                CommandParameter="False">
+                <xlabs:ImageButton.Style>
+                    <Style
+                        TargetType="xlabs:ImageButton"
+                        BasedOn="{StaticResource imageButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger
+                                TargetType="xlabs:ImageButton"
+                                Binding="{Binding ShowInvitations}"
+                                Value="False">
+                                <Setter
+                                    Property="TextColor"
+                                    Value="#18BC9C" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </xlabs:ImageButton.Style>
+            </xlabs:ImageButton>
+            <xlabs:ImageButton
+                Image="email.png"
+                Text="{Binding Application.LoginUser.InvitedChannelsCount, StringFormat='Invited[{0}]'}"
+                Command="{Binding ShowInvitationsCommand}"
+                CommandParameter="True">
+                <xlabs:ImageButton.Style>
+                    <Style
+                        TargetType="xlabs:ImageButton"
+                        BasedOn="{StaticResource imageButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger
+                                TargetType="xlabs:ImageButton"
+                                Binding="{Binding ShowInvitations}"
+                                Value="True">
+                                <Setter
+                                    Property="TextColor"
+                                    Value="#18BC9C" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </xlabs:ImageButton.Style>
+            </xlabs:ImageButton>
+        </StackLayout>
 
-            <Entry
-                Grid.Row="1"
-                Margin="4"
-                FontSize="Medium"
-                Text="{Binding Query}" />
+        <Entry
+            Grid.Row="1"
+            Margin="4"
+            FontSize="Medium"
+            Text="{Binding Query}" />
 
-            <ListView
-                Grid.Row="2"
-                Margin="0,4"
-                ItemsSource="{Binding Channels}"
-                HasUnevenRows="True"
-                ItemSelected="ListView_ItemSelected">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout>
-                                <Label
-                                    FontSize="Medium"
-                                    Margin="8,0"
-                                    Text="{Binding DisplayName}" />
-                                <Label
-                                    FontSize="Small"
-                                    Margin="12,0"
-                                    Text="{Binding Description}" />
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+        <ListView
+            Grid.Row="2"
+            Margin="0,4"
+            ItemsSource="{Binding Channels}"
+            HasUnevenRows="True"
+            ItemSelected="ListView_ItemSelected">
+            <ListView.ItemTemplate>
+                <DataTemplate
+                    x:DataType="vm:ChannelViewModel">
+                    <ViewCell
+                        x:DataType="vm:ChannelViewModel">
+                        <StackLayout>
+                            <Label
+                                FontSize="Medium"
+                                Margin="8,0"
+                                Text="{Binding DisplayName}" />
+                            <Label
+                                FontSize="Small"
+                                Margin="12,0"
+                                Text="{Binding Description}" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
-            <ActivityIndicator
-                Grid.Row="2"
-                VerticalOptions="Center"
-                HorizontalOptions="Fill"
-                IsRunning="{Binding IsBusy}"
-                IsVisible="{Binding IsBusy}" />
+        <ActivityIndicator
+            Grid.Row="2"
+            VerticalOptions="Center"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}" />
 
-            <StackLayout
-                Grid.Row="3"
-                Orientation="Horizontal"
-                HorizontalOptions="End">
-                <Button
-                    Text="Back"
-                    Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
-            </StackLayout>
-        </Grid>
-    </ContentPage.Content>
+        <StackLayout
+            Grid.Row="3"
+            Orientation="Horizontal"
+            HorizontalOptions="End">
+            <Button
+                Text="Back"
+                Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
+        </StackLayout>
+    </Grid>
 </ContentPage>

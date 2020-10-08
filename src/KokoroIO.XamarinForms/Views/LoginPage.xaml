@@ -4,71 +4,64 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels;"
     x:Class="KokoroIO.XamarinForms.Views.LoginPage"
-    IsBusy="{Binding IsBusy}">
+    IsBusy="{Binding IsBusy}"
+    x:DataType="vm:LoginViewModel">
     <ContentPage.BindingContext>
         <vm:LoginViewModel />
     </ContentPage.BindingContext>
-    <ContentPage.Content>
-        <StackLayout
-            Spacing="20"
-            Padding="15">
-            <Label
-                Text="Mail Address"
-                FontSize="Medium" />
-            <Entry
-                x:Name="mailAddress"
-                FontSize="Medium"
-                Keyboard="Email"
-                Text="{Binding MailAddress}"
-                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
-                Completed="MailAddress_Completed" />
-            <Label
-                Text="Password"
-                FontSize="Medium" />
-            <Entry
-                x:Name="password"
-                FontSize="Medium"
-                IsPassword="True"
-                Text="{Binding Password}"
-                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
-                Completed="Password_Completed" />
+    <StackLayout
+        x:DataType="vm:LoginViewModel"
+        Spacing="20"
+        Padding="15">
+        <Label
+            Text="Mail Address"
+            FontSize="Medium" />
+        <Entry
+            x:Name="mailAddress"
+            FontSize="Medium"
+            Keyboard="Email"
+            Text="{Binding MailAddress}"
+            IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
+            Completed="MailAddress_Completed" />
+        <Label
+            Text="Password"
+            FontSize="Medium" />
+        <Entry
+            x:Name="password"
+            FontSize="Medium"
+            IsPassword="True"
+            Text="{Binding Password}"
+            IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
+            Completed="Password_Completed" />
 
-            <Label
-                Text="Server"
-                FontSize="Medium" />
-            <Entry
-                FontSize="Medium"
-                Keyboard="Url"
-                Text="{Binding EndPoint}"
-                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
-                Completed="Password_Completed" />
+        <Label
+            Text="Server"
+            FontSize="Medium" />
+        <Entry
+            FontSize="Medium"
+            Keyboard="Url"
+            Text="{Binding EndPoint}"
+            IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanNegationConverter}}"
+            Completed="Password_Completed" />
 
-            <Button
-                x:Name="loginButton"
-                FontSize="Medium"
-                Command="{Binding LoginCommand}">
-                <Button.Style>
-                    <Style
-                        TargetType="Button">
-                        <Setter
-                            Property="Text"
-                            Value="Log in" />
-                        <Style.Triggers>
-                            <DataTrigger
-                                TargetType="Button"
-                                Binding="{Binding IsBusy}"
-                                Value="True">
-                                <Setter
-                                    Property="IsEnabled"
-                                    Value="False" />
-                                <Setter
-                                    Property="Text"
-                                    Value="Logging in..." />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackLayout>
-    </ContentPage.Content>
+        <Button
+            x:Name="loginButton"
+            FontSize="Medium"
+            Text="Log in"
+            Command="{Binding LoginCommand}">
+            <Button.Triggers>
+                <DataTrigger
+                    TargetType="Button"
+                    Binding="{Binding IsBusy}"
+                    Value="True">
+                    <Setter
+                        Property="IsEnabled"
+                        Value="False" />
+                    <Setter
+                        Property="Text"
+                        Value="Logging in..." />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+    </StackLayout>
 </ContentPage>

@@ -5,7 +5,8 @@
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.UploaderSettingsPage"
-    Title="{Binding Title}">
+    Title="{Binding Title}"
+    x:DataType="vm:UploaderSettingsViewModel">
     <ContentPage.Icon>
         <OnPlatform
             x:TypeArguments="FileImageSource"
@@ -13,74 +14,75 @@
             iOS="image_white.png"
             Android="image_white.png" />
     </ContentPage.Icon>
-    <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
-            <ListView
-                VerticalOptions="Fill"
-                CachingStrategy="RecycleElement"
-                ItemsSource="{Binding Uploaders}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition
-                                        Width="Auto" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding ToggleCommand}" />
-                                </Grid.GestureRecognizers>
-                                <xlabs:CheckBox
-                                    VerticalOptions="Center"
-                                    HorizontalOptions="End"
-                                    Margin="16"
-                                    InputTransparent="True"
-                                    Checked="{Binding IsSelected}" />
-                                <Label
-                                    Grid.Column="1"
-                                    Text="{Binding DisplayName}"
-                                    FontSize="Large"
-                                    HeightRequest="48"
-                                    Margin="8"
-                                    HorizontalTextAlignment="Start"
-                                    Style="{DynamicResource ListItemTextStyle}">
-                                    <Label.Triggers>
-                                        <DataTrigger
-                                            TargetType="Label"
-                                            Binding="{Binding HasLogoImage}"
-                                            Value="True">
-                                            <Setter
-                                                Property="IsVisible"
-                                                Value="False" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                                <Image
-                                    Grid.Column="1"
-                                    HorizontalOptions="Start"
-                                    HeightRequest="48"
-                                    Margin="8"
-                                    Source="{Binding LogoImageSource}"
-                                    IsVisible="{Binding HasLogoImage}" />
-                            </Grid>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <Grid
-                Grid.Row="1">
-                <Button
-                    HorizontalOptions="End"
-                    Text="Back"
-                    Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
-            </Grid>
+    <Grid
+        x:DataType="vm:UploaderSettingsViewModel">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <ListView
+            VerticalOptions="Fill"
+            CachingStrategy="RecycleElement"
+            ItemsSource="{Binding Uploaders}">
+            <ListView.ItemTemplate>
+                <DataTemplate
+                    x:DataType="vm:UploaderInfo">
+                    <ViewCell
+                        x:DataType="vm:UploaderInfo">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                    Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding ToggleCommand}" />
+                            </Grid.GestureRecognizers>
+                            <xlabs:CheckBox
+                                VerticalOptions="Center"
+                                HorizontalOptions="End"
+                                Margin="16"
+                                InputTransparent="True"
+                                Checked="{Binding IsSelected}" />
+                            <Label
+                                Grid.Column="1"
+                                Text="{Binding DisplayName}"
+                                FontSize="Large"
+                                HeightRequest="48"
+                                Margin="8"
+                                HorizontalTextAlignment="Start"
+                                Style="{DynamicResource ListItemTextStyle}">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        TargetType="Label"
+                                        Binding="{Binding HasLogoImage}"
+                                        Value="True">
+                                        <Setter
+                                            Property="IsVisible"
+                                            Value="False" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <Image
+                                Grid.Column="1"
+                                HorizontalOptions="Start"
+                                HeightRequest="48"
+                                Margin="8"
+                                Source="{Binding LogoImageSource}"
+                                IsVisible="{Binding HasLogoImage}" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Grid
+            Grid.Row="1">
+            <Button
+                HorizontalOptions="End"
+                Text="Back"
+                Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
         </Grid>
-    </ContentPage.Content>
+    </Grid>
 </ContentPage>

@@ -6,199 +6,197 @@
     xmlns:views="clr-namespace:KokoroIO.XamarinForms.Views"
     x:Class="KokoroIO.XamarinForms.Views.ChannelsView">
     <ContentView.Resources>
-        <ResourceDictionary>
-            <views:GridLengthConverter
-                x:Key="gridLengthConverter"
-                Coefficient="16" />
-            <views:TargetNullValueConverter
-                x:Key="targetNullValueConverter"
-                TargetNullValue="*" />
-            <Style
-                x:Key="channelLabelStyle"
-                TargetType="Label">
-                <Setter
-                    Property="VerticalOptions"
-                    Value="Fill" />
-                <Setter
-                    Property="VerticalTextAlignment"
-                    Value="Center" />
-                <Setter
-                    Property="FontSize"
-                    Value="16" />
-                <Setter
-                    Property="TextColor"
-                    Value="#aaa" />
-                <Setter
-                    Property="FontAttributes">
-                    <Setter.Value>
-                        <!-- HACK: UWP workaround -->
-                        <OnPlatform
-                            x:TypeArguments="FontAttributes"
-                            Android="None"
-                            iOS="None"
-                            WinPhone="Bold" />
-                    </Setter.Value>
-                </Setter>
+        <views:GridLengthConverter
+            x:Key="gridLengthConverter"
+            Coefficient="16" />
+        <views:TargetNullValueConverter
+            x:Key="targetNullValueConverter"
+            TargetNullValue="*" />
+        <Style
+            x:Key="channelLabelStyle"
+            TargetType="Label">
+            <Setter
+                Property="VerticalOptions"
+                Value="Fill" />
+            <Setter
+                Property="VerticalTextAlignment"
+                Value="Center" />
+            <Setter
+                Property="FontSize"
+                Value="16" />
+            <Setter
+                Property="TextColor"
+                Value="#aaa" />
+            <Setter
+                Property="FontAttributes">
+                <Setter.Value>
+                    <!-- HACK: UWP workaround -->
+                    <OnPlatform
+                        x:TypeArguments="FontAttributes"
+                        Android="None"
+                        iOS="None"
+                        WinPhone="Bold" />
+                </Setter.Value>
+            </Setter>
 
-                <Style.Triggers>
-                    <DataTrigger
-                        TargetType="Label"
-                        Binding="{Binding IsSelected}"
-                        Value="True">
-                        <Setter
-                            Property="TextColor"
-                            Value="#18BC9C" />
-                        <Setter
-                            Property="FontAttributes"
-                            Value="Bold" />
-                        <Setter
-                            Property="BackgroundColor"
-                            Value="##e9e9e9" />
-                    </DataTrigger>
-                    <DataTrigger
-                        TargetType="Label"
-                        Binding="{Binding IsArchived}"
-                        Value="True">
-                        <Setter
-                            Property="TextColor"
-                            Value="#ccc" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-            <DataTemplate
-                x:Key="channelListViewItemTemplate">
-                <ViewCell>
-                    <Grid
-                        Padding="10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition
-                                Width="{Binding ConcatenationDepth, Converter={StaticResource gridLengthConverter}}" />
-                            <ColumnDefinition
-                                Width="16" />
-                            <ColumnDefinition
-                                Width="Auto" />
-                            <ColumnDefinition />
-                            <ColumnDefinition
-                                Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.Triggers>
+            <Style.Triggers>
+                <DataTrigger
+                    TargetType="Label"
+                    Binding="{Binding IsSelected}"
+                    Value="True">
+                    <Setter
+                        Property="TextColor"
+                        Value="#18BC9C" />
+                    <Setter
+                        Property="FontAttributes"
+                        Value="Bold" />
+                    <Setter
+                        Property="BackgroundColor"
+                        Value="##e9e9e9" />
+                </DataTrigger>
+                <DataTrigger
+                    TargetType="Label"
+                    Binding="{Binding IsArchived}"
+                    Value="True">
+                    <Setter
+                        Property="TextColor"
+                        Value="#ccc" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <DataTemplate
+            x:Key="channelListViewItemTemplate"
+            x:DataType="views:ChannelsViewNode">
+            <ViewCell
+                x:DataType="views:ChannelsViewNode">
+                <Grid
+                    Padding="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition
+                            Width="{Binding ConcatenationDepth, Converter={StaticResource gridLengthConverter}}" />
+                        <ColumnDefinition
+                            Width="16" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition
+                            Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.Triggers>
+                        <DataTrigger
+                            TargetType="Grid"
+                            Binding="{Binding IsSelected}"
+                            Value="True">
+                            <Setter
+                                Property="BackgroundColor"
+                                Value="##e9e9e9" />
+                        </DataTrigger>
+                    </Grid.Triggers>
+                    <Label
+                        Grid.Column="1"
+                        Style="{StaticResource channelLabelStyle}"
+                        Text="#"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="End"
+                        VerticalOptions="Fill"
+                        VerticalTextAlignment="Center">
+                        <Label.Triggers>
                             <DataTrigger
-                                TargetType="Grid"
-                                Binding="{Binding IsSelected}"
+                                TargetType="Label"
+                                Binding="{Binding IsDirectMessage}"
                                 Value="True">
                                 <Setter
-                                    Property="BackgroundColor"
-                                    Value="##e9e9e9" />
+                                    Property="Text"
+                                    Value="@" />
                             </DataTrigger>
-                        </Grid.Triggers>
+                            <DataTrigger
+                                TargetType="Label"
+                                Binding="{Binding IsGroup}"
+                                Value="True">
+                                <Setter
+                                    Property="Text"
+                                    Value="▼" />
+                            </DataTrigger>
+                            <DataTrigger
+                                TargetType="Label"
+                                Binding="{Binding IsExpanded}"
+                                Value="True">
+                                <Setter
+                                    Property="Rotation"
+                                    Value="0" />
+                            </DataTrigger>
+                            <DataTrigger
+                                TargetType="Label"
+                                Binding="{Binding IsExpanded}"
+                                Value="False">
+                                <Setter
+                                    Property="Rotation"
+                                    Value="-90" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label
+                        Grid.Column="2"
+                        Text="{Binding ConcatenatedName}"
+                        Style="{StaticResource channelLabelStyle}">
+                        <Label.Triggers>
+                            <DataTrigger
+                                TargetType="Label"
+                                Binding="{Binding IsGroup}"
+                                Value="True">
+                                <Setter
+                                    Property="Text"
+                                    Value="{Binding Name, StringFormat='{}{0}/'}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label
+                        Grid.Column="3"
+                        Text="{Binding Discriminator}"
+                        Style="{StaticResource channelLabelStyle}"
+                        FontSize="9"
+                        TextColor="#fcc">
+                        <Label.Triggers>
+                            <DataTrigger
+                                TargetType="Label"
+                                Binding="{Binding Discriminator}"
+                                Value="{x:Null}">
+                                <Setter
+                                    Property="IsVisible"
+                                    Value="False" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Frame
+                        Grid.Column="4"
+                        Margin="4,0"
+                        Padding="4,0"
+                        CornerRadius="8"
+                        MinimumWidthRequest="24"
+                        VerticalOptions="Center"
+                        BackgroundColor="#2C3E50"
+                        BorderColor="#2C3E50"
+                        IsVisible="{Binding IsUnreadCountVisible}">
                         <Label
-                            Grid.Column="1"
-                            Style="{StaticResource channelLabelStyle}"
-                            Text="#"
-                            HorizontalOptions="Fill"
-                            HorizontalTextAlignment="End"
-                            VerticalOptions="Fill"
-                            VerticalTextAlignment="Center">
-                            <Label.Triggers>
-                                <DataTrigger
-                                    TargetType="Label"
-                                    Binding="{Binding IsDirectMessage}"
-                                    Value="True">
-                                    <Setter
-                                        Property="Text"
-                                        Value="@" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    TargetType="Label"
-                                    Binding="{Binding IsGroup}"
-                                    Value="True">
-                                    <Setter
-                                        Property="Text"
-                                        Value="▼" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    TargetType="Label"
-                                    Binding="{Binding IsExpanded}"
-                                    Value="True">
-                                    <Setter
-                                        Property="Rotation"
-                                        Value="0" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    TargetType="Label"
-                                    Binding="{Binding IsExpanded}"
-                                    Value="False">
-                                    <Setter
-                                        Property="Rotation"
-                                        Value="-90" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                        <Label
-                            Grid.Column="2"
-                            Text="{Binding ConcatenatedName}"
-                            Style="{StaticResource channelLabelStyle}">
-                            <Label.Triggers>
-                                <DataTrigger
-                                    TargetType="Label"
-                                    Binding="{Binding IsGroup}"
-                                    Value="True">
-                                    <Setter
-                                        Property="Text"
-                                        Value="{Binding Name, StringFormat='{}{0}/'}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                        <Label
-                            Grid.Column="3"
-                            Text="{Binding Discriminator}"
-                            Style="{StaticResource channelLabelStyle}"
-                            FontSize="9"
-                            TextColor="#fcc">
-                            <Label.Triggers>
-                                <DataTrigger
-                                    TargetType="Label"
-                                    Binding="{Binding Discriminator}"
-                                    Value="{x:Null}">
-                                    <Setter
-                                        Property="IsVisible"
-                                        Value="False" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                        <Frame
-                            Grid.Column="4"
-                            Margin="4,0"
-                            Padding="4,0"
-                            CornerRadius="8"
-                            MinimumWidthRequest="24"
-                            VerticalOptions="Center"
-                            BackgroundColor="#2C3E50"
-                            BorderColor="#2C3E50"
-                            IsVisible="{Binding IsUnreadCountVisible}">
-                            <Label
-                                Margin="0"
-                                Padding="0"
-                                VerticalTextAlignment="Center"
-                                HorizontalTextAlignment="Center"
-                                TextColor="#fff"
-                                FontFamily="Monospace"
-                                FontAttributes="Bold"
-                                FontSize="Small"
-                                Text="{Binding UnreadCount, Converter={StaticResource targetNullValueConverter}}" />
-                        </Frame>
-                    </Grid>
-                </ViewCell>
-            </DataTemplate>
-        </ResourceDictionary>
+                            Margin="0"
+                            Padding="0"
+                            VerticalTextAlignment="Center"
+                            HorizontalTextAlignment="Center"
+                            TextColor="#fff"
+                            FontFamily="Monospace"
+                            FontAttributes="Bold"
+                            FontSize="Small"
+                            Text="{Binding UnreadCount, Converter={StaticResource targetNullValueConverter}}" />
+                    </Frame>
+                </Grid>
+            </ViewCell>
+        </DataTemplate>
     </ContentView.Resources>
-    <ContentView.Content>
-        <views:CustomTableView
-            x:Name="tableView"
-            HorizontalOptions="Fill"
-            VerticalOptions="Fill"
-            Intent="Menu"
-            IsSeparatorVisible="False">
-        </views:CustomTableView>
-    </ContentView.Content>
+    <views:CustomTableView
+        x:Name="tableView"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill"
+        Intent="Menu"
+        IsSeparatorVisible="False">
+    </views:CustomTableView>
 </ContentView>

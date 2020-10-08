@@ -5,80 +5,82 @@
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.ChannelDetailPage"
     Title="{Binding Channel.DisplayName}"
-    IsBusy="{Binding IsBusy}">
-    <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
-            <Label
-                FontSize="Large"
-                Text="{Binding Channel.DisplayName}" />
-            <Label
-                Grid.Row="1"
-                FontSize="Medium"
-                Text="{Binding Channel.Description}" />
-            <ListView
-                Grid.Row="2"
-                ItemsSource="{Binding Members}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition
-                                        Width="Auto" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Image
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    Margin="8"
-                                    Source="{Binding DisplayAvatar}" />
-                                <Label
-                                    Grid.Column="1"
-                                    VerticalOptions="Center"
-                                    Text="{Binding FullDisplayName}" />
-                            </Grid>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <StackLayout
-                Grid.Row="3"
-                HorizontalOptions="End"
-                Orientation="Horizontal">
+    IsBusy="{Binding IsBusy}"
+    x:DataType="vm:ChannelDetailViewModel">
+    <Grid
+        x:DataType="vm:ChannelDetailViewModel">
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label
+            FontSize="Large"
+            Text="{Binding Channel.DisplayName}" />
+        <Label
+            Grid.Row="1"
+            FontSize="Medium"
+            Text="{Binding Channel.Description}" />
+        <ListView
+            Grid.Row="2"
+            ItemsSource="{Binding Members}">
+            <ListView.ItemTemplate>
+                <DataTemplate
+                    x:DataType="vm:ProfileViewModel">
+                    <ViewCell
+                        x:DataType="vm:ProfileViewModel">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                    Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Image
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Margin="8"
+                                Source="{Binding DisplayAvatar}" />
+                            <Label
+                                Grid.Column="1"
+                                VerticalOptions="Center"
+                                Text="{Binding FullDisplayName}" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <StackLayout
+            Grid.Row="3"
+            HorizontalOptions="End"
+            Orientation="Horizontal">
 
-                <Button
-                    Text="Join"
-                    Command="{Binding JoinCommand}"
-                    IsVisible="{Binding CanJoin}" />
+            <Button
+                Text="Join"
+                Command="{Binding JoinCommand}"
+                IsVisible="{Binding CanJoin}" />
 
-                <Button
-                    Text="Leave"
-                    Command="{Binding LeaveCommand}">
-                    <Button.Triggers>
-                        <DataTrigger
-                            TargetType="Button"
-                            Binding="{Binding Channel.MembershipId}"
-                            Value="{x:Null}">
-                            <Setter
-                                Property="IsVisible"
-                                Value="False" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
+            <Button
+                Text="Leave"
+                Command="{Binding LeaveCommand}">
+                <Button.Triggers>
+                    <DataTrigger
+                        TargetType="Button"
+                        Binding="{Binding Channel.MembershipId}"
+                        Value="{x:Null}">
+                        <Setter
+                            Property="IsVisible"
+                            Value="False" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
 
-                <Button
-                    Text="Back"
-                    Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
-            </StackLayout>
-        </Grid>
-    </ContentPage.Content>
+            <Button
+                Text="Back"
+                Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
+        </StackLayout>
+    </Grid>
 </ContentPage>

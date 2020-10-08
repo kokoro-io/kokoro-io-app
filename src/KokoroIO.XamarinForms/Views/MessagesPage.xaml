@@ -3,57 +3,57 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     xmlns:view="clr-namespace:KokoroIO.XamarinForms.Views"
     xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     x:Class="KokoroIO.XamarinForms.Views.MessagesPage"
-    Title="{Binding Title}">
+    Title="{Binding Title}"
+    x:DataType="vm:MessagesViewModel">
     <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style
-                x:Key="bannerButtonStyle"
-                TargetType="Button">
-                <Setter
-                    Property="Margin"
-                    Value="8,4" />
-                <Setter
-                    Property="VerticalOptions"
-                    Value="Start" />
-                <Setter
-                    Property="HorizontalOptions"
-                    Value="FillAndExpand" />
-                <Setter
-                    Property="FontSize"
-                    Value="Small" />
-                <Setter
-                    Property="BorderWidth"
-                    Value="0" />
-                <Setter
-                    Property="BorderRadius"
-                    Value="5" />
-                <Setter
-                    Property="TextColor"
-                    Value="#fff" />
-            </Style>
-            <Style
-                x:Key="footerButtonStyle"
-                TargetType="xlabs:ImageButton">
-                <Setter
-                    Property="BackgroundColor"
-                    Value="Transparent" />
-                <Setter
-                    Property="Margin"
-                    Value="0" />
-                <Setter
-                    Property="ImageWidthRequest"
-                    Value="24" />
-                <Setter
-                    Property="ImageHeightRequest"
-                    Value="24" />
-                <Setter
-                    Property="WidthRequest"
-                    Value="48" />
-            </Style>
-        </ResourceDictionary>
+        <Style
+            x:Key="bannerButtonStyle"
+            TargetType="Button">
+            <Setter
+                Property="Margin"
+                Value="8,4" />
+            <Setter
+                Property="VerticalOptions"
+                Value="Start" />
+            <Setter
+                Property="HorizontalOptions"
+                Value="FillAndExpand" />
+            <Setter
+                Property="FontSize"
+                Value="Small" />
+            <Setter
+                Property="BorderWidth"
+                Value="0" />
+            <Setter
+                Property="BorderRadius"
+                Value="5" />
+            <Setter
+                Property="TextColor"
+                Value="#fff" />
+        </Style>
+        <Style
+            x:Key="footerButtonStyle"
+            TargetType="xlabs:ImageButton">
+            <Setter
+                Property="BackgroundColor"
+                Value="Transparent" />
+            <Setter
+                Property="Margin"
+                Value="0" />
+            <Setter
+                Property="ImageWidthRequest"
+                Value="24" />
+            <Setter
+                Property="ImageHeightRequest"
+                Value="24" />
+            <Setter
+                Property="WidthRequest"
+                Value="48" />
+        </Style>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem
@@ -100,190 +100,190 @@
             Order="Secondary"
             Text="Leave channel [WIP]" />
     </ContentPage.ToolbarItems>
-    <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
-            <view:MessagesView
-                LoadOlderCommand="{Binding PrependCommand}"
-                RefreshCommand="{Binding AppendCommand}"
-                NavigatingCommand="{Binding OpenUrlCommand}"
-                Messages="{Binding Messages}"
-                SelectedMessage="{Binding SelectedMessage}"
-                HasUnread="{Binding Channel.HasUnread}" />
+    <Grid
+        x:DataType="vm:MessagesViewModel">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <view:MessagesView
+            LoadOlderCommand="{Binding PrependCommand}"
+            RefreshCommand="{Binding AppendCommand}"
+            NavigatingCommand="{Binding OpenUrlCommand}"
+            Messages="{Binding Messages}"
+            SelectedMessage="{Binding SelectedMessage}"
+            HasUnread="{Binding Channel.HasUnread}" />
+        <StackLayout
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="Start">
+            <Button
+                Style="{StaticResource bannerButtonStyle}"
+                BackgroundColor="#4169E1"
+                Text="{Binding Channel.UnreadCount,StringFormat='{}{0} new messages'}"
+                Command="{Binding ShowUnreadCommand}">
+                <Button.Triggers>
+                    <DataTrigger
+                        TargetType="Button"
+                        Binding="{Binding Channel.UnreadCount}"
+                        Value="0">
+                        <Setter
+                            Property="IsVisible"
+                            Value="False" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button
+                Style="{StaticResource bannerButtonStyle}"
+                Text="Archived channel"
+                BackgroundColor="DarkOrange"
+                IsVisible="{Binding IsArchiveBannerShown}"
+                Command="{Binding ClearArchiveBannerCommand}" />
+            <Button
+                Style="{StaticResource bannerButtonStyle}"
+                Text="Disconnected from server"
+                BackgroundColor="Khaki"
+                IsVisible="{Binding Application.IsDisconnected}"
+                Command="{Binding Application.ConnectCommand}" />
+        </StackLayout>
+        <ActivityIndicator
+            VerticalOptions="Center"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}" />
+
+        <Grid
+            Grid.Row="1"
+            HeightRequest="32"
+            IsVisible="{Binding CanPost}">
+
             <StackLayout
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Start">
-                <Button
-                    Style="{StaticResource bannerButtonStyle}"
-                    BackgroundColor="#4169E1"
-                    Text="{Binding Channel.UnreadCount,StringFormat='{}{0} new messages'}"
-                    Command="{Binding ShowUnreadCommand}">
-                    <Button.Triggers>
-                        <DataTrigger
-                            TargetType="Button"
-                            Binding="{Binding Channel.UnreadCount}"
-                            Value="0">
-                            <Setter
-                                Property="IsVisible"
-                                Value="False" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button
-                    Style="{StaticResource bannerButtonStyle}"
-                    Text="Archived channel"
-                    BackgroundColor="DarkOrange"
-                    IsVisible="{Binding IsArchiveBannerShown}"
-                    Command="{Binding ClearArchiveBannerCommand}" />
-                <Button
-                    Style="{StaticResource bannerButtonStyle}"
-                    Text="Disconnected from server"
-                    BackgroundColor="Khaki"
-                    IsVisible="{Binding Application.IsDisconnected}"
-                    Command="{Binding Application.ConnectCommand}" />
-            </StackLayout>
-            <ActivityIndicator
-                VerticalOptions="Center"
-                HorizontalOptions="Fill"
-                IsRunning="{Binding IsBusy}"
-                IsVisible="{Binding IsBusy}" />
+                Orientation="Horizontal">
 
-            <Grid
-                Grid.Row="1"
-                HeightRequest="32"
-                IsVisible="{Binding CanPost}">
+                <StackLayout.Triggers>
+                    <DataTrigger
+                        TargetType="StackLayout"
+                        Binding="{Binding ProfileCandicates.HasResult}"
+                        Value="True">
+                        <Setter
+                            Property="IsVisible"
+                            Value="False" />
+                    </DataTrigger>
+                    <DataTrigger
+                        TargetType="StackLayout"
+                        Binding="{Binding ChannelCandicates.HasResult}"
+                        Value="True">
+                        <Setter
+                            Property="IsVisible"
+                            Value="False" />
+                    </DataTrigger>
+                </StackLayout.Triggers>
 
-                <StackLayout
-                    Orientation="Horizontal">
-
-                    <StackLayout.Triggers>
-                        <DataTrigger
-                            TargetType="StackLayout"
-                            Binding="{Binding ProfileCandicates.HasResult}"
-                            Value="True">
-                            <Setter
-                                Property="IsVisible"
-                                Value="False" />
-                        </DataTrigger>
-                        <DataTrigger
-                            TargetType="StackLayout"
-                            Binding="{Binding ChannelCandicates.HasResult}"
-                            Value="True">
-                            <Setter
-                                Property="IsVisible"
-                                Value="False" />
-                        </DataTrigger>
-                    </StackLayout.Triggers>
-
-                    <xlabs:ImageButton
-                        Style="{StaticResource footerButtonStyle}"
-                        Image="image.png"
-                        Command="{Binding UploadImageCommand}"
-                        IsVisible="{Binding SupportsImageUpload}" />
-
-                    <xlabs:ImageButton
-                        Style="{StaticResource footerButtonStyle}"
-                        Image="camera.png"
-                        Command="{Binding TakePhotoCommand}"
-                        IsVisible="{Binding SupportsTakePhoto}" />
-
-                    <xlabs:ImageButton
-                        Style="{StaticResource footerButtonStyle}"
-                        Image="history.png"
-                        Command="{Binding ShowImageHistoryCommand}" />
-
-                    <xlabs:ImageButton
-                        Style="{StaticResource footerButtonStyle}"
-                        Image="visibility.png"
-                        Command="{Binding ToggleNsfwCommand}">
-                        <xlabs:ImageButton.Triggers>
-                            <DataTrigger
-                                TargetType="xlabs:ImageButton"
-                                Binding="{Binding IsNsfw}"
-                                Value="True">
-                                <Setter
-                                    Property="Image"
-                                    Value="visibility_off.png" />
-                            </DataTrigger>
-                        </xlabs:ImageButton.Triggers>
-                    </xlabs:ImageButton>
-
-                    <xlabs:ImageButton
-                        Style="{StaticResource footerButtonStyle}"
-                        Image="expand_content.png"
-                        Command="{Binding ToggleExpandsContentsCommand}">
-                        <xlabs:ImageButton.Triggers>
-                            <DataTrigger
-                                TargetType="xlabs:ImageButton"
-                                Binding="{Binding ExpandsContents}"
-                                Value="False">
-                                <Setter
-                                    Property="Image"
-                                    Value="skip_content.png" />
-                            </DataTrigger>
-                        </xlabs:ImageButton.Triggers>
-                    </xlabs:ImageButton>
-                </StackLayout>
-
-                <view:MembersLabel
-                    LineBreakMode="NoWrap"
-                    VerticalTextAlignment="Center"
-                    IsVisible="{Binding ProfileCandicates.HasResult}"
-                    Entities="{Binding ProfileCandicates.Result}"
-                    SelectCommand="{Binding  ProfileCandicates.SelectCommand}" />
-
-                <view:ChannelsLabel
-                    LineBreakMode="NoWrap"
-                    VerticalTextAlignment="Center"
-                    IsVisible="{Binding ChannelCandicates.HasResult}"
-                    Entities="{Binding ChannelCandicates.Result}"
-                    SelectCommand="{Binding  ChannelCandicates.SelectCommand}" />
-            </Grid>
-
-            <Grid
-                Grid.Row="2"
-                Margin="4"
-                IsVisible="{Binding CanPost}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition
-                        Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <view:ExpandableEditor
-                    x:Name="editor"
-                    FontSize="Small"
-                    HorizontalOptions="FillAndExpand"
-                    Text="{Binding NewMessage}"
-                    Placeholder="{Binding Channel.Placeholder}"
-                    SelectionStart="{Binding SelectionStart}"
-                    SelectionLength="{Binding SelectionLength}"
-                    MaxLines="10"
-                    HasFocus="{Binding NewMessageFocused, Mode=TwoWay}"
-                    PostCommand="{Binding PostCommand}"
-                    FilePasted="ExpandableEditor_FilePasted"
-                    Unfocused="ExpandableEditor_Unfocused" />
                 <xlabs:ImageButton
-                    Grid.Column="1"
                     Style="{StaticResource footerButtonStyle}"
-                    Image="send.png"
-                    VerticalOptions="End"
-                    Command="{Binding PostCommand}" />
-            </Grid>
+                    Image="image.png"
+                    Command="{Binding UploadImageCommand}"
+                    IsVisible="{Binding SupportsImageUpload}" />
 
-            <view:MessagesPageProfile
-                Grid.RowSpan="3" />
-            <view:MessagesPageImageHistory
-                Grid.RowSpan="3" />
-            <view:CommandListPopup
-                Grid.RowSpan="3" />
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="camera.png"
+                    Command="{Binding TakePhotoCommand}"
+                    IsVisible="{Binding SupportsTakePhoto}" />
 
-            <!--TODO: support dedicated contents <xlabs:PopupLayout
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="history.png"
+                    Command="{Binding ShowImageHistoryCommand}" />
+
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="visibility.png"
+                    Command="{Binding ToggleNsfwCommand}">
+                    <xlabs:ImageButton.Triggers>
+                        <DataTrigger
+                            TargetType="xlabs:ImageButton"
+                            Binding="{Binding IsNsfw}"
+                            Value="True">
+                            <Setter
+                                Property="Image"
+                                Value="visibility_off.png" />
+                        </DataTrigger>
+                    </xlabs:ImageButton.Triggers>
+                </xlabs:ImageButton>
+
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="expand_content.png"
+                    Command="{Binding ToggleExpandsContentsCommand}">
+                    <xlabs:ImageButton.Triggers>
+                        <DataTrigger
+                            TargetType="xlabs:ImageButton"
+                            Binding="{Binding ExpandsContents}"
+                            Value="False">
+                            <Setter
+                                Property="Image"
+                                Value="skip_content.png" />
+                        </DataTrigger>
+                    </xlabs:ImageButton.Triggers>
+                </xlabs:ImageButton>
+            </StackLayout>
+
+            <view:MembersLabel
+                LineBreakMode="NoWrap"
+                VerticalTextAlignment="Center"
+                IsVisible="{Binding ProfileCandicates.HasResult}"
+                Entities="{Binding ProfileCandicates.Result}"
+                SelectCommand="{Binding  ProfileCandicates.SelectCommand}" />
+
+            <view:ChannelsLabel
+                LineBreakMode="NoWrap"
+                VerticalTextAlignment="Center"
+                IsVisible="{Binding ChannelCandicates.HasResult}"
+                Entities="{Binding ChannelCandicates.Result}"
+                SelectCommand="{Binding  ChannelCandicates.SelectCommand}" />
+        </Grid>
+
+        <Grid
+            Grid.Row="2"
+            Margin="4"
+            IsVisible="{Binding CanPost}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition
+                    Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <view:ExpandableEditor
+                x:Name="editor"
+                FontSize="Small"
+                HorizontalOptions="FillAndExpand"
+                Text="{Binding NewMessage}"
+                Placeholder="{Binding Channel.Placeholder}"
+                SelectionStart="{Binding SelectionStart}"
+                SelectionLength="{Binding SelectionLength}"
+                MaxLines="10"
+                HasFocus="{Binding NewMessageFocused, Mode=TwoWay}"
+                PostCommand="{Binding PostCommand}"
+                FilePasted="ExpandableEditor_FilePasted"
+                Unfocused="ExpandableEditor_Unfocused" />
+            <xlabs:ImageButton
+                Grid.Column="1"
+                Style="{StaticResource footerButtonStyle}"
+                Image="send.png"
+                VerticalOptions="End"
+                Command="{Binding PostCommand}" />
+        </Grid>
+
+        <view:MessagesPageProfile
+            Grid.RowSpan="3" />
+        <view:MessagesPageImageHistory
+            Grid.RowSpan="3" />
+        <view:CommandListPopup
+            Grid.RowSpan="3" />
+
+        <!--TODO: support dedicated contents <xlabs:PopupLayout
                 x:Name="webViewPopup"
                 Grid.RowSpan="3"
                 BackgroundColor="#80000000"
@@ -301,6 +301,5 @@
                         BindingContextChanged="PopupWebView_BindingContextChanged" />
                 </xlabs:PopupLayout.Content>
             </xlabs:PopupLayout>-->
-        </Grid>
-    </ContentPage.Content>
+    </Grid>
 </ContentPage>

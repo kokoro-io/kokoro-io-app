@@ -5,7 +5,8 @@
     xmlns:xlabs="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
     xmlns:vm="clr-namespace:KokoroIO.XamarinForms.ViewModels"
     x:Class="KokoroIO.XamarinForms.Views.ProfileSettingsPage"
-    Title="{Binding Title}">
+    Title="{Binding Title}"
+    x:DataType="vm:ProfileSettingsViewModel">
     <ContentPage.Icon>
         <OnPlatform
             x:TypeArguments="FileImageSource"
@@ -14,112 +15,108 @@
             Android="account_white.png" />
     </ContentPage.Icon>
     <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style
-                x:Key="footerButtonStyle"
-                TargetType="xlabs:ImageButton">
-                <Setter
-                    Property="BackgroundColor"
-                    Value="Transparent" />
-                <Setter
-                    Property="Margin"
-                    Value="0" />
-                <Setter
-                    Property="ImageWidthRequest"
-                    Value="24" />
-                <Setter
-                    Property="ImageHeightRequest"
-                    Value="24" />
-                <Setter
-                    Property="WidthRequest"
-                    Value="48" />
-            </Style>
-        </ResourceDictionary>
+        <Style
+            x:Key="footerButtonStyle"
+            TargetType="xlabs:ImageButton">
+            <Setter
+                Property="BackgroundColor"
+                Value="Transparent" />
+            <Setter
+                Property="Margin"
+                Value="0" />
+            <Setter
+                Property="ImageWidthRequest"
+                Value="24" />
+            <Setter
+                Property="ImageHeightRequest"
+                Value="24" />
+            <Setter
+                Property="WidthRequest"
+                Value="48" />
+        </Style>
     </ContentPage.Resources>
-    <ContentPage.Content>
+    <Grid
+        x:DataType="vm:ProfileSettingsViewModel">
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition
                     Height="Auto" />
-                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
                 <RowDefinition
                     Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                </Grid.RowDefinitions>
 
-                <StackLayout
-                    VerticalOptions="End"
-                    Orientation="Horizontal">
-
-                    <Image
-                        WidthRequest="120"
-                        HeightRequest="120"
-                        Margin="8"
-                        Source="{Binding Application.LoginUser.Avatar120px}" />
-
-                    <xlabs:ImageButton
-                        Style="{StaticResource footerButtonStyle}"
-                        Image="image.png"
-                        Command="{Binding SelectPhotoCommand}" />
-
-                    <xlabs:ImageButton
-                        Style="{StaticResource footerButtonStyle}"
-                        Image="camera.png"
-                        Command="{Binding TakePhotoCommand}" />
-
-                </StackLayout>
-
-                <Label
-                    Grid.Row="1"
-                    FontSize="Medium"
-                    FontAttributes="Bold"
-                    Text="Screen Name" />
-                <Entry
-                    Grid.Row="2"
-                    FontSize="Large"
-                    Keyboard="Email"
-                    Text="{Binding ScreenName}" />
-                <Label
-                    Grid.Row="3"
-                    FontSize="Medium"
-                    FontAttributes="Bold"
-                    Text="Display Name" />
-                <Entry
-                    Grid.Row="4"
-                    FontSize="Large"
-                    Text="{Binding DisplayName}" />
-                <Button
-                    Grid.Row="5"
-                    FontSize="Medium"
-                    Text="Save Profile"
-                    Command="{Binding SaveCommand}" />
-            </Grid>
             <StackLayout
-                Grid.Row="2"
-                Orientation="Horizontal"
-                HorizontalOptions="End">
-                <Button
-                    Text="Log out"
-                    Command="{x:Static vm:ApplicationViewModel.LogoutCommand}" />
-                <Button
-                    Text="Back"
-                    Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
-            </StackLayout>
-        </Grid>
+                VerticalOptions="End"
+                Orientation="Horizontal">
 
-    </ContentPage.Content>
+                <Image
+                    WidthRequest="120"
+                    HeightRequest="120"
+                    Margin="8"
+                    Source="{Binding Application.LoginUser.Avatar120px}" />
+
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="image.png"
+                    Command="{Binding SelectPhotoCommand}" />
+
+                <xlabs:ImageButton
+                    Style="{StaticResource footerButtonStyle}"
+                    Image="camera.png"
+                    Command="{Binding TakePhotoCommand}" />
+
+            </StackLayout>
+
+            <Label
+                Grid.Row="1"
+                FontSize="Medium"
+                FontAttributes="Bold"
+                Text="Screen Name" />
+            <Entry
+                Grid.Row="2"
+                FontSize="Large"
+                Keyboard="Email"
+                Text="{Binding ScreenName}" />
+            <Label
+                Grid.Row="3"
+                FontSize="Medium"
+                FontAttributes="Bold"
+                Text="Display Name" />
+            <Entry
+                Grid.Row="4"
+                FontSize="Large"
+                Text="{Binding DisplayName}" />
+            <Button
+                Grid.Row="5"
+                FontSize="Medium"
+                Text="Save Profile"
+                Command="{Binding SaveCommand}" />
+        </Grid>
+        <StackLayout
+            Grid.Row="2"
+            Orientation="Horizontal"
+            HorizontalOptions="End">
+            <Button
+                Text="Log out"
+                Command="{x:Static vm:ApplicationViewModel.LogoutCommand}" />
+            <Button
+                Text="Back"
+                Command="{x:Static vm:ApplicationViewModel.PopToRootCommand}" />
+        </StackLayout>
+    </Grid>
 </ContentPage>
